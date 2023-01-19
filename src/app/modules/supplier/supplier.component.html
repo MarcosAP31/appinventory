@@ -1,0 +1,142 @@
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Proveedores</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Mantenimiento</a></li>
+                    <li class="breadcrumb-item active">Provedores</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-success" (click)="creating=true;" data-toggle="modal"
+                    data-target="#modal-default"><i class="fa fa-plus"></i>&nbsp;&nbsp; Nuevo Proveedor</button>
+                <br><br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Lista de Proveedores</h3>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table" class="table row-border hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>RUC</th>
+                                    <th>Nombre Empresarial</th>
+                                    <th>Tipo</th>
+                                    <th>Dirección</th>
+                                    <th>Teléfono</th>
+                                    <th>Correo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let supplier of suppliers">
+                                    <td>{{supplier.RUC}}</td>
+                                    <td>{{supplier.BusinessName}}</td>
+                                    <td>{{supplier.Kind}}</td>
+                                    <td>{{supplier.Direction}}</td>
+                                    <td>{{supplier.Phone}}</td>
+                                    <td>{{supplier.Email}}</td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <button (click)="edit(supplier.SupplierId)" type="button" class="btn btn-warning" data-toggle="modal"
+                                            data-target="#modal-default">
+                                                <i class="fas fa-edit" ></i>
+                                            </button>
+                                            <button (click)="delete(supplier.SupplierId)" type="button" class="btn btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-default"  data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form ngNativeValidate [formGroup]="formSupplier" (ngSubmit)="submit()">
+                    <div class="modal-header">
+                        <h4 class="modal-title">{{creating?'Nuevo':'Editando'}} Proveedor</h4>
+                        <button (click)="closeModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="inputRUC">RUC</label>
+                            <input required type="text" class="form-control" name="" formControlName="RUC" 
+                                class="form-control" placeholder="Ingrese nombres" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputName">Nombre empresarial</label>
+                            <input required type="text" class="form-control" name="" formControlName="BusinessName" 
+                                class="form-control" placeholder="Ingrese nombre empresarial" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputName">Nombre comercial</label>
+                            <input required type="text" class="form-control" name="" formControlName="TradeName" 
+                                class="form-control" placeholder="Ingrese nombre comercial" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputKind">Tipo</label>
+                            <input required type="text" class="form-control" name="" formControlName="Kind" 
+                                class="form-control" placeholder="Ingrese tipo de empresa" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputNombres">Departamento</label>
+                             <input required type="text" class="form-control" name="" formControlName="Department" 
+                                 class="form-control" placeholder="Ingrese departamento" required>
+                         </div>
+                         <div class="form-group">
+                            <label for="inputNombres">Provincia</label>
+                             <input required type="text" class="form-control" name="" formControlName="Province" 
+                                 class="form-control" placeholder="Ingrese provincia" required>
+                         </div>
+                         <div class="form-group">
+                            <label for="inputNombres">Distrito</label>
+                             <input required type="text" class="form-control" name="" formControlName="District" 
+                                 class="form-control" placeholder="Ingrese distrito" required>
+                         </div>
+                        <div class="form-group">
+                           <label for="inputNombres">Dirección</label>
+                            <input required type="text" class="form-control" name="" formControlName="Direction" 
+                                class="form-control" placeholder="Ingrese direcction" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputUsuario">Teléfono</label>
+                            <input required type="text" class="form-control" name="" formControlName="Phone" 
+                                class="form-control" placeholder="Ingrese telefono" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputUsuario">Correo</label>
+                            <input required type="text" class="form-control" name="" formControlName="Email" 
+                                class="form-control" placeholder="Ingrese correo" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()"> Cerrar</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;
+                            Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+

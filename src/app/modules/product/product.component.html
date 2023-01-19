@@ -1,0 +1,137 @@
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Productos</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Mantenimiento</a></li>
+                    <li class="breadcrumb-item active">Productos</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-success" (click)="creating=true;" data-toggle="modal"
+                    data-target="#modal-default"><i class="fa fa-plus"></i>&nbsp;&nbsp; Nuevo Producto</button>
+                <br><br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Lista de Clientes</h3>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table" class="table row-border hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Codigo</th>
+                                    <th>Descripcion</th>
+                                    <th>Categoria</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio de compra</th>
+                                    <th>Precio de venta</th>
+                                    <th>Proveedor</th>
+                                    <th>Imagen</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let product of products">
+                                    <td>{{product.Code}}</td>
+                                    <td>{{product.Description}}</td>
+                                    <td>{{product.Category}}</td>
+                                    <td>{{product.Amount}}</td>
+                                    <td>{{product.PurchasePrice}}</td>
+                                    <td>{{product.SalePrice}}</td>
+                                    <td>{{product.supplier}}</td>
+                                    <td><img width="120px" src="{{product.Image}}" alt=""></td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <button (click)="edit(product.Code)" type="button" class="btn btn-warning" data-toggle="modal"
+                                            data-target="#modal-default">
+                                                <i class="fas fa-edit" ></i>
+                                            </button>
+                                            <button (click)="delete(product.Code)" type="button" class="btn btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-default"  data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form ngNativeValidate [formGroup]="formProduct" (ngSubmit)="submit()">
+                    <div class="modal-header">
+                        <h4 class="modal-title">{{creating?'Nuevo':'Editando'}} Producto</h4>
+                        <button (click)="closeModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="inputDescription">Descripcion</label>
+                            <input required type="text" class="form-control" name="" formControlName="Description" 
+                                class="form-control" placeholder="Ingrese descripcion" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputCategory">Categoria</label>
+                            <input required type="text" class="form-control" name="" formControlName="Category" 
+                                class="form-control" placeholder="Ingrese categoria" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputAmount">Cantidad</label>
+                            <input required type="text" class="form-control" name="" formControlName="Amount" 
+                                class="form-control" placeholder="Ingrese cantidad" required>
+                        </div>
+                        <div class="form-group">
+                           <label for="inputPurchasePrice">Precio de Compra</label>
+                            <input required type="text" class="form-control" name="" formControlName="PurchasePrice" 
+                                class="form-control" placeholder="Ingrese precio de compra" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputSalePrice">Precio de Venta</label>
+                            <input required type="text" class="form-control" name="" formControlName="SalePrice" 
+                                class="form-control" placeholder="Ingrese precio de venta" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="selectSupplier">Proveedor</label>
+                            <select name="Empresa" class="form-control" formControlName="SupplierId">
+                                <option value="" disabled selected hidden>Selecciona un proveedor</option>
+                                <option  *ngFor="let supplier of suppliers" [value]="supplier.SupplierId">{{supplier.BusinessName}}</option>
+                            </select>
+                            <span *ngIf="this.formProduct.value.SupplierId==''" class="error-custom">Seleccione el proveedor</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputPurchasePrice">Imagen</label>
+                             <input required type="text" class="form-control" name="" formControlName="Image" 
+                                 class="form-control" placeholder="Ingrese precio de compra" required>
+                         </div>
+                        <div *ngIf="previsualizacion">
+                            <img width="100px" [src]="previsualizacion" alt="">
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()"> Cerrar</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;
+                            Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+

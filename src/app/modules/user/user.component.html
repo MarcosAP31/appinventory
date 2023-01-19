@@ -1,0 +1,170 @@
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Usuarios</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Mantenimiento</a></li>
+                    <li class="breadcrumb-item active">Usuarios</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-success" (click)="creating=true;" data-toggle="modal"
+                    data-target="#modal-default"><i class="fa fa-plus"></i>&nbsp;&nbsp; Nuevo Usuario</button>
+                <br><br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Lista de Usuarios</h3>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table" class="table row-border hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Nombres</th>
+                                    <th>Apellidos</th>
+                                    <th>Fecha de nacimiento</th>
+                                    <th>Sexo</th>
+                                    <th>Dirección</th>
+                                    <th>Teléfono</th>
+                                    <th>Correo</th>
+                                    <th>Imagen</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let user of users">
+                                    <td>{{user.Name}}</td>
+                                    <td>{{user.LastName}}</td>
+                                    <!-- <td>{{usuario.clave}}</td> -->
+                                    <td>{{user.Birthday}}</td>
+                                    <td>{{user.Sex}}</td>
+                                    <td>{{user.Direction}}</td>
+                                    <td>{{user.Phone}}</td>
+                                    <td>{{user.Email}}</td>
+                                    <td><img width="120px" src="assets/img/{{user.Image}}" alt=""></td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <button (click)="edit(user.UserId)" type="button" class="btn btn-warning" data-toggle="modal"
+                                            data-target="#modal-default">
+                                                <i class="fas fa-edit" ></i>
+                                            </button>
+                                            <button (click)="delete(user.UserId)" type="button" class="btn btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-default"  data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form ngNativeValidate [formGroup]="formUser" (ngSubmit)="submit()">
+                    <div class="modal-header">
+                        <h4 class="modal-title">{{creating?'Nuevo':'Editando'}} Usuario</h4>
+                        <button (click)="closeModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="inputNombres">Nombres</label>
+                            <input required type="text" class="form-control" Name="" formControlName="Name" 
+                                class="form-control" placeholder="Ingrese nombres" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputApellidos">Apellido paterno</label>
+                            <input required type="text" class="form-control" Name="" formControlName="LastName" 
+                                class="form-control" placeholder="Ingrese apellido paterno" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputNombres">Apellido materno</label>
+                            <input required type="text" class="form-control" Name="" formControlName="MotherLastname" 
+                                class="form-control" placeholder="Ingrese apellido materno" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputNombres">Fecha de nacimiento</label>
+                            <input required type="date" class="form-control" Name="" formControlName="Birthday" 
+                                class="form-control" placeholder="Ingrese fecha de nacimiento" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="selectSupplier">Sexo</label>
+                            <select name="Empresa" class="form-control" formControlName="Sex">
+                                <option value="" disabled selected hidden>Selecciona un género</option>
+                                <option value="MASCULINO">MASCULINO</option>
+                                <option value="FEMENINO">FEMENINO</option>
+                                
+                            </select>
+                            
+                        </div>
+                        <div class="form-group">
+                            <label for="inputUsuario">Departamento</label>
+                            <input required type="text" class="form-control" Name="" formControlName="Department" 
+                                class="form-control" placeholder="Ingrese departamento" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputUsuario">Provincia</label>
+                            <input required type="text" class="form-control" Name="" formControlName="Province" 
+                                class="form-control" placeholder="Ingrese provincia" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputUsuario">Distrito</label>
+                            <input required type="text" class="form-control" Name="" formControlName="District" 
+                                class="form-control" placeholder="Ingrese distrito" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputUsuario">Dirección</label>
+                            <input required type="text" class="form-control" Name="" formControlName="Direction" 
+                                class="form-control" placeholder="Ingrese direccion" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputUsuario">Teléfono</label>
+                            <input required type="text" class="form-control" Name="" formControlName="Phone" 
+                                class="form-control" placeholder="Ingrese telefono" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputUsuario">Correo</label>
+                            <input required type="text" class="form-control" Name="" formControlName="Email" 
+                                class="form-control" placeholder="Ingrese correo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputUsuario">Contraseña</label>
+                            <input required type="text" class="form-control" Name="" formControlName="Password" 
+                                class="form-control" placeholder="Ingrese contraseña" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputSalePrice">Imagen</label>
+                            <input required type="file" (change)="captureFile($event)" class="form-control" name="" formControlName="Image" 
+                                class="form-control" placeholder="Ingrese Imagen" required>
+                        </div>
+                        <div *ngIf="previsualizacion">
+                            <img width="100px" [src]="previsualizacion" alt="">
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()"> Cerrar</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;
+                            Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+

@@ -1,0 +1,107 @@
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Salidas</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Mantenimiento</a></li>
+                    <li class="breadcrumb-item active">Salidas</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-success" (click)="creating=true;" data-toggle="modal"
+                    data-target="#modal-default"><i class="fa fa-plus"></i>&nbsp;&nbsp; Nueva Salida</button>
+                <br><br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Salidas</h3>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table" class="table row-border hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Codigo de producto</th>
+                                    <th>Producto</th>
+                                    <th>Fecha de salida</th>
+                                    <th>Cliente</th>
+                                    <th>Usuario</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio unitario</th>
+                                    <th>Precio total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let output of outputs">
+                                    <td>{{output.Code}}</td>
+                                    <td>{{output.Product}}</td>
+                                    <td>{{output.Date}}</td>
+                                    <td>{{output.Client}}</td>
+                                    <td>{{output.User}}</td>
+                                    <td>{{output.Amount}}</td>
+                                    <td>{{output.Price}}</td>
+                                    <td>{{output.Price*output.Amount}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-default"  data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form ngNativeValidate [formGroup]="formOutput" (ngSubmit)="submit()">
+                    <div class="modal-header">
+                        <h4 class="modal-title">{{creating?'Nuevo':'Editando'}} Salida</h4>
+                        <button (click)="closeModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="selectSupplier">Producto</label>
+                            <select name="Product" class="form-control" formControlName="Code">
+                                <option value="" disabled selected hidden>Selecciona un producto</option>
+                                <option  *ngFor="let product of products" [value]="product.Code">{{product.Description}}</option>
+                            </select>
+                            <span *ngIf="this.formOutput.value.Code==''" class="error-custom">Seleccione el producto</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="selectSupplier">Cliente</label>
+                            <select name="Product" class="form-control" formControlName="ClientId">
+                                <option value="" disabled selected hidden>Selecciona un cliente</option>
+                                <option  *ngFor="let client of clients" [value]="client.ClientId">{{client.Name}}</option>
+                            </select>
+                            <span *ngIf="this.formOutput.value.ClientId==''" class="error-custom">Seleccione el cliente</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputAmount">Cantidad</label>
+                            <input required type="text" class="form-control" name="" formControlName="Amount" 
+                                class="form-control" placeholder="Ingrese cantidad" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()"> Cerrar</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;
+                            Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+
