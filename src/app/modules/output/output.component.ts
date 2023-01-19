@@ -14,7 +14,8 @@ import { AnyCatcher } from 'rxjs/internal/AnyCatcher';
   styleUrls: ['./output.component.css']
 })
 export class OutputComponent implements OnInit {
-
+  product:any
+  amountproduct:any
   pipe = new DatePipe('en-US');
   todayWithPipe:any;
   formOutput:FormGroup
@@ -129,6 +130,7 @@ export class OutputComponent implements OnInit {
     if(this.creating==false){
       output.OutputId=this.outputid
     }
+    
     var solicitud = this.creating?this.storeService.insertOutput(output):this.storeService.updateOutput(this.outputid,output);
     Swal.fire({
       title: 'Confirmación',
@@ -142,44 +144,74 @@ export class OutputComponent implements OnInit {
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        Swal.fire({
-          allowOutsideClick: false,
-          icon: 'info',
-          title: 'Guardando registro',
-          text: 'Cargando...',
-        });
-
-        Swal.showLoading();
-        solicitud.subscribe(r => {
+        this.storeService.getProduct(this.formOutput.value.Code).subscribe((r:any)=>{
+          this.amountproduct=r.Amount
+          console.log(this.amountproduct)
+          if(this.amountproduct-this.formOutput.value.Amount<0){
+            Swal.fire({
+              allowOutsideClick: false,
+              icon: 'info',
+              title: 'Alerta de cantidad ingresada',
+              text: 'Excede a la cantidad de productos en stock',
+              
+        showCancelButton: false,
+        confirmButtonText: `OK`,
         
+       
+            }).then((result)=>{
+              Swal.close()
+            })
+          }else{
+                     
           Swal.fire({
             allowOutsideClick: false,
-            icon: 'success',
-            title: 'Éxito',
-            text: 'Se ha guardado correctamente!',
-          }).then((result) => {
-            window.location.reload();
+            icon: 'info',
+            title: 'Guardando registro',
+            text: 'Cargando...',
           });
-        }, err => {
-          console.log(err);
-        
-          if (err.name == "HttpErrorResponse") {
+  
+          Swal.showLoading();
+          solicitud.subscribe(r => {
+          
+            Swal.fire({
+              allowOutsideClick: false,
+              icon: 'success',
+              title: 'Éxito',
+              text: 'Se ha guardado correctamente!',
+            }).then((result) => {
+              window.location.reload();
+            });
+          }, err => {
+            console.log(err);
+          
+            if (err.name == "HttpErrorResponse") {
+              Swal.fire({
+                allowOutsideClick: false,
+                icon: 'error',
+                title: 'Error al conectar',
+                text: 'Error de comunicación con el servidor',
+              });
+              return;
+            }
             Swal.fire({
               allowOutsideClick: false,
               icon: 'error',
-              title: 'Error al conectar',
-              text: 'Error de comunicación con el servidor',
+              title: err.name,
+              text: err.message,
             });
-            return;
-          }
-          Swal.fire({
-            allowOutsideClick: false,
-            icon: 'error',
-            title: err.name,
-            text: err.message,
           });
-        });
-
+          this.storeService.getProduct(this.formOutput.value.Code).subscribe(r=>{
+            this.product=r
+            this.product.Amount=this.amountproduct-this.formOutput.value.Amount
+            this.storeService.updateProduct(this.formOutput.value.Code,this.product).subscribe(r=>{
+              
+            })
+          })
+        }
+        })
+        
+        
+        
       } else if (result.isDenied) {
 
       }
