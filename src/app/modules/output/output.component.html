@@ -50,8 +50,8 @@
                                     <td>{{output.Client}}</td>
                                     <td>{{output.User}}</td>
                                     <td>{{output.Amount}}</td>
-                                    <td>{{output.Price}}</td>
-                                    <td>{{output.Price*output.Amount}}</td>
+                                    <td>S/.{{output.Price.toFixed(2)}}</td>
+                                    <td>S/.{{(output.Price*output.Amount).toFixed(2)}}</td>
                                 </tr>
                             </tbody>
                         </table>

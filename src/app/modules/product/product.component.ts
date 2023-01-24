@@ -8,6 +8,8 @@ import Swal from 'sweetalert2';
 import { Entry } from 'src/app/models/entry';
 import { DatePipe } from '@angular/common';
 import { DomSanitizer } from '@angular/platform-browser';
+import { OperationsComponent } from '../operations/operations.component';
+import { Operation } from 'src/app/models/operation';
 @Component({
   selector: 'app-product',
   templateUrl: './product.component.html',
@@ -220,7 +222,7 @@ export class ProductComponent implements OnInit {
     */
     var product=new Product()
     var entry=new Entry()
-    
+    var operation=new Operation()
     product.Description=this.formProduct.value.Description
     product.Category=this.formProduct.value.Category
     product.Amount=this.formProduct.value.Amount
@@ -262,8 +264,15 @@ export class ProductComponent implements OnInit {
         entry.Amount=this.formProduct.value.Amount
           
         entry.UserId=Number(localStorage.getItem('userId'))
+        
         this.storeService.insertEntry(entry).subscribe(response=>{
     
+        })
+        operation.Date=entry.Date
+        operation.Description="Compra de "+product.Amount+" "+product.Description+"(s)"
+        operation.Code=entry.Code
+        
+        this.storeService.insertOperation(operation).subscribe(r=>{
         })
           })
           Swal.fire({

@@ -7,12 +7,13 @@ import { Supplier } from '../models/supplier';
 import { User } from '../models/user';
 import { Entry } from '../models/entry';
 import { Output } from '../models/output';
+import { Operation } from '../models/operation';
 @Injectable({
   providedIn: 'root'
 })
 export class StoreService {
   headers=new Headers()
-  API_URI = 'http://192.168.0.198:3000/apistore';
+  API_URI = 'http://192.168.0.197:3000/apistore';
   /*
   apitipoinventario = 'https://localhost:7000/api/Tipoinventario';
   apilocal = 'https://localhost:7000/api/Local';
@@ -56,6 +57,12 @@ export class StoreService {
   //Products
   getProducts() {
     return this.http.get(`${this.API_URI}/product`);
+  }
+  getIncomes(){
+    return this.http.get(`${this.API_URI}/product/operations/incomes`);
+  }
+  getExpenses(){
+    return this.http.get(`${this.API_URI}/product/operations/expenses`);
   }
   getProduct(id: number) {
     return this.http.get(`${this.API_URI}/product/${id}`);
@@ -150,6 +157,14 @@ export class StoreService {
   }
   deleteOutput(id:number): Observable<any> {
     return this.http.delete(`${this.API_URI}/output/${id}`);
+  }
+
+  //Operaciones
+  getOperations() {
+    return this.http.get(`${this.API_URI}/operation`);
+  }
+  insertOperation(operation:Operation) {
+    return this.http.post(`${this.API_URI}/operation`, operation);
   }
  
 /*

@@ -8,6 +8,7 @@ import Swal from 'sweetalert2';
 import { Entry } from 'src/app/models/entry';
 import { DatePipe } from '@angular/common';
 import { AnyCatcher } from 'rxjs/internal/AnyCatcher';
+import { Operation } from 'src/app/models/operation';
 @Component({
   selector: 'app-output',
   templateUrl: './output.component.html',
@@ -95,33 +96,9 @@ export class OutputComponent implements OnInit {
   }*/
   
   submit(){
-    /*
-    var empresa=new Empresa();
-    if(this.creando==true){
-      
-      empresa.descripcion=this.formularioEmpresa.value.descripcion;
-      empresa.habilitado=true;
-      var arr = [];
-    arr.push(empresa);
-    this.inventarioService.insertarEmpresa(arr).subscribe(response=>{
-     
-      console.log("Me presionaste");
-    });
-    }
-    else{
-      this.inventarioService.obtenerEmpresa(this.formularioEmpresa.value.empresaId).subscribe(
-        (response:any)=>{
-         empresa.empresaId=response[0]['empresaId'];
-         empresa.descripcion=this.formularioEmpresa.value.descripcion;
-         empresa.habilitado=true;
-         this.inventarioService.actualizarEmpresa(empresa).subscribe();
-        }
-      );
-      
-      
-    }
-    */
+    
     var output=new Output()
+    var operation=new Operation()
     output.Date=this.todayWithPipe
     output.Amount=this.formOutput.value.Amount
     output.Code=this.formOutput.value.Code
@@ -146,6 +123,9 @@ export class OutputComponent implements OnInit {
       if (result.isConfirmed) {
         this.storeService.getProduct(this.formOutput.value.Code).subscribe((r:any)=>{
           this.amountproduct=r.Amount
+          operation.Date=output.Date
+          operation.Description="Venta de "+output.Amount+" "+r.Description+"(s)"
+          operation.Code=r.Code
           console.log(this.amountproduct)
           if(this.amountproduct-this.formOutput.value.Amount<0){
             Swal.fire({
@@ -172,7 +152,9 @@ export class OutputComponent implements OnInit {
   
           Swal.showLoading();
           solicitud.subscribe(r => {
-          
+            this.storeService.insertOperation(operation).subscribe(r=>{
+
+            })
             Swal.fire({
               allowOutsideClick: false,
               icon: 'success',

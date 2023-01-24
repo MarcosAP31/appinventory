@@ -13,6 +13,7 @@ import { SupplierComponent } from './modules/supplier/supplier.component';
 import { UserComponent } from './modules/user/user.component';
 import { EntryComponent } from './modules/entry/entry.component';
 import { OutputComponent } from './modules/output/output.component'
+import { OperationsComponent } from './modules/operations/operations.component';
 import { InicioComponent } from './pages/inicio/inicio.component';
 import { LoginComponent } from './pages/login/login.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -39,6 +40,7 @@ import { CookieService } from 'ngx-cookie-service';
     SupplierComponent,
     EntryComponent,
     OutputComponent,
+    OperationsComponent,
     InicioComponent,
     LoginComponent
     

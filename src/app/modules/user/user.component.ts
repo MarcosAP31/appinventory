@@ -215,7 +215,7 @@ export class UserComponent implements OnInit {
     var user=new User()
     user.Name=this.formUser.value.Name
     user.LastName=this.formUser.value.LastName
-    user.MotherLastname=this.formUser.value.MotherLastName
+    user.MotherLastname=this.formUser.value.MotherLastname
     user.Birthday=this.formUser.value.Birthday
     user.Sex=this.formUser.value.Sex
     user.Department=this.formUser.value.Department
@@ -225,7 +225,11 @@ export class UserComponent implements OnInit {
     user.Phone=this.formUser.value.Phone
     user.Email=this.formUser.value.Email
     user.Password=this.formUser.value.Password
-    user.Image=this.formUser.value.Image
+    var splits
+    splits=this.formUser.value.Image.split('fakepath\\')
+    
+    this.image=splits[1]
+    user.Image=this.image  
     if(this.creating==false){
       
       user.UserId=this.id

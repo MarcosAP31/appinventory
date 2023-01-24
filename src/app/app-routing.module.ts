@@ -8,6 +8,7 @@ import { SupplierComponent } from './modules/supplier/supplier.component';
 import { EntryComponent } from './modules/entry/entry.component';
 import { OutputComponent } from './modules/output/output.component';
 import { InicioComponent } from './pages/inicio/inicio.component';
+import { OperationsComponent } from './modules/operations/operations.component';
 import { LoginComponent } from './pages/login/login.component';
 import { MantenimientoComponent } from './sections/mantenimiento/mantenimiento.component';
 import { SecurityGuard } from './security.guard';
@@ -32,7 +33,8 @@ const routes: Routes = [
         {path: 'user',component:UserComponent,canActivate:[SecurityGuard]},
         {path: 'supplier',component:SupplierComponent,canActivate:[SecurityGuard]},
         {path: 'entry',component:EntryComponent,canActivate:[SecurityGuard]},
-        {path: 'output',component:OutputComponent,canActivate:[SecurityGuard]}
+        {path: 'output',component:OutputComponent,canActivate:[SecurityGuard]},
+        {path: 'operations',component:OperationsComponent,canActivate:[SecurityGuard]}
       ]
     }
   ]},

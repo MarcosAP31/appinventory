@@ -41,6 +41,7 @@ export class InicioComponent implements OnInit {
 
   logout(){
     //localStorage.setItem('token','')
+  
     this.router.navigate(['login']);
   }
 }
