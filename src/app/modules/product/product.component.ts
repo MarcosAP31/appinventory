@@ -2,8 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Product } from 'src/app/models/product';
 import { FormGroup, FormBuilder } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import{Router,ActivatedRoute} from '@angular/router';
 import { StoreService } from 'src/app/service/store.service';
+import { Request, Response } from 'express'
+
 import Swal from 'sweetalert2';
 import { Entry } from 'src/app/models/entry';
 import { DatePipe } from '@angular/common';
@@ -16,8 +19,15 @@ import { Operation } from 'src/app/models/operation';
   styleUrls: ['./product.component.css']
 })
 export class ProductComponent implements OnInit {
-  image:any
-  files:any
+  image:any="../../../assets/upload.png"
+  show:boolean=false;
+  title = 'fileUpload';
+  images = '';
+  imgURL = '/assets/noimage.png';
+  multipleImages = [];
+  imagenes: any = [];
+  
+  file:any
   previsualizacion:any
   pipe = new DatePipe('en-US');
   todayWithPipe:any;
@@ -33,6 +43,7 @@ export class ProductComponent implements OnInit {
   code=0
  
   constructor(
+    private http: HttpClient,
     private sanitizer: DomSanitizer,
     public form:FormBuilder,
     private storeService:StoreService,
@@ -85,12 +96,43 @@ export class ProductComponent implements OnInit {
   ngOnInit(): void {
     //this.obtenerUsuario();
     //this.reiniciar();
+    this.mostrarImg();
     this.dtOptions = {
       pagingType: 'full_numbers',
       responsive:true
     };
     this.get();
     this.todayWithPipe = this.pipe.transform(Date.now(), 'dd/MM/yyyy  h:mm:ss a');
+  }
+  selectImage(event:any) {
+    if (event.target.files.length > 0) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+       reader.readAsDataURL(file);
+       reader.onload = (event: any)=>{
+         this.imgURL = event.target.result;
+       }
+      this.images = file;
+    }
+    this.show=true;
+  }
+
+  selectMultipleImage(event:any) {
+    if (event.target.files.length > 0) {
+      this.multipleImages = event.target.files;
+    }
+  }
+  mostrarImg(){
+    
+    this.http.get<any>('http://localhost:3000/apistore/upload').subscribe(res => {
+    
+    this.imagenes = res;
+    const reader = new FileReader();
+    reader.onload = (this.imagenes);
+       
+   console.log(this.imagenes);
+    });
+
   }
   /*obtenerUsuario() {
     var objectUser = localStorage.getItem('user-inventario-application');
@@ -223,16 +265,16 @@ export class ProductComponent implements OnInit {
     var product=new Product()
     var entry=new Entry()
     var operation=new Operation()
+    
     product.Description=this.formProduct.value.Description
     product.Category=this.formProduct.value.Category
     product.Amount=this.formProduct.value.Amount
     product.PurchasePrice=this.formProduct.value.PurchasePrice
     product.SalePrice=this.formProduct.value.SalePrice
     product.SupplierId=this.formProduct.value.SupplierId
-   product.Image=this.formProduct.value.Image
-    if(this.creating==false){
-      product.Code=this.code
-    }
+    var string=this.formProduct.value.Image
+     var splits = string.split("\\",3); 
+     product.Image=splits[2]
     var solicitud = this.creating?this.storeService.insertProduct(product):this.storeService.updateProduct(this.code,product);
     Swal.fire({
       title: 'Confirmación',
@@ -306,8 +348,27 @@ export class ProductComponent implements OnInit {
       } else if (result.isDenied) {
 
       }
-    });
+      const formData = new FormData();
+    formData.append('file', this.images);
+   
 
+    this.http.post<any>('http://localhost:3000/apistore/file', formData).subscribe(
+      (res) => console.log(res,  Swal.fire({
+                icon: 'success',
+                title: 'Imagen cargada!!',
+                text: 'La imagen se subio correctamente!'
+                }).then((result) => {
+                            if (result) {
+                                       location.reload();
+                          }
+               }) 
+         )
+    );
+   this.imgURL = '/assets/noimage.png';
+    });
+    
+    
+   //console.log(this.formProduct.value.Image);
 
 
     
@@ -351,8 +412,9 @@ export class ProductComponent implements OnInit {
     this.formProduct=this.form.group({
       Description:[''],Category:[''],Amount:[''],PurchasePrice:[''],SalePrice:[''],SupplierId:[''],Image:['']
   })
+  this.show=false;
   }
-
+  
   
   /*deleteProduct(id:any,iControl:any){
     console.log(id);

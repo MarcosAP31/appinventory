@@ -13,7 +13,7 @@ import { Operation } from '../models/operation';
 })
 export class StoreService {
   headers=new Headers()
-  API_URI = 'http://192.168.0.197:3000/apistore';
+  API_URI = 'http://localhost:3000/apistore';
   /*
   apitipoinventario = 'https://localhost:7000/api/Tipoinventario';
   apilocal = 'https://localhost:7000/api/Local';
@@ -34,6 +34,9 @@ export class StoreService {
     
     this.headers.append("Authorization", "Bearer "+ localStorage.getItem("token") )
   }
+  //Images
+  
+
   //Clients
   getClients() {
     return this.http.get(`${this.API_URI}/client`);

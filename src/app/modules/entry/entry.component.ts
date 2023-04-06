@@ -24,7 +24,7 @@ export class EntryComponent implements OnInit {
   formEntry:FormGroup
   creating=true
   entryid=0
-  amountproduct=0
+  amountproduct:any
  
   constructor(
     public form:FormBuilder,
@@ -158,7 +158,7 @@ export class EntryComponent implements OnInit {
           });
           this.storeService.getProduct(this.formEntry.value.Code).subscribe(r=>{
             this.product=r
-            this.product.Amount=this.amountproduct+this.formEntry.value.Amount
+            this.product.Amount=Number(this.amountproduct)+Number(this.formEntry.value.Amount)
             this.storeService.updateProduct(this.formEntry.value.Code,this.product).subscribe(r=>{
               
             })

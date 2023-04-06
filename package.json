@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "fs-extra": "^8.1.0"
   },
   "private": true,
   "dependencies": {
@@ -26,6 +27,7 @@
     "datatables.net": "^1.12.1",
     "datatables.net-colreorder-dt": "^1.6.1",
     "datatables.net-dt": "^1.12.1",
+    "file-system": "^2.2.2",
     "install": "^0.13.0",
     "jquery": "^3.6.1",
     "ngx-cookie-service": "^15.0.0",
@@ -41,6 +43,7 @@
     "@angular/cli": "~14.0.0",
     "@angular/compiler-cli": "^14.0.0",
     "@types/datatables.net": "^1.10.24",
+    "@types/fs-extra": "^11.0.1",
     "@types/jasmine": "~4.0.0",
     "@types/jquery": "^3.5.14",
     "jasmine-core": "~4.1.0",
