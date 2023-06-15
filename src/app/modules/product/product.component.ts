@@ -178,6 +178,7 @@ export class ProductComponent implements OnInit {
 
         this.storeService.getProduct(id).subscribe((r: any) => {
           this.storeService.getFileByName(r.Image).subscribe((res: any) => {
+            this.storeService.deleteFile(res.FileId).subscribe();
             this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe(re => {
               console.log(re, location.reload());
             });
@@ -264,13 +265,23 @@ export class ProductComponent implements OnInit {
               entry.Amount = this.formProduct.value.Amount;
               entry.UserId = Number(localStorage.getItem('userId'));
 
-              this.storeService.insertEntry(entry).subscribe(response => { });
+              this.storeService.insertEntry(entry).subscribe();
 
               operation.Date = entry.Date;
               operation.Description = "Compra de " + product.Amount + " " + product.Description + "(s)";
               operation.Code = entry.Code;
 
-              this.storeService.insertOperation(operation).subscribe(r => { });
+              this.storeService.insertOperation(operation).subscribe();
+            });
+          }else{
+            this.storeService.getProduct(this.code).subscribe((re: any) => {
+              this.storeService.getFileByName(re.Image).subscribe((res: any) => {
+                this.storeService.deleteFile(res.FileId).subscribe();
+                
+                this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe(re => {
+                  console.log(re, location.reload());
+                });
+              })
             });
           }
 
