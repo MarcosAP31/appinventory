@@ -216,7 +216,10 @@ export class DocumentComponent implements OnInit {
           if (this.creating == false) {
             this.storeService.getDocument(this.documentid).subscribe(r=>{
               this.storeService.getDocument(this.documentid).subscribe(r=>{
-
+                this.documentid=1;
+                this.documentid=1;
+                this.documentid=1;
+                this.documentid=1;
               })
             })
           }
