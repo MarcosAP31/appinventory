@@ -277,7 +277,7 @@ export class ProductComponent implements OnInit {
             this.storeService.getProduct(this.code).subscribe((re: any) => {
               this.storeService.getFileByName(re.Image).subscribe((res: any) => {
                 this.storeService.deleteFile(res.FileId).subscribe();
-                
+
                 this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe(re => {
                   console.log(re, location.reload());
                 });
@@ -328,6 +328,7 @@ export class ProductComponent implements OnInit {
         }).then((result) => {
           if (result) {
             location.reload();
+            this.code=1;
           }
         }))
       );
