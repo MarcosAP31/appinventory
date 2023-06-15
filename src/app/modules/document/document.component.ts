@@ -214,9 +214,9 @@ export class DocumentComponent implements OnInit {
         solicitud.subscribe(r => {
           this.generatePDF();
           if (this.creating == false) {
-            this.storeService.getDocument(this.documentid).subscribe(r=>{
-              this.storeService.getDocument(this.documentid).subscribe(r=>{
-            
+            this.storeService.getDocument(this.documentid).subscribe((re:any)=>{
+              this.storeService.deleteFile(this.documentid).subscribe((res:any)=>{
+                
               })
             })
           }
