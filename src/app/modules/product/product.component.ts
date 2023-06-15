@@ -272,15 +272,39 @@ export class ProductComponent implements OnInit {
               operation.Code = entry.Code;
 
               this.storeService.insertOperation(operation).subscribe();
+              const formData = new FormData();
+              formData.append('file', this.images);
+
+              this.http.post<any>('http://192.168.1.5:3000/apistore/file', formData).subscribe((res) =>
+                console.log(res, Swal.fire({
+                  icon: 'success',
+                  title: 'Imagen cargada!!',
+                  text: '¡La imagen se subió correctamente!'
+                }).then((result) => {
+                  if (result) {
+                    location.reload();
+                  }
+                }))
+              );
             });
-          }else{
+          } else {
             this.storeService.getProduct(this.code).subscribe((re: any) => {
               this.storeService.getFileByName(re.Image).subscribe((res: any) => {
                 this.storeService.deleteFile(res.FileId).subscribe();
+                const formData = new FormData();
+                formData.append('file', this.images);
 
-                this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe(re => {
-                  console.log(re, location.reload());
-                });
+                this.http.post<any>('http://192.168.1.5:3000/apistore/saveimg', formData).subscribe((res) =>
+                  console.log(res, Swal.fire({
+                    icon: 'success',
+                    title: 'Imagen cargada!!',
+                    text: '¡La imagen se subió correctamente!'
+                  }).then((result) => {
+                    if (result) {
+                      location.reload();
+                    }
+                  }))
+                );
               })
             });
           }
@@ -317,21 +341,7 @@ export class ProductComponent implements OnInit {
       } else if (result.isDenied) {
         // El usuario ha cancelado la operación
       }
-      const formData = new FormData();
-      formData.append('file', this.images);
 
-      this.http.post<any>('http://192.168.1.5:3000/apistore/file', formData).subscribe((res) =>
-        console.log(res, Swal.fire({
-          icon: 'success',
-          title: 'Imagen cargada!!',
-          text: '¡La imagen se subió correctamente!'
-        }).then((result) => {
-          if (result) {
-            location.reload();
-            this.code=1;
-          }
-        }))
-      );
       this.imgURL = '/assets/noimage.png';
     });
 
