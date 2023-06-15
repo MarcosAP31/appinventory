@@ -40,6 +40,9 @@ export class StoreService {
     
     this.headers.append("Authorization", "Bearer "+ localStorage.getItem("token") )
   }
+  //Images
+  
+
   //Clients
   getClients() {
     return this.http.get(`${this.API_URI}/client`);

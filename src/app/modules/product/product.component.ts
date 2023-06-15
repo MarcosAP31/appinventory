@@ -4,6 +4,8 @@ import { Product } from 'src/app/models/product';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { StoreService } from 'src/app/service/store.service';
+import { Request, Response } from 'express'
+
 import Swal from 'sweetalert2';
 import { Entry } from 'src/app/models/entry';
 import { DatePipe } from '@angular/common';
@@ -320,7 +322,6 @@ export class ProductComponent implements OnInit {
       );
       this.imgURL = '/assets/noimage.png';
     });
-
 
   }
 
