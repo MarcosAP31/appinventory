@@ -11,20 +11,19 @@ export class SecurityGuard implements CanActivate {
   constructor(private cookieService:CookieService,private router:Router){
 
   }
-  /*
+  
   redirect(flag:boolean):any{
     if(!flag){
-      this.router.navigate(['pages','login'])
-    }else{
-      this.router.navigate(['pages','inicio'])
+      this.router.navigate(['/pages','login'])
     }
-  }*/
+  }
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
       const cookie=this.cookieService.check('token_access');
-      //this.redirect(cookie)
+      this.redirect(cookie)
     return cookie;
+    
   }
   
 }

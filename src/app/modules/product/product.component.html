@@ -48,10 +48,10 @@
                                     <td>{{product.Description}}</td>
                                     <td>{{product.Category}}</td>
                                     <td>{{product.Amount}}</td>
-                                    <td>{{product.PurchasePrice}}</td>
-                                    <td>{{product.SalePrice}}</td>
+                                    <td>S/.{{product.PurchasePrice}}</td>
+                                    <td>S/.{{product.SalePrice}}</td>
                                     <td>{{product.supplier}}</td>
-                                    <td><img width="120px" src="{{product.Image}}" alt=""></td>
+                                    <td><img width="120px" src="http://192.168.1.5:3000/build/uploads/img/{{product.Image}}" alt=""></td>
                                     <td class="text-center">
                                         <div class="btn-group">
                                             <button (click)="edit(product.Code)" type="button" class="btn btn-warning" data-toggle="modal"
@@ -94,7 +94,7 @@
                         </div>
                         <div class="form-group">
                             <label for="inputAmount">Cantidad</label>
-                            <input required type="text" class="form-control" name="" formControlName="Amount" 
+                            <input type="text" class="form-control" name="" formControlName="Amount" 
                                 class="form-control" placeholder="Ingrese cantidad" required>
                         </div>
                         <div class="form-group">
@@ -117,12 +117,13 @@
                         </div>
                         <div class="form-group">
                             <label for="inputPurchasePrice">Imagen</label>
-                             <input required type="text" class="form-control" name="" formControlName="Image" 
-                                 class="form-control" placeholder="Ingrese precio de compra" required>
+                            <input formControlName="Image" type="file" class="form-control-file" accept="image/*" name="image"
+                            (change)="selectImage($event)">
+                            <div *ngIf="show" class="card-body">
+                                <img class="img-fluid" style="width:150px;" [src]="imgURL" class="card-img-top">
+                              </div>
+                            
                          </div>
-                        <div *ngIf="previsualizacion">
-                            <img width="100px" [src]="previsualizacion" alt="">
-                        </div>
                     </div>
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()"> Cerrar</button>

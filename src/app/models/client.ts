@@ -2,7 +2,6 @@ export class Client{
     ClientId!:number;
     Name!:string;
     LastName!:string;
-    MotherLastname!:string;
     Birthday!:string;
     Sex!:string;
     Department!:string;

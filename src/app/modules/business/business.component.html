@@ -1,0 +1,158 @@
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Negocio</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Mantenimiento</a></li>
+                    <li class="breadcrumb-item active">Negocios</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-success" (click)="creating=true;" data-toggle="modal"
+                    data-target="#modal-default"><i class="fa fa-plus"></i>&nbsp;&nbsp; Nuevo Negocio</button>
+                <br><br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Lista de Negocios</h3>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table" class="table row-border hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Descripción</th>
+                                    <th>Valor</th>
+                                    <th>Referencia</th>
+                                    <th>Estado</th>
+                                    <th>Fecha de creación</th>
+                                    <th>Fecha de cierre</th>
+                                    <th>Comentarios</th>
+                                    <th>Actividad</th>
+                                    <th>Próxima actividad</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let business of businesses">
+                                    <td>{{business.Description}}</td>
+                                    <td>S/.{{business.Value}}</td>
+                                    <td>{{business.Reference}}</td>
+                                    <td>{{business.State}}</td>
+                                    <td>{{business.CreationDate}}</td>
+                                    <td>{{business.ClosingDate | date:"dd/MM/yyyy h:mm a"}}</td>
+                                    <td>{{business.Commentary}}</td>
+                                    <td>{{business.Activity}}</td>
+                                    <td>{{business.NextActivity}}</td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <button (click)="edit(business.BusinessId)" type="button" class="btn btn-warning" data-toggle="modal"
+                                            data-target="#modal-default">
+                                                <i class="fas fa-edit" ></i>
+                                            </button>
+                                            <button (click)="delete(business.BusinessId)" type="button" class="btn btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-default"  data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form ngNativeValidate [formGroup]="formBusiness" (ngSubmit)="submit()">
+                    <div class="modal-header">
+                        <h4 class="modal-title">{{creating?'Nuevo':'Editando'}} negocio</h4>
+                        <button (click)="closeModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="inputDescription">Descripción</label>
+                            <input required type="text" class="form-control" Name="" formControlName="Description" 
+                                class="form-control" placeholder="Ingrese descripción" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputValue">Valor</label>
+                            <input required type="text" class="form-control" Name="" formControlName="Value" 
+                                class="form-control" placeholder="Ingrese valor" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputReference">Referencia</label>
+                            <input required type="text" class="form-control" Name="" formControlName="Reference" 
+                                class="form-control" placeholder="Ingrese apellido materno" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="selectState">Estado</label>
+                            <select name="State" class="form-control" formControlName="State">
+                                <option value="" disabled selected hidden>Selecciona un estado</option>
+                                <option value="Contactado">Contactado</option>
+                                <option value="Ofertado">Ofertado</option>
+                                <option value="Seguimiento">Seguimiento</option>
+                                <option value="Cierre">Cierre</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="inputClosingDate">Fecha de cierre</label>
+                            <div style="display:flex">
+                                <input required type="date" class="form-control" Name="" formControlName="ClosingDate" 
+                                    class="form-control" placeholder="Ingrese fecha de creación" required>
+                                    <input required type="time" class="form-control" Name="" formControlName="ClosingTime" 
+                                    class="form-control" placeholder="Ingrese fecha de creación" required>
+                                </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputReference">Comentarios</label>
+                            <input required type="text" class="form-control" Name="" formControlName="Commentary" 
+                                class="form-control" placeholder="Ingrese comentarios" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="selectActivity">Actividad</label>
+                            <select name="Empresa" class="form-control" formControlName="Activity">
+                                <option value="" disabled selected hidden>Selecciona una actividad</option>
+                                <option value="Reunión">Reunión</option>
+                                <option value="Llamada">Llamada</option>
+                                <option value="Correo">Correo</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputNextActivity">Próxima Actividad</label>
+                            <div style="display:flex">
+                                <input required type="date" class="form-control" Name="" formControlName="NextActivityDate" 
+                                    class="form-control" placeholder="Ingrese fecha de creación" required>
+                                    <input required type="time" class="form-control" Name="" formControlName="NextActivityTime" 
+                                    class="form-control" placeholder="Ingrese fecha de creación" required>
+                                </div>
+                        
+                        </div>
+                        
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()"> Cerrar</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;
+                            Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+

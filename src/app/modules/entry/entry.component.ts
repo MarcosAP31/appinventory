@@ -8,41 +8,38 @@ import Swal from 'sweetalert2';
 import { Entry } from 'src/app/models/entry';
 import { DatePipe } from '@angular/common';
 import { Operation } from 'src/app/models/operation';
+
 @Component({
   selector: 'app-entry',
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.css']
 })
 export class EntryComponent implements OnInit {
-  product:any
-  dtOptions:DataTables.Settings = {};
+  product: any;
+  dtOptions: DataTables.Settings = {};
   dtTrigger: Subject<any> = new Subject<any>();
-  entrys:any
-  products:any
+  entrys: any;
+  products: any;
   pipe = new DatePipe('en-US');
-  todayWithPipe:any;
-  formEntry:FormGroup
-  creating=true
-  entryid=0
-  amountproduct=0
+  todayWithPipe: any;
+  formEntry: FormGroup;
+  creating = true;
+  entryid = 0;
+  amountproduct: any;
  
   constructor(
-    public form:FormBuilder,
-    private storeService:StoreService,
-    
+    public form: FormBuilder,
+    private storeService: StoreService,
   ) { 
-    this.formEntry=this.form.group({
-      Code:[''],Amount:['']
-  });
-    }
-
-  /*gOnInit(): void {
-    this.inventarioService.obtenerEmpresas().subscribe(response=>{
-      this.empresas=response;
-      console.log(this.empresas);
+    // Inicializar el formulario de entrada
+    this.formEntry = this.form.group({
+      Code: [''],
+      Amount: ['']
     });
-  }*/
-  isLoading(){
+  }
+
+  isLoading() {
+    // Mostrar un spinner de carga
     Swal.fire({
       allowOutsideClick: false,
       width: '200px',
@@ -50,53 +47,53 @@ export class EntryComponent implements OnInit {
     });
     Swal.showLoading();
   }
-  stopLoading(){
+
+  stopLoading() {
+    // Ocultar el spinner de carga
     Swal.close();
   }
 
-  get(){
-    this.storeService.getEntrys().subscribe(response=>{
+  get() {
+    // Obtener las entradas y los productos
+    this.storeService.getEntrys().subscribe(response => {
       this.entrys = response;
       this.dtTrigger.next(0);
-      //this.stopLoading();
-    })
-    this.storeService.getProducts().subscribe(response=>{
+    });
+
+    this.storeService.getProducts().subscribe(response => {
       this.products = response;
-    })
-    
-    
-    /*
-    this.inventarioService.obtenerEmpresas().subscribe(response=>{
-      this.empresas = response;
-      //this.stopLoading();
-    })*/
-    
-    
+    });
   }
-  
+
   ngOnInit(): void {
-    //this.obtenerUsuario();
-    //this.reiniciar();
+    // Configurar opciones de DataTables
     this.dtOptions = {
       pagingType: 'full_numbers',
-      responsive:true
+      responsive: true
     };
-    this.get();
-    this.todayWithPipe = this.pipe.transform(Date.now(), 'dd/MM/yyyy  h:mm:ss a');
-  }
-  submit(){
     
-    var entry=new Entry()
-    var operation=new Operation()
-    entry.Date=this.todayWithPipe
-    entry.Amount=this.formEntry.value.Amount
-    entry.Code=this.formEntry.value.Code
-    entry.UserId=Number(localStorage.getItem('userId'))
-    if(this.creating==false){
-      entry.EntryId=this.entryid
+    // Obtener datos iniciales
+    this.get();
+
+    // Obtener la fecha actual formateada
+    this.todayWithPipe = this.pipe.transform(Date.now(), 'dd/MM/yyyy h:mm:ss a');
+  }
+
+  submit() {
+    // Crear una nueva entrada o actualizar una entrada existente
+    var entry = new Entry();
+    var operation = new Operation();
+    entry.Date = this.todayWithPipe;
+    entry.Amount = this.formEntry.value.Amount;
+    entry.Code = this.formEntry.value.Code;
+    entry.UserId = Number(localStorage.getItem('userId'));
+
+    if (!this.creating) {
+      entry.EntryId = this.entryid;
     }
     
-    var solicitud = this.creating?this.storeService.insertEntry(entry):this.storeService.updateEntry(this.entryid,entry);
+    var solicitud = this.creating ? this.storeService.insertEntry(entry) : this.storeService.updateEntry(this.entryid, entry);
+
     Swal.fire({
       title: 'Confirmación',
       text: 'Seguro de guardar el registro?',
@@ -107,16 +104,15 @@ export class EntryComponent implements OnInit {
       allowOutsideClick: false,
       icon: 'info'
     }).then((result) => {
-      /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        this.storeService.getProduct(this.formEntry.value.Code).subscribe((r:any)=>{
-          this.amountproduct=r.Amount
-          operation.Date=entry.Date
-          operation.Description="Compra de "+entry.Amount+" "+r.Description+"(s)"
-          operation.Code=r.Code
-          console.log(this.amountproduct)
-          
-                     
+        // Obtener el producto correspondiente al código ingresado en el formulario
+        this.storeService.getProduct(this.formEntry.value.Code).subscribe((r: any) => {
+          this.amountproduct = r.Amount;
+
+          operation.Date = entry.Date;
+          operation.Description = "Compra de " + entry.Amount + " " + r.Description + "(s)";
+          operation.Code = r.Code;
+
           Swal.fire({
             allowOutsideClick: false,
             icon: 'info',
@@ -125,17 +121,20 @@ export class EntryComponent implements OnInit {
           });
   
           Swal.showLoading();
+          
+          // Realizar la solicitud para guardar la entrada
           solicitud.subscribe(r => {
-            this.storeService.insertOperation(operation).subscribe(r=>{
-
-            })
-            Swal.fire({
-              allowOutsideClick: false,
-              icon: 'success',
-              title: 'Éxito',
-              text: 'Se ha guardado correctamente!',
-            }).then((result) => {
-              window.location.reload();
+            // Insertar la operación relacionada a la entrada
+            this.storeService.insertOperation(operation).subscribe(r => {
+              // Mostrar mensaje de éxito y recargar la página
+              Swal.fire({
+                allowOutsideClick: false,
+                icon: 'success',
+                title: 'Éxito',
+                text: 'Se ha guardado correctamente!',
+              }).then((result) => {
+                window.location.reload();
+              });
             });
           }, err => {
             console.log(err);
@@ -149,6 +148,7 @@ export class EntryComponent implements OnInit {
               });
               return;
             }
+            
             Swal.fire({
               allowOutsideClick: false,
               icon: 'error',
@@ -156,28 +156,28 @@ export class EntryComponent implements OnInit {
               text: err.message,
             });
           });
-          this.storeService.getProduct(this.formEntry.value.Code).subscribe(r=>{
-            this.product=r
-            this.product.Amount=this.amountproduct+this.formEntry.value.Amount
-            this.storeService.updateProduct(this.formEntry.value.Code,this.product).subscribe(r=>{
-              
-            })
-          })
-        }
-        )
-        
-        
-        
-      } else if (result.isDenied) {
 
+          // Actualizar la cantidad del producto correspondiente
+          this.storeService.getProduct(this.formEntry.value.Code).subscribe(r => {
+            this.product = r;
+            this.product.Amount = Number(this.amountproduct) + Number(this.formEntry.value.Amount);
+            
+            this.storeService.updateProduct(this.formEntry.value.Code, this.product).subscribe(r => {
+              // Realizar cualquier otra acción necesaria después de actualizar el producto
+            });
+          });
+        });
+      } else if (result.isDenied) {
+        // El usuario canceló la operación
       }
     });
+  }
 
+  closeModal() {
+    // Reiniciar el formulario al cerrar el modal
+    this.formEntry = this.form.group({
+      Code: [''],
+      Amount: ['']
+    });
   }
-  closeModal(){
-    this.formEntry=this.form.group({
-      Code:[''],Amount:['']
-  })
-  }
-  
 }

@@ -1,0 +1,161 @@
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Informes</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Mantenimiento</a></li>
+                    <li class="breadcrumb-item active">Informes</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section id="document" class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-success" (click)="creating=true;" data-toggle="modal"
+                    data-target="#modal-default"><i class="fa fa-plus"></i>&nbsp;&nbsp; Nuevo Informe</button>
+                <br><br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Lista de Informes</h3>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table"
+                            class="table row-border hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Fecha de creación</th>
+                                    <th>Usuario</th>
+                                    <th>Area</th>
+                                    <th>Atención</th>
+                                    <th>Empresa</th>
+                                    <th>Equipo</th>
+                                    <th>Precio</th>
+                                    <th>Archivo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let document of documents">
+                                    <td>{{document.Name}}</td>
+                                    <td>{{document.CreationDate}}</td>
+                                    <td>{{document.userName}}</td>
+                                    <td>{{document.Area}}</td>
+                                    <td>{{document.Attention}}</td>
+                                    <td>{{document.Enterprise}}</td>
+                                    <td>{{document.Device}}</td>
+                                    <td>{{document.Price}}</td>
+                                    <td>
+                                        
+                                            <a href="http://192.168.1.5:3000/build/uploads/documents/{{document.Path}}"
+                                                target="_blank"><i class="far fa-file-pdf" style="color:red;font-size:35px;"></i></a>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <button (click)="edit(document.DocumentId)" type="button"
+                                                class="btn btn-warning" data-toggle="modal"
+                                                data-target="#modal-default">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button (click)="delete(document.DocumentId)" type="button"
+                                                class="btn btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-default" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form ngNativeValidate [formGroup]="formDocument" (ngSubmit)="submit()">
+                    <div class="modal-header">
+                        <h4 class="modal-title">{{creating?'Nuevo':'Editando'}} Informe</h4>
+                        <button (click)="closeModal()" type="button" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="inputName">Nombre</label>
+                            <input required type="text" class="form-control" name="" formControlName="Name"
+                                class="form-control" placeholder="Ingrese nombre de informe" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputReference">Referencia</label>
+                            <input required type="text" class="form-control" name="" formControlName="Reference"
+                                class="form-control" placeholder="Ingrese referencia" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputEnterprise">Empresa</label>
+                            <input required type="text" class="form-control" name="" formControlName="Enterprise"
+                                class="form-control" placeholder="Ingrese empresa" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputAttention">Atencion</label>
+                            <input required type="text" class="form-control" name="" formControlName="Attention"
+                                class="form-control" placeholder="Ingrese atención" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputDevice">Equipo</label>
+                            <input required type="text" class="form-control" name="" formControlName="Device"
+                                class="form-control" placeholder="Ingrese equipo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputSerie">Serie</label>
+                            <input required type="text" class="form-control" name="" formControlName="Serie"
+                                class="form-control" placeholder="Ingrese serie" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputArea">Area</label>
+                            <input required type="text" class="form-control" name="" formControlName="Area"
+                                class="form-control" placeholder="Ingrese area" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputFailure">Falla</label>
+                            <input required type="text" class="form-control" name="" formControlName="Failure"
+                                class="form-control" placeholder="Ingrese falla" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputDiagnosis">Diagnóstico</label>
+                            <input required type="text" class="form-control" name="" formControlName="Diagnosis"
+                                class="form-control" placeholder="Ingrese diagnóstico" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputAction">Acción a realizar</label>
+                            <input required type="text" class="form-control" name="" formControlName="Action"
+                                class="form-control" placeholder="Ingrese acción a realizar" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputPrice">Precio</label>
+                            <input required type="text" class="form-control" name="" formControlName="Price"
+                                class="form-control" placeholder="Ingrese precio" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()">
+                            Cerrar</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;
+                            Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

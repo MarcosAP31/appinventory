@@ -45,13 +45,13 @@
                             <tbody>
                                 <tr *ngFor="let output of outputs">
                                     <td>{{output.Code}}</td>
-                                    <td>{{output.Product}}</td>
+                                    <td>{{output.product}}</td>
                                     <td>{{output.Date}}</td>
-                                    <td>{{output.Client}}</td>
-                                    <td>{{output.User}}</td>
+                                    <td>{{output.client}}</td>
+                                    <td>{{output.user}}</td>
                                     <td>{{output.Amount}}</td>
-                                    <td>S/.{{output.Price.toFixed(2)}}</td>
-                                    <td>S/.{{(output.Price*output.Amount).toFixed(2)}}</td>
+                                    <td>S/.{{output.salePrice}}</td>
+                                    <td>S/.{{(output.salePrice*output.Amount)}}</td>
                                 </tr>
                             </tbody>
                         </table>

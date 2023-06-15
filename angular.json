@@ -59,6 +59,9 @@
               "node_modules/datatables.net-bs4/js/dataTables.bootstrap4.min.js",
               "node_modules/datatables.net-colreorder/js/dataTables.colReorder.js",
               "node_modules/select2/dist/js/select2.min.js"
+            ],
+            "allowedCommonJsDependencies": [
+              "path"
             ]
           },
           "configurations": {
@@ -120,5 +123,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "1897e354-3b0e-4fba-914d-cc8da9c08e45"
   }
 }

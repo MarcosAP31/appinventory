@@ -38,6 +38,7 @@
                                     <th>Sexo</th>
                                     <th>Dirección</th>
                                     <th>Teléfono</th>
+                                    <th>Nombre de Usuario</th>
                                     <th>Correo</th>
                                     <th>Imagen</th>
                                 </tr>
@@ -51,8 +52,9 @@
                                     <td>{{user.Sex}}</td>
                                     <td>{{user.Direction}}</td>
                                     <td>{{user.Phone}}</td>
+                                    <td>{{user.UserName}}</td>
                                     <td>{{user.Email}}</td>
-                                    <td><img width="120px" src="assets/img/{{user.Image}}" alt=""></td>
+                                    <td><img width="120px" src="http://192.168.1.5:3000/build/uploads/img/{{user.Image}}" alt=""></td>
                                     <td class="text-center">
                                         <div class="btn-group">
                                             <button (click)="edit(user.UserId)" type="button" class="btn btn-warning" data-toggle="modal"
@@ -89,14 +91,9 @@
                                 class="form-control" placeholder="Ingrese nombres" required>
                         </div>
                         <div class="form-group">
-                            <label for="inputApellidos">Apellido paterno</label>
+                            <label for="inputApellidos">Apellidos</label>
                             <input type="text" class="form-control" Name="" formControlName="LastName" 
                                 class="form-control" placeholder="Ingrese apellido paterno" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="inputNombres">Apellido materno</label>
-                            <input type="text" class="form-control" Name="" formControlName="MotherLastname" 
-                                class="form-control" placeholder="Ingrese apellido materno" required>
                         </div>
                         <div class="form-group">
                             <label for="inputNombres">Fecha de nacimiento</label>
@@ -114,48 +111,54 @@
                             
                         </div>
                         <div class="form-group">
-                            <label for="inputUsuario">Departamento</label>
+                            <label for="inputDepartment">Departamento</label>
                             <input type="text" class="form-control" Name="" formControlName="Department" 
                                 class="form-control" placeholder="Ingrese departamento" required>
                         </div>
                         <div class="form-group">
-                            <label for="inputUsuario">Provincia</label>
+                            <label for="inputProvince">Provincia</label>
                             <input type="text" class="form-control" Name="" formControlName="Province" 
                                 class="form-control" placeholder="Ingrese provincia" required>
                         </div>
                         <div class="form-group">
-                            <label for="inputUsuario">Distrito</label>
+                            <label for="inputDistrict">Distrito</label>
                             <input type="text" class="form-control" Name="" formControlName="District" 
                                 class="form-control" placeholder="Ingrese distrito" required>
                         </div>
                         <div class="form-group">
-                            <label for="inputUsuario">Dirección</label>
+                            <label for="inputDirection">Dirección</label>
                             <input type="text" class="form-control" Name="" formControlName="Direction" 
                                 class="form-control" placeholder="Ingrese direccion" required>
                         </div>
                         <div class="form-group">
-                            <label for="inputUsuario">Teléfono</label>
+                            <label for="inputPhone">Teléfono</label>
                             <input type="text" class="form-control" Name="" formControlName="Phone" 
                                 class="form-control" placeholder="Ingrese telefono" required>
                         </div>
                         <div class="form-group">
-                            <label for="inputUsuario">Correo</label>
+                            <label for="inputUserName">Nombre de usuario</label>
+                            <input type="text" class="form-control" Name="" formControlName="UserName" 
+                                class="form-control" placeholder="Ingrese nombre de usuario" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputEmail">Correo</label>
                             <input type="text" class="form-control" Name="" formControlName="Email" 
                                 class="form-control" placeholder="Ingrese correo" required>
                         </div>
                         <div class="form-group">
-                            <label for="inputUsuario">Contraseña</label>
+                            <label for="inputPassword">Contraseña</label>
                             <input type="text" class="form-control" Name="" formControlName="Password" 
                                 class="form-control" placeholder="Ingrese contraseña" required>
                         </div>
                         <div class="form-group">
-                            <label for="inputSalePrice">Imagen</label>
-                            <input type="file" (change)="captureFile($event)" class="form-control" name="" formControlName="Image" 
-                                class="form-control" placeholder="Ingrese Imagen" required>
-                        </div>
-                        <div *ngIf="previsualizacion">
-                            <img width="100px" [src]="previsualizacion" alt="">
-                        </div>
+                            <label for="inputImage">Imagen</label>
+                            <input formControlName="Image" type="file" class="form-control-file" accept="image/*" name="image"
+                            (change)="selectImage($event)">
+                            <div *ngIf="show" class="card-body">
+                                <img class="img-fluid" style="width:150px;" [src]="imgURL" class="card-img-top">
+                              </div>
+                            
+                         </div>
                     </div>
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()"> Cerrar</button>

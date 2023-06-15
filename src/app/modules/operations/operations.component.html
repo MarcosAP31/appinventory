@@ -22,6 +22,14 @@
                     <div class="card-header">
                         <h3 class="card-title">Operaciones</h3>
                     </div>
+                    <form ngNativeValidate [formGroup]="formOperation" (ngSubmit)="submit()">
+                        <input required type="text" id="balance" class="form-control" name="" formControlName="Balance" 
+                                class="form-control" placeholder="Ingrese saldo inicial" required [disabled]="balancedisabled">
+                                <div class="modal-footer justify-content-between">
+                                    <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;
+                                        Registrar saldo</button>
+                                </div>
+                    </form>
                     <div class="card-body table-responsive">
                         <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table" class="table row-border hover">
                             <thead class="thead-light">
@@ -29,25 +37,39 @@
                                     <th>Fecha</th>
                                     <th>Descripcion</th>
                                     <th>Precio Unitario</th>
+                                    <th>Cantidad</th>
                                     <th>Ingresos</th>
                                     <th>Egresos</th>
-                                  
+                                    <th>Saldo</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{this.formOperation.value.Balance}}</td>
+                                </tr>
                                 <tr *ngFor="let operation of operations">
                                     <td>{{operation.Date}}</td>
                                     <td>{{operation.Description}}</td>
-                                    <td>S/.{{operation.Description.includes('Venta')?operation.SalePrice.toFixed(2):operation.PurchasePrice.toFixed(2)}}</td>
-                                    <td >{{operation.Description.includes('Venta')?'S/.'+(operation.SalePrice*this.getAmount(operation.Description)).toFixed(2):' '}}</td>
-                                    <td>{{operation.Description.includes('Compra')?'S/.'+(operation.PurchasePrice*this.getAmount(operation.Description)).toFixed(2):' '}}</td>
+                                    <td>S/.{{operation.Description.includes('Venta')?operation.salePrice.toFixed(2):(operation.purchasePrice)}}</td>
+                                    <td>{{this.getAmount(operation.Description)}}</td>
+                                    <td>{{operation.Description.includes('Venta')?'S/.'+(operation.salePrice*this.getAmount(operation.Description)):' '}}</td>
+                                    <td>{{operation.Description.includes('Compra')?'S/.'+(operation.purchasePrice*this.getAmount(operation.Description)):' '}}</td>
+                                    <td>S/.{{this.getFinalBalance(operation).toFixed(2)}}</td>
                                 </tr>
                                 <tr>
                                     <td></td>
                                     <td></td>
                                     <td></td>
+                                    <td></td>
                                     <td>S/.{{this.finalincomes.toFixed(2)}}</td>
                                     <td>S/.{{this.finalexpenses.toFixed(2)}}</td>
+                                    <td>S/.{{(this.finalBalance-this.finalexpenses+this.finalincomes).toFixed(2)}}</td>
                                 </tr>
                             </tbody>
                         </table>

@@ -2,7 +2,6 @@ export class User{
     UserId!:number;
     Name!:string;
     LastName!:string;
-    MotherLastname!:string;
     Birthday!:string;
     Sex!:string;
     Department!:string;
@@ -10,7 +9,9 @@ export class User{
     District!:string;
     Direction!:string;
     Phone!:number;
+    UserName!:string;
     Email!:string;
     Password!:string;
+    Status!:string;
     Image!:string;
 }

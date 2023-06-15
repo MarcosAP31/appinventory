@@ -8,12 +8,18 @@ import { User } from '../models/user';
 import { Entry } from '../models/entry';
 import { Output } from '../models/output';
 import { Operation } from '../models/operation';
+import { Business } from '../models/business';
+import { Session } from '../models/session';
+import { Message } from '../models/message';
+import { Document } from '../models/document';
+import { Conversation } from '../models/conversation';
 @Injectable({
   providedIn: 'root'
 })
 export class StoreService {
   headers=new Headers()
-  API_URI = 'http://192.168.0.197:3000/apistore';
+  //API_URI = 'https://plottertech.com.pe:3000/apistore';
+  API_URI = 'http://192.168.1.5:3000/apistore';
   /*
   apitipoinventario = 'https://localhost:7000/api/Tipoinventario';
   apilocal = 'https://localhost:7000/api/Local';
@@ -76,12 +82,19 @@ export class StoreService {
     return this.http.put(`${this.API_URI}/product/${id}`, updatedProduct);
     
   }
+  
   deleteProduct(id:number): Observable<any> {
     return this.http.delete(`${this.API_URI}/product/${id}`);
   }
   getProductByDescription(description: string) {
     return this.http.get(`${this.API_URI}/product/description/${description}`);
   }
+
+  //Files
+  getFileByName(name:string){
+    return this.http.get(`${this.API_URI}/file/name/${name}`);
+  }
+  
   //Proveedores
   getSuppliers() {
     return this.http.get(`${this.API_URI}/supplier`);
@@ -121,9 +134,11 @@ export class StoreService {
   login(user:User){
     return this.http.post(`${this.API_URI}/user/login`, user);
   }
-  verify(token:any){
-    
-    return this.http.post(`${this.API_URI}/user/verify`, token);
+  verifyToken(token:any){
+    return this.http.post(`${this.API_URI}/user/verifytoken`, token);
+  }
+  expireToken(token:any){
+    return this.http.post(`${this.API_URI}/user/expiretoken`, token);
   }
   //Entradas
   getEntrys() {
@@ -166,7 +181,106 @@ export class StoreService {
   insertOperation(operation:Operation) {
     return this.http.post(`${this.API_URI}/operation`, operation);
   }
- 
+
+  //Business
+  getBusinesses() {
+    return this.http.get(`${this.API_URI}/business`);
+  }
+  getBusiness(id: number) {
+    return this.http.get(`${this.API_URI}/business/${id}`);
+  }
+  insertBusiness(business:Business) {
+    return this.http.post(`${this.API_URI}/business`, business);
+  }
+  updateBusiness(id:number, updatedBusiness: Business){
+    return this.http.put(`${this.API_URI}/business/${id}`, updatedBusiness);
+  }
+  deleteBusiness(id:number): Observable<any> {
+    return this.http.delete(`${this.API_URI}/business/${id}`);
+  }
+
+  //Session
+  getSessions() {
+    return this.http.get(`${this.API_URI}/session`);
+  }
+  getSession(id: number) {
+    return this.http.get(`${this.API_URI}/session/${id}`);
+  }
+  insertSession(session:Session) {
+    return this.http.post(`${this.API_URI}/session`, session);
+  }
+  updateSession(id:number, updatedSession: Session){
+    return this.http.put(`${this.API_URI}/session/${id}`, updatedSession);
+  }
+  deleteSession(id:number): Observable<any> {
+    return this.http.delete(`${this.API_URI}/session/${id}`);
+  }
+  getSessionByUserId(userid:number): Observable<any> {
+    return this.http.get(`${this.API_URI}/session/userid/${userid}`);
+  }
+
+  //Messages
+  getMessages() {
+    return this.http.get(`${this.API_URI}/message`);
+  }
+  getMessagesByConversationId(conversationid: number) {
+    return this.http.get(`${this.API_URI}/message/conversationid/${conversationid}`);
+  }
+  getMessagesByUserId(userid: number) {
+    return this.http.get(`${this.API_URI}/message/userid/${userid}`);
+  }
+  insertMessage(message:Message) {
+    return this.http.post(`${this.API_URI}/message`, message);
+  }
+  updateMessage(id:number, updatedMessage: Message){
+    return this.http.put(`${this.API_URI}/message/${id}`, updatedMessage);
+  }
+  deleteMessage(id:number): Observable<any> {
+    return this.http.delete(`${this.API_URI}/message/${id}`);
+  }
+
+  //Conversation
+  getConversations() {
+    return this.http.get(`${this.API_URI}/conversation`);
+  }
+  getConversation(id: number) {
+    return this.http.get(`${this.API_URI}/conversation/${id}`);
+  }
+  getConversationByName(name:string){
+    return this.http.get(`${this.API_URI}/conversation/name/${name}`);
+  }
+  insertConversation(conversation:Conversation) {
+    return this.http.post(`${this.API_URI}/conversation`, conversation);
+  }
+  updateConversation(id:number, updatedConversation: Conversation){
+    return this.http.put(`${this.API_URI}/conversation/${id}`, updatedConversation);
+  }
+  deleteConversation(id:number): Observable<any> {
+    return this.http.delete(`${this.API_URI}/conversation/${id}`);
+  }
+
+  //Document
+  getDocuments() {
+    return this.http.get(`${this.API_URI}/document`);
+  }
+  getDocument(id: number) {
+    return this.http.get(`${this.API_URI}/document/${id}`);
+  }
+  getDocumentByUserId(userid: number) {
+    return this.http.get(`${this.API_URI}/document/userid/${userid}`);
+  }
+  insertDocument(document:Document) {
+   
+    return this.http.post(`${this.API_URI}/document`, document);
+    
+  }
+  updateDocument(id:number, updatedDocument: Document){
+    return this.http.put(`${this.API_URI}/document/${id}`, updatedDocument);
+    
+  }
+  deleteDocument(id:number): Observable<any> {
+    return this.http.delete(`${this.API_URI}/document/${id}`);
+  }
 /*
   getClient(id: any,token:any): Observable<any> {
     let caracter=new RegExp('[+]','g')

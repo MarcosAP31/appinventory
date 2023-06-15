@@ -1,0 +1,39 @@
+<h1>Usuarios Activos para Chatear</h1>
+
+<ul class="user-list">
+  <li class="user-item" *ngFor="let user of users" (click)="openChat(user)">
+    <img  alt="Avatar de usuario">
+    <div class="user-info">
+      <div class="user-name">{{ user.UserName }}</div>
+      <div class="user-status">{{ user.Status }}</div>
+    </div>
+  </li>
+</ul>
+
+<div class="chat-window" *ngIf="selectedChat">
+  <div class="chat-header">
+    <div class="user-name">{{ selectedChat.UserName }}</div>
+    <button (click)="closeChat()">Cerrar</button>
+  </div>
+  <div class="chat-messages" #messageContainer>
+    
+    <div class="message" *ngFor="let message of messages">
+      <div class="sent-message" *ngIf="showMessage(message).sentByUser">
+        <!-- Mostrar mensaje enviado por el usuario actual -->
+        <div class="message-sender">{{ message.userName }}</div>
+        <div class="message-text">{{ message.Content}}</div>
+      </div>
+      <div class="received-message" *ngIf="showMessage(message).receivedMessage">
+        <!-- Mostrar mensaje recibido de otro usuario -->
+        <div class="message-sender">{{ message.userName }}</div>
+        <div class="message-text">{{ message.Content}}</div>
+      </div>
+    </div>
+  </div>
+  <div class="chat-input">
+    <form ngNativeValidate [formGroup]="formMessage" (ngSubmit)="submit()">
+    <input type="text" placeholder="Escribe un mensaje" formControlName="Content">
+    <button type="submit">Enviar</button>
+    </form>
+  </div>
+</div>

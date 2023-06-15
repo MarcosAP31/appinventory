@@ -39,7 +39,7 @@
                     <img src="assets/img/usuario.png" class="img-circle " alt="User Image">
                 </div>
                 <div class="info">
-                    <a class="d-block">{{this.name}}</a>
+                    <a class="d-block">{{windowRef.localStorage.getItem('username')}}</a>
                 </div>
             </div>
 
@@ -89,9 +89,30 @@
                                     <p>Operaciones</p>
                                 </a>
                             </li>
-                            
-                        
-                   
+                            <li class="nav-item">
+                                <a class="nav-link" routerLinkActive="active" [routerLink]="['mantenimiento/business']">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Gestión de Clientes</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" routerLinkActive="active" [routerLink]="['mantenimiento/session']">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Sesiones</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" routerLinkActive="active" [routerLink]="['mantenimiento/document']">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Documentos</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" routerLinkActive="active" [routerLink]="['mantenimiento/message']">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Mensajes</p>
+                                </a>
+                            </li>
                 </ul>
             </nav>
         </div>
