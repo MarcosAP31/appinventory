@@ -212,14 +212,16 @@ export class DocumentComponent implements OnInit {
         Swal.showLoading();
 
         solicitud.subscribe(r => {
-          this.generatePDF();
           if (this.creating == false) {
-            this.storeService.getDocument(this.documentid).subscribe((re:any)=>{
-              this.storeService.deleteFile(this.documentid).subscribe((res:any)=>{
-                
+            this.storeService.getDocument(this.documentid).subscribe((re: any) => {
+              this.storeService.getFileByName(re.Path).subscribe((res: any) => {
+                this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe(resp => {
+                  console.log(resp, location.reload());
+                });
               })
             })
           }
+          this.generatePDF();
           Swal.fire({
             allowOutsideClick: false,
             icon: 'success',
@@ -341,7 +343,7 @@ export class DocumentComponent implements OnInit {
                     const formData = new FormData();
                     formData.append('file', file);
 
-                    this.http.post<any>('http://192.168.1.5:3000/apistore/filedoc', formData).subscribe((res) =>
+                    this.http.post<any>('http://192.168.1.5:3000/apistore/savedoc', formData).subscribe((res) =>
                       console.log(res, Swal.fire({
                         icon: 'success',
                         title: 'Imagen cargada!!',

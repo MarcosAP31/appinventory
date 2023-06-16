@@ -97,9 +97,6 @@ export class StoreService {
   getFileByName(name:string){
     return this.http.get(`${this.API_URI}/file/name/${name}`);
   }
-  deleteFile(id:number): Observable<any> {
-    return this.http.delete(`${this.API_URI}/file/${id}`);
-  }
   
   //Proveedores
   getSuppliers() {
