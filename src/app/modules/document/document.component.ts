@@ -140,7 +140,13 @@ export class DocumentComponent implements OnInit {
           text: 'Cargando...',
         });
         Swal.showLoading();
-
+        this.storeService.getDocument(documentid).subscribe((r: any) => {
+          this.storeService.getFileByName(r.Path).subscribe((res: any) => {
+            this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe(re => {
+              console.log(re, location.reload());
+            });
+          })
+        });
         this.storeService.deleteDocument(documentid).subscribe(r => {
           Swal.fire({
             allowOutsideClick: false,
@@ -210,7 +216,7 @@ export class DocumentComponent implements OnInit {
           text: 'Cargando...',
         });
         Swal.showLoading();
-        if(this.creating==false){
+        if (this.creating == false) {
           this.storeService.getDocument(this.documentid).subscribe((re: any) => {
             this.storeService.getFileByName(re.Path).subscribe((res: any) => {
               this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe();
