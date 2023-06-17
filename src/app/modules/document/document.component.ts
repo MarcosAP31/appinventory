@@ -210,17 +210,14 @@ export class DocumentComponent implements OnInit {
           text: 'Cargando...',
         });
         Swal.showLoading();
-
-        solicitud.subscribe(r => {
-          if (this.creating == false) {
-            this.storeService.getDocument(this.documentid).subscribe((re: any) => {
-              this.storeService.getFileByName(re.Path).subscribe((res: any) => {
-                this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe(resp => {
-                  console.log(resp, location.reload());
-                });
-              })
+        if(this.creating==false){
+          this.storeService.getDocument(this.documentid).subscribe((re: any) => {
+            this.storeService.getFileByName(re.Path).subscribe((res: any) => {
+              this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe();
             })
-          }
+          });
+        }
+        solicitud.subscribe(r => {
           this.generatePDF();
           Swal.fire({
             allowOutsideClick: false,

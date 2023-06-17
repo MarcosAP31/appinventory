@@ -238,11 +238,6 @@ export class ClientComponent implements OnInit {
     var splits = this.formClient.value.Image.split('fakepath\\');
     this.image = splits[1];
     client.Image = this.image;
-
-    if (this.creating == false) {
-      client.ClientId = this.id;
-    }
-
     var solicitud = this.creating ? this.storeService.insertClient(client) : this.storeService.updateClient(this.id, client);
     Swal.fire({
       title: 'Confirmación',
@@ -262,8 +257,28 @@ export class ClientComponent implements OnInit {
           text: 'Cargando...',
         });
         Swal.showLoading();
-
+        if (this.creating == false) {
+          this.storeService.getClient(this.id).subscribe((re: any) => {
+            this.storeService.getFileByName(re.Image).subscribe((res: any) => {
+              this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe();
+            })
+          });
+        }
         solicitud.subscribe(r => {
+          // Subir imagen
+          const formData = new FormData();
+          formData.append('file', this.images);
+          this.http.post<any>('http://192.168.1.5:3000/apistore/saveimg', formData).subscribe(
+            (res) => console.log(res, Swal.fire({
+              icon: 'success',
+              title: 'Imagen cargada',
+              text: '¡La imagen se subió correctamente!'
+            }).then((result) => {
+              if (result) {
+                location.reload();
+              }
+            }))
+          );
           Swal.fire({
             allowOutsideClick: false,
             icon: 'success',
@@ -294,22 +309,6 @@ export class ClientComponent implements OnInit {
       } else if (result.isDenied) {
         // El usuario ha cancelado la operación
       }
-
-      // Subir imagen
-      const formData = new FormData();
-      formData.append('file', this.images);
-      this.http.post<any>('http://192.168.1.5:3000/apistore/file', formData).subscribe(
-        (res) => console.log(res, Swal.fire({
-          icon: 'success',
-          title: 'Imagen cargada',
-          text: '¡La imagen se subió correctamente!'
-        }).then((result) => {
-          if (result) {
-            location.reload();
-          }
-        }))
-      );
-      this.imgURL = '/assets/noimage.png';
     });
   }
 

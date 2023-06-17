@@ -323,7 +323,7 @@ export class ProductComponent implements OnInit {
           });
         });
 
-        this.imgURL = '/assets/noimage.png';
+        //this.imgURL = '/assets/noimage.png';
       } else if (result.isDenied) {
         // El usuario ha cancelado la operación
       }
