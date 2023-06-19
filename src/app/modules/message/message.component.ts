@@ -85,8 +85,9 @@ export class MessageComponent implements OnInit {
             }
           });
         }
+        this.validate=false
       });
-      this.validate=false
+      
       this.todayWithPipe = this.pipe.transform(Date.now(), 'dd/MM/yyyy  h:mm:ss a');
   }
   ngOnDestroy(): void {

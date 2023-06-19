@@ -252,6 +252,9 @@ export class StoreService {
   getConversationByName(name:string){
     return this.http.get(`${this.API_URI}/conversation/name/${name}`);
   }
+  getNewMessagesByName(name:string,datetime:string){
+    return this.http.get(`${this.API_URI}/conversation/newmessages/${name}/${datetime}`);
+  }
   insertConversation(conversation:Conversation) {
     return this.http.post(`${this.API_URI}/conversation`, conversation);
   }
