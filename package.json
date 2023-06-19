@@ -40,6 +40,7 @@
     "jszip-utils": "^0.1.0",
     "mammoth": "^1.6.0",
     "ngx-cookie-service": "^15.0.0",
+    "ngx-socket-io": "^4.5.1",
     "path-browserify": "^1.0.1",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^3.7.107",
