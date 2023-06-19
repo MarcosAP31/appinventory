@@ -47,7 +47,7 @@ export class MessageComponent implements OnInit {
       responsive: true
     };
     // Establecer conexión con el servidor de Socket.IO
-    this.socket = io('http://192.168.1.5:3000'); // Reemplaza la URL con la URL de tu servidor Socket.IO
+    this.socket = io('http://192.168.1.5'); // Reemplaza la URL con la URL de tu servidor Socket.IO
 
     // Suscribirse a eventos del socket
     this.socket.on('message', (message: any) => {
@@ -87,6 +87,7 @@ export class MessageComponent implements OnInit {
         }
       });
       this.validate=false
+      this.todayWithPipe = this.pipe.transform(Date.now(), 'dd/MM/yyyy  h:mm:ss a');
   }
   ngOnDestroy(): void {
     // Limpiar el Subject al destruir el componente para evitar fugas de memoria
