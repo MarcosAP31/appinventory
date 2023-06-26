@@ -234,6 +234,7 @@ export class MessageComponent implements OnInit {
             message.Content = this.formMessage.value.Content;
             message.ShippingDate = this.todayWithPipe;
             message.UserId = Number(localStorage.getItem('userId'));
+            message.State="entregado";
             message.ConversationId = re.ConversationId;
             this.storeService.insertMessage(message).subscribe(response => {
               this.storeService.getMessagesByConversationId(re.ConversationId).subscribe((resp: any) => {
@@ -253,6 +254,7 @@ export class MessageComponent implements OnInit {
         const message = new Message();
         message.Content = this.formMessage.value.Content;
         message.ShippingDate = this.todayWithPipe;
+        message.State="entregado"
         message.UserId = Number(localStorage.getItem('userId'));
         message.ConversationId = r.ConversationId;
         this.storeService.insertMessage(message).subscribe(response => {

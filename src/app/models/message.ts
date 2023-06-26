@@ -3,5 +3,6 @@ export class Message{
     Content!:string;
     ShippingDate!:string;
     UserId!:number;
+    State!:string;
     ConversationId!:number;
 }
