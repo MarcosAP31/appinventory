@@ -11,7 +11,9 @@ import { ViewChild, ElementRef } from '@angular/core';
 import { interval, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { io } from 'socket.io-client';
-
+import { switchMap } from 'rxjs/operators';
+import { webSocket } from 'rxjs/webSocket';
+import { NgZone } from '@angular/core';
 @Component({
   selector: 'app-message',
   templateUrl: './message.component.html',
@@ -21,9 +23,9 @@ export class MessageComponent implements OnInit {
   @ViewChild('messageContainer', { static: false }) messageContainer!: ElementRef;
   private unsubscribe$: Subject<void> = new Subject<void>();
   socket: any;
-  validate: boolean = false
+  validate: boolean = true
   listmessages: any[] = []
-
+  datelastmessage: any
   dtOptions: DataTables.Settings = {};
   dtTrigger: Subject<any> = new Subject<any>();
   formMessage: FormGroup;
@@ -32,8 +34,8 @@ export class MessageComponent implements OnInit {
   pipe = new DatePipe('en-US');
   todayWithPipe: any;
   selectedChat: any;
-
-  constructor(public form: FormBuilder, private storeService: StoreService) {
+  message: any = "vacio"
+  constructor(public form: FormBuilder, private storeService: StoreService, private ngZone: NgZone) {
     // Inicializar el formulario de mensajes
     this.formMessage = this.form.group({
       Content: ['']
@@ -47,48 +49,52 @@ export class MessageComponent implements OnInit {
       responsive: true
     };
     // Establecer conexión con el servidor de Socket.IO
-    this.socket = io('http://192.168.1.5'); // Reemplaza la URL con la URL de tu servidor Socket.IO
+    this.socket = new WebSocket('ws://192.168.1.5:3000'); // Reemplaza la URL con la URL de tu servidor WebSocket
 
     // Suscribirse a eventos del socket
-    this.socket.on('message', (message: any) => {
-      // Actualizar los mensajes cuando se recibe un nuevo mensaje del servidor
-      this.messages.push(message);
-      this.scrollToBottom();
+    this.socket.addEventListener('open', () => {
+      console.log('Conexión establecida');
+    });
+
+    this.socket.addEventListener('message', (event: MessageEvent) => {
+      console.log('Mensaje recibido:', event.data);
+      //const message = JSON.parse(event.data);
+
+      this.ngZone.run(() => {
+        const conversationName = `${localStorage.getItem('username')}-${localStorage.getItem('receiver')}`;
+        this.storeService.getConversationByName(conversationName).subscribe((r: any) => {
+          if (r != null) {
+            this.storeService.getMessagesByConversationId(r.ConversationId).subscribe((res: any) => {
+              this.getMessages(res);
+            });
+            
+          } else {
+            const conversationNameReverse = `${localStorage.getItem('receiver')}-${localStorage.getItem('username')}`;
+            this.storeService.getConversationByName(conversationNameReverse).subscribe((re: any) => {
+              if (re != null) {
+                this.storeService.getMessagesByConversationId(re.ConversationId).subscribe((res: any) => {
+                  this.getMessages(res);
+                });
+              
+              } else {
+                this.messages = re;
+              }
+            });
+          }
+        });
+        this.scrollToBottom();
+      });
+    });
+
+    this.socket.addEventListener('close', () => {
+      console.log('Conexión cerrada');
     });
 
 
     this.getUsers();
-    interval(1000)
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(() => {
-        if (this.validate) {
 
 
-          const conversationName = `${localStorage.getItem('username')}-${localStorage.getItem('receiver')}`;
-          this.storeService.getConversationByName(conversationName).subscribe((r: any) => {
-            if (r != null) {
-              this.storeService.getMessagesByConversationId(r.ConversationId).subscribe((res: any) => {
-
-                this.getMessages(res);
-              });
-            } else {
-              const conversationNameReverse = `${localStorage.getItem('receiver')}-${localStorage.getItem('username')}`;
-              this.storeService.getConversationByName(conversationNameReverse).subscribe((re: any) => {
-                if (re != null) {
-                  this.storeService.getMessagesByConversationId(re.ConversationId).subscribe((res: any) => {
-                    this.getMessages(res);
-                  });
-                } else {
-                  this.messages = re;
-                }
-              });
-            }
-          });
-        }
-        this.validate=false
-      });
-      
-      this.todayWithPipe = this.pipe.transform(Date.now(), 'dd/MM/yyyy  h:mm:ss a');
+    this.todayWithPipe = this.pipe.transform(Date.now(), 'dd/MM/yyyy  h:mm:ss a');
   }
   ngOnDestroy(): void {
     // Limpiar el Subject al destruir el componente para evitar fugas de memoria
@@ -117,8 +123,15 @@ export class MessageComponent implements OnInit {
     this.storeService.getConversationByName(conversationName).subscribe((r: any) => {
       if (r != null) {
         this.storeService.getMessagesByConversationId(r.ConversationId).subscribe((res: any) => {
-
           this.getMessages(res);
+        });
+        this.storeService.getLastMessageByConversationId(r.ConversationId).subscribe((res: any) => {
+          if (this.datelastmessage == r.ShippingDate) {
+            this.validate = false
+          } else {
+            this.validate = true
+            this.datelastmessage = r.ShippingDate
+          }
         });
       } else {
         const conversationNameReverse = `${localStorage.getItem('receiver')}-${localStorage.getItem('username')}`;
@@ -126,6 +139,14 @@ export class MessageComponent implements OnInit {
           if (re != null) {
             this.storeService.getMessagesByConversationId(re.ConversationId).subscribe((res: any) => {
               this.getMessages(res);
+            });
+            this.storeService.getLastMessageByConversationId(re.ConversationId).subscribe((res: any) => {
+              if (this.datelastmessage == re.ShippingDate) {
+                this.validate = false
+              } else {
+                this.validate = true
+                this.datelastmessage = re.ShippingDate
+              }
             });
           } else {
             this.messages = re;
@@ -151,9 +172,9 @@ export class MessageComponent implements OnInit {
   }
   //Función para mostrar mensaje
   showMessage(message: any) {
-    let sentByUser=false
-    let receivedMessage=false
-    let content=message.content
+    let sentByUser = false
+    let receivedMessage = false
+    let content = message.content
     if (message.userName == localStorage.getItem('username')) {
       sentByUser = true
       receivedMessage = false
@@ -162,7 +183,7 @@ export class MessageComponent implements OnInit {
       sentByUser = false
     }
     return {
-      message:message.Content,sentByUser, receivedMessage
+      message: message.Content, sentByUser, receivedMessage
     }
   }
   //Funcion para desplazaarse hasta el final del contenedor de los mensajes
@@ -201,7 +222,7 @@ export class MessageComponent implements OnInit {
                   this.getMessages(resp);
                   console.log(this.messages)
                   // Emitir el mensaje al servidor Socket.IO
-                  this.socket.emit('message', message);
+                  this.socket.send(JSON.stringify(message.Content));
                   this.validate = true
                 })
               });
@@ -221,7 +242,7 @@ export class MessageComponent implements OnInit {
                 this.getMessages(resp);
                 console.log(this.messages)
                 // Emitir el mensaje al servidor Socket.IO
-                this.socket.emit('message', message);
+                this.socket.send(JSON.stringify(message.Content));
                 this.validate = true
               })
             });
@@ -240,7 +261,7 @@ export class MessageComponent implements OnInit {
             this.getMessages(resp);
             console.log(this.messages)
             // Emitir el mensaje al servidor Socket.IO
-            this.socket.emit('message', message);
+            this.socket.send(JSON.stringify(message.Content));
             this.validate = true
           })
         });

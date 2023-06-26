@@ -99,6 +99,9 @@
   
   .message-text {
     margin-top: 5px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
   }
   .sent-message {
     background-color: #C1E1C5;

@@ -229,6 +229,9 @@ export class StoreService {
   getMessagesByConversationId(conversationid: number) {
     return this.http.get(`${this.API_URI}/message/conversationid/${conversationid}`);
   }
+  getLastMessageByConversationId(conversationid: number) {
+    return this.http.get(`${this.API_URI}/lastmessage/conversationid/${conversationid}`);
+  }
   getMessagesByUserId(userid: number) {
     return this.http.get(`${this.API_URI}/message/userid/${userid}`);
   }
