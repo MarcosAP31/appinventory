@@ -18,8 +18,7 @@ import { Conversation } from '../models/conversation';
 })
 export class StoreService {
   headers=new Headers()
-  //API_URI = 'https://plottertech.com.pe:3000/apistore';
-  API_URI = 'http://192.168.1.5:3000/apistore';
+  API_URI = 'http://localhost:3000/apistore';
   /*
   apitipoinventario = 'https://localhost:7000/api/Tipoinventario';
   apilocal = 'https://localhost:7000/api/Local';

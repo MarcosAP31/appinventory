@@ -49,7 +49,7 @@ export class MessageComponent implements OnInit {
       responsive: true
     };
     // Establecer conexión con el servidor de Socket.IO
-    this.socket = new WebSocket('ws://192.168.1.5:3000'); // Reemplaza la URL con la URL de tu servidor WebSocket
+    this.socket = new WebSocket('ws://localhost:3000'); // Reemplaza la URL con la URL de tu servidor WebSocket
 
     // Suscribirse a eventos del socket
     this.socket.addEventListener('open', () => {
