@@ -1,0 +1,105 @@
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Ubicación de almacenes</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Mantenimiento</a></li>
+                    <li class="breadcrumb-item active">Ubicación de almacenes</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-success" (click)="creating=true;" data-toggle="modal"
+                    data-target="#modal-default"><i class="fa fa-plus"></i>&nbsp;&nbsp; Nueva Ubicación</button>
+                <br><br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Lista de Ubicaciones</h3>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table"
+                            class="table row-border hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Codigo</th>
+                                    <th>Nombre</th>
+                                    <th>Descripcion</th>
+                                    <th>Almacenamiento</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let ubication of ubications">
+                                    <td>{{ubication.Code}}</td>
+                                    <td>{{ubication.Name}}</td>
+                                    <td>{{ubication.Description}}</td>
+                                    <td>{{ubication.Storage}}</td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <button (click)="edit(ubication.Code)" type="button" class="btn btn-warning"
+                                                data-toggle="modal" data-target="#modal-default">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button (click)="delete(ubication.Code)" type="button" class="btn btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-default" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form ngNativeValidate [formGroup]="formUbication" (ngSubmit)="submit()">
+                    <div class="modal-header">
+                        <h4 class="modal-title">{{creating?'Nuevo':'Editando'}} Ubicacion</h4>
+                        <button (click)="closeModal()" type="button" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="inputName">Nombre</label>
+                            <input required type="text" class="form-control" name="" formControlName="Name"
+                                class="form-control" placeholder="Ingrese nombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputDescription">Descripcion</label>
+                            <input required type="text" class="form-control" name="" formControlName="Description"
+                                class="form-control" placeholder="Ingrese descripcion" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputStorage">Capacidad</label>
+                            <input required type="text" class="form-control" name="" formControlName="Storage"
+                                class="form-control" placeholder="Ingrese capacidad" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()">
+                            Cerrar</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;
+                            Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
