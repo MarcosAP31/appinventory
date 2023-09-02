@@ -71,9 +71,10 @@ export class OperationsComponent implements OnInit {
 
   get() {
     // Obtener operaciones del servicio
-    this.storeService.getOperations().subscribe((response: any) => {
+    this.storeService.getOperations().subscribe(response => {
       this.operations = response;
       this.operaciones = this.operations;
+      console.log(response)
       for (let i = 0; i < this.operations.length; i++) {
         if (this.operations[i].Description.includes('Venta')) {
           this.finalincomes = this.finalincomes + (this.operations[i].salePrice * this.getAmount(this.operations[i].Description));
@@ -81,6 +82,7 @@ export class OperationsComponent implements OnInit {
           this.finalexpenses = this.finalexpenses + (this.operations[i].purchasePrice * this.getAmount(this.operations[i].Description));
         }
       }
+      this.dtTrigger.next(0);
     });
   }
 

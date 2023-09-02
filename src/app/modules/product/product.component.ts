@@ -253,33 +253,33 @@ export class ProductComponent implements OnInit {
           text: 'Cargando...',
         });
         Swal.showLoading();
-        if (this.creating == true) {
-          this.storeService.getProductByDescription(this.formProduct.value.Description).subscribe((res: any) => {
-            this.codeproduct = res.Code;
 
-            entry.Code = this.codeproduct;
-            entry.Date = this.todayWithPipe;
-            entry.Amount = this.formProduct.value.Amount;
-            entry.UserId = Number(localStorage.getItem('userId'));
-
-            this.storeService.insertEntry(entry).subscribe(response => { });
-
-            operation.Date = entry.Date;
-            operation.Description = "Compra de " + product.Amount + " " + product.Description + "(s)";
-            operation.Code = entry.Code;
-
-            this.storeService.insertOperation(operation).subscribe(r => { });
-          });
-        } else {
-          console.log("holaaaa")
-          this.storeService.getProduct(this.code).subscribe((re: any) => {
-            this.storeService.getFileByName(re.Image).subscribe((res: any) => {
-              this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe();
-            })
-          });
-        }
         solicitud.subscribe(r => {
+          if (this.creating == true) {
+            this.storeService.getProductByDescription(this.formProduct.value.Description).subscribe((res: any) => {
+              this.codeproduct = res.Code;
 
+              entry.Code = this.codeproduct;
+              entry.Date = this.todayWithPipe;
+              entry.Amount = this.formProduct.value.Amount;
+              entry.UserId = Number(localStorage.getItem('userId'));
+              console.log(entry)
+              this.storeService.insertEntry(entry).subscribe(response => { });
+
+              operation.Date = entry.Date;
+              operation.Description = "Compra de " + product.Amount + " " + product.Description + "(s)";
+              operation.Code = entry.Code;
+
+              this.storeService.insertOperation(operation).subscribe(r => { });
+            });
+          } else {
+            console.log("holaaaa")
+            this.storeService.getProduct(this.code).subscribe((re: any) => {
+              this.storeService.getFileByName(re.Image).subscribe((res: any) => {
+                this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe();
+              })
+            });
+          }
           const formData = new FormData();
           formData.append('file', this.images);
 
