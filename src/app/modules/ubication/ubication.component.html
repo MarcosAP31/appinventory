@@ -36,7 +36,7 @@
                                     <th>Codigo</th>
                                     <th>Nombre</th>
                                     <th>Descripcion</th>
-                                    <th>Almacenamiento</th>
+                                    <th>Capacidad</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -44,7 +44,7 @@
                                     <td>{{ubication.Code}}</td>
                                     <td>{{ubication.Name}}</td>
                                     <td>{{ubication.Description}}</td>
-                                    <td>{{ubication.Storage}}</td>
+                                    <td>{{ubication.Capacity}}</td>
                                     <td class="text-center">
                                         <div class="btn-group">
                                             <button (click)="edit(ubication.Code)" type="button" class="btn btn-warning"
@@ -87,8 +87,8 @@
                                 class="form-control" placeholder="Ingrese descripcion" required>
                         </div>
                         <div class="form-group">
-                            <label for="inputStorage">Capacidad</label>
-                            <input required type="text" class="form-control" name="" formControlName="Storage"
+                            <label for="inputCapacity">Capacidad</label>
+                            <input required type="text" class="form-control" name="" formControlName="Capacity"
                                 class="form-control" placeholder="Ingrese capacidad" required>
                         </div>
                     </div>

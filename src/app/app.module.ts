@@ -50,6 +50,7 @@ import { CookieService } from 'ngx-cookie-service';
     SessionComponent,
     MessageComponent,
     DocumentComponent,
+    UbicationComponent,
     InicioComponent,
     LoginComponent
     
