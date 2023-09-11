@@ -1,10 +1,11 @@
 export class Product{
-    Code!:number;
+    ProductId!:number;
     Description!:string;
     Category!:string;
     Amount!:number;
     PurchasePrice!:number;
     SalePrice!:number;
     SupplierId!:number;
+    UbicationId!:number;
     Image!:string;
 }

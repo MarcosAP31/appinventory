@@ -37,7 +37,7 @@ export class OutputComponent implements OnInit {
   ) {
     // Inicializar el formulario de salida
     this.formOutput = this.form.group({
-      Code: [''],
+      ProductId: [''],
       ClientId: [''],
       Amount: ['']
     });
@@ -94,7 +94,7 @@ export class OutputComponent implements OnInit {
     const operation = new Operation();
     output.Date = this.todayWithPipe;
     output.Amount = this.formOutput.value.Amount;
-    output.Code = this.formOutput.value.Code;
+    output.ProductId = this.formOutput.value.ProductId;
     output.ClientId = this.formOutput.value.ClientId;
     output.UserId = Number(localStorage.getItem('userId'));
 
@@ -117,11 +117,11 @@ export class OutputComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         // Obtener el producto relacionado a través del código
-        this.storeService.getProduct(this.formOutput.value.Code).subscribe((r: any) => {
+        this.storeService.getProduct(this.formOutput.value.ProductId).subscribe((r: any) => {
           this.amountproduct = r.Amount;
           operation.Date = output.Date;
           operation.Description = 'Venta de ' + output.Amount + ' ' + r.Description + '(s)';
-          operation.Code = r.Code;
+          operation.ProductId = r.ProductId;
 
           if (this.amountproduct - this.formOutput.value.Amount < 0) {
             // Validar si la cantidad ingresada excede la cantidad de productos en stock
@@ -180,10 +180,10 @@ export class OutputComponent implements OnInit {
             });
 
             // Actualizar el producto relacionado
-            this.storeService.getProduct(this.formOutput.value.Code).subscribe(r => {
+            this.storeService.getProduct(this.formOutput.value.ProductId).subscribe(r => {
               this.product = r;
               this.product.Amount = this.amountproduct - this.formOutput.value.Amount;
-              this.storeService.updateProduct(this.formOutput.value.Code, this.product).subscribe(r => {});
+              this.storeService.updateProduct(this.formOutput.value.ProductId, this.product).subscribe(r => {});
             });
           }
         });
@@ -196,7 +196,7 @@ export class OutputComponent implements OnInit {
   closeModal() {
     // Reiniciar el formulario de salida
     this.formOutput = this.form.group({
-      Code: [''],
+      ProductId: [''],
       ClientId: [''],
       Amount: ['']
     });

@@ -36,6 +36,7 @@
                                 <tr>
                                     <th>Fecha</th>
                                     <th>Descripcion</th>
+                                    <th>Usuario</th>
                                     <th>Precio Unitario</th>
                                     <th>Cantidad</th>
                                     <th>Ingresos</th>
@@ -51,11 +52,13 @@
                                     <td></td>
                                     <td></td>
                                     <td></td>
+                                    <td></td>
                                     <td>{{this.formOperation.value.Balance}}</td>
                                 </tr>
                                 <tr *ngFor="let operation of operations">
                                     <td>{{operation.Date}}</td>
                                     <td>{{operation.Description}}</td>
+                                    <td>{{operation.userName}}</td>
                                     <td>S/.{{operation.Description.includes('Venta')?operation.salePrice.toFixed(2):(operation.purchasePrice)}}</td>
                                     <td>{{this.getAmount(operation.Description)}}</td>
                                     <td>{{operation.Description.includes('Venta')?'S/.'+(operation.salePrice*this.getAmount(operation.Description)):' '}}</td>

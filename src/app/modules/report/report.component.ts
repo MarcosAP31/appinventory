@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
-import { Product } from 'src/app/models/product';
+import { Report } from 'src/app/models/report';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { StoreService } from 'src/app/service/store.service';
 import { Request, Response } from 'express'
-
+import pdfMake from 'pdfmake/build/pdfmake';
+import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import Swal from 'sweetalert2';
 import { Entry } from 'src/app/models/entry';
 import { DatePipe } from '@angular/common';
@@ -13,15 +15,14 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Operation } from 'src/app/models/operation';
 
 @Component({
-  selector: 'app-product',
-  templateUrl: './product.component.html',
-  styleUrls: ['./product.component.css']
+  selector: 'app-report',
+  templateUrl: './report.component.html',
+  styleUrls: ['./report.component.css']
 })
-export class ProductComponent implements OnInit {
+export class ReportComponent implements OnInit {
   // Propiedades
   image: any = "../../../assets/upload.png";
   show: boolean = false;
-  showUbication: boolean = true;
   title = 'fileUpload';
   images = '';
   imgURL = '/assets/noimage.png';
@@ -31,11 +32,12 @@ export class ProductComponent implements OnInit {
   previsualizacion: any;
   pipe = new DatePipe('en-US');
   todayWithPipe: any;
-  formProduct: FormGroup;
+  formReport: FormGroup;
+  reports: any;
   products: any;
-  idproduct: any;
+  orders: any;
+  idreport: any;
   suppliers: any;
-  ubications: any;
   dtOptions: DataTables.Settings = {};
   dtTrigger: Subject<any> = new Subject<any>();
   creating = true;
@@ -49,15 +51,10 @@ export class ProductComponent implements OnInit {
     private storeService: StoreService
   ) {
     // Inicializar formulario
-    this.formProduct = this.form.group({
+    this.formReport = this.form.group({
       Description: [''],
       Category: [''],
-      Amount: [''],
-      PurchasePrice: [''],
-      SalePrice: [''],
-      SupplierId: [''],
-      UbicationId: [''],
-      Image: ['']
+      Date: ['']
     });
   }
 
@@ -76,17 +73,11 @@ export class ProductComponent implements OnInit {
     Swal.close();
   }
 
-  // Método para obtener los productos y proveedores
+  // Método para obtener los reportos y proveedores
   get() {
-    this.storeService.getProducts().subscribe(response => {
-      this.products = response;
+    this.storeService.getReports().subscribe(response => {
+      this.reports = response;
       this.dtTrigger.next(0);
-    });
-    this.storeService.getSuppliers().subscribe(response => {
-      this.suppliers = response;
-    });
-    this.storeService.getUbications().subscribe(response => {
-      this.ubications = response;
     });
   }
 
@@ -123,7 +114,7 @@ export class ProductComponent implements OnInit {
 
   // Método para mostrar las imágenes
   mostrarImg() {
-    this.http.get<any>('http://localhost:3000/apistore/upload').subscribe(res => {
+    this.http.get<any>('http://192.168.1.5:3000/apistore/upload').subscribe(res => {
       this.imagenes = res;
       const reader = new FileReader();
       reader.onload = (this.imagenes);
@@ -131,13 +122,14 @@ export class ProductComponent implements OnInit {
     });
   }
 
-  // Método para editar un producto
+  // Método para editar un reporto
   edit(id: any) {
     this.creating = false;
-    this.formProduct.get('Amount')?.disable();
-    this.storeService.getProduct(id).subscribe((response: any) => {
-      this.id = response.ProductId;
-      this.formProduct.setValue({
+    this.formReport.get('Amount')?.disable();
+
+    this.storeService.getReport(id).subscribe((response: any) => {
+      this.id = response.ReportId;
+      this.formReport.setValue({
         Description: response.Description,
         Category: response.Category,
         Amount: response.Amount,
@@ -147,8 +139,8 @@ export class ProductComponent implements OnInit {
         Image: response.Image
       });
     });
-    this.showUbication = false;
-    this.formProduct = this.form.group({
+
+    this.formReport = this.form.group({
       Description: [''],
       Category: [''],
       Amount: [''],
@@ -159,7 +151,7 @@ export class ProductComponent implements OnInit {
     });
   }
 
-  // Método para eliminar un producto
+  // Método para eliminar un reporto
   delete(id: any) {
     Swal.fire({
       title: 'Confirmación',
@@ -180,15 +172,15 @@ export class ProductComponent implements OnInit {
         });
         Swal.showLoading();
 
-        this.storeService.getProduct(id).subscribe((r: any) => {
+        this.storeService.getReport(id).subscribe((r: any) => {
           this.storeService.getFileByName(r.Image).subscribe((res: any) => {
-            this.http.delete<any>(`http://localhost:3000/apistore/file/${res.FileId}`).subscribe(re => {
+            this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe(re => {
               console.log(re, location.reload());
             });
           })
         });
 
-        this.storeService.deleteProduct(id).subscribe(r => {
+        this.storeService.deleteReport(id).subscribe(r => {
           Swal.fire({
             allowOutsideClick: false,
             icon: 'success',
@@ -221,24 +213,12 @@ export class ProductComponent implements OnInit {
     });
   }
 
-  // Método para guardar un producto
+  // Método para guardar un reporto
   submit() {
-    var product = new Product();
-    var entry = new Entry();
-    var operation = new Operation();
-    var newoperation = new Operation();
-    product.Description = this.formProduct.value.Description;
-    product.Category = this.formProduct.value.Category;
-    product.Amount = this.formProduct.value.Amount;
-    product.PurchasePrice = this.formProduct.value.PurchasePrice;
-    product.SalePrice = this.formProduct.value.SalePrice;
-    product.SupplierId = this.formProduct.value.SupplierId;
-    var string = this.formProduct.value.Image;
-    var splits = string.split("\\", 3);
-    product.Image = splits[2];
-
-    var solicitud = this.creating ? this.storeService.insertProduct(product) : this.storeService.updateProduct(this.id, product);
-
+    var report = new Report();
+    report.Description = this.formReport.value.Description;
+    report.Category = this.formReport.value.Category;
+    report.Date = this.todayWithPipe;
     Swal.fire({
       title: 'Confirmación',
       text: '¿Seguro de guardar el registro?',
@@ -258,60 +238,73 @@ export class ProductComponent implements OnInit {
         });
         Swal.showLoading();
 
-        solicitud.subscribe(r => {
-          if (this.creating == true) {
-            this.storeService.getProductByDescription(this.formProduct.value.Description).subscribe((res: any) => {
-              this.idproduct = res.ProductId;
-              entry.ProductId = this.idproduct;
-              entry.Date = this.todayWithPipe;
-              entry.Amount = this.formProduct.value.Amount;
-              entry.UbicationId = this.formProduct.value.UbicationId;
-              entry.UserId = Number(localStorage.getItem('userId'));
-              console.log(entry)
-              this.storeService.insertEntry(entry).subscribe(response => { });
-
-              operation.Date = entry.Date;
-              operation.Description = "Compra de " + product.Amount + " " + product.Description + "(s)";
-              operation.ProductId = entry.ProductId;
-              operation.UserId = Number(localStorage.getItem('userId'));
-              this.storeService.insertOperation(operation).subscribe(re => { });
-              this.storeService.getUbication(entry.UbicationId).subscribe((r: any) => {
-                newoperation.Date = entry.Date;
-                newoperation.Description = "Se agregó " + product.Amount + " " + product.Description + "(s) al " + r.Name;
-                newoperation.ProductId = entry.ProductId;
-                newoperation.UserId = Number(localStorage.getItem('userId'));
-                this.storeService.insertOperation(newoperation).subscribe(re => { });
-              })
-
-
+        this.storeService.insertReport(report).subscribe(r => {
+          if (this.formReport.value.Category == "Existencias") {
+            this.storeService.getProducts().subscribe(response => {
+              this.products = response;
+              this.dtTrigger.next(0);
             });
           } else {
-            console.log("holaaaa")
-            this.storeService.getProduct(this.id).subscribe((re: any) => {
-              this.storeService.getFileByName(re.Image).subscribe((res: any) => {
-                this.http.delete<any>(`http://localhost:3000/apistore/file/${res.FileId}`).subscribe();
-              })
-            });
-          }
-          const formData = new FormData();
-          formData.append('file', this.images);
-
-          this.http.post<any>('http://localhost:3000/apistore/saveimg', formData).subscribe((res) =>
-            console.log(res, Swal.fire({
-              icon: 'success',
-              title: 'Imagen cargada!!',
-              text: '¡La imagen se subió correctamente!'
-            }).then((result) => {
-              if (result) {
-                location.reload();
+            if (this.formReport.value.Category == "Escasez de inventario") {
+              this.storeService.getProducts().subscribe((response: any) => {
+                for (let i = 0; i < response.length; i++) {
+                  if (response[i].Amount <= 5) {
+                    this.products.push(response[i]);
+                  }
+                }
+              });
+            } else {
+              if (this.formReport.value.Category == "Exceso de inventario") {
+                this.storeService.getProducts().subscribe((response: any) => {
+                  for (let i = 0; i < response.length; i++) {
+                    if (response[i].Amount >= 8) {
+                      this.products.push(response[i]);
+                    }
+                  }
+                });
+              } else {
+                if (this.formReport.value.Category == "Pedidos pendientes") {
+                  this.storeService.getOrders().subscribe((response: any) => {
+                    for (let i = 0; i < response.length; i++) {
+                      if (response[i].State == "Pendiente") {
+                        this.orders.push(response[i]);
+                      }
+                    }
+                  });
+                } else {
+                  this.storeService.getProducts().subscribe((response: any) => {
+                    let profits: { revenue: number, productid: number }[] = [];
+                    for (let i = 0; i < response.length; i++) {
+                      this.storeService.getOutput(response[i]).subscribe((res: any) => {
+                        profits.push({
+                          revenue: (response[i].SalePrice - response[i].PurchasePrice) * res.Amount,
+                          productid: res.ProductId
+                        });
+                      })
+                    }
+                    let max = profits[0].revenue;
+                    for (let j = 0; j < profits.length; j++) {
+                      for (let k = j + 1; k < profits.length; k++) {
+                        if (profits[k].revenue > max) {
+                          max = profits[k].revenue;
+                          this.storeService.getProduct(profits[k].productid).subscribe((res: any) => {
+                            this.products.push(res);
+                          })
+                          break;
+                        }
+                      }
+                    }
+                  });
+                }
               }
-            }))
-          );
+            }
+          }
+          this.generatePDF();
           Swal.fire({
             allowOutsideClick: false,
             icon: 'success',
             title: 'Éxito',
-            text: '¡Se ha guardado correctamente!',
+            text: 'Se ha guardado correctamente!',
           }).then((result) => {
             window.location.reload();
           });
@@ -335,26 +328,66 @@ export class ProductComponent implements OnInit {
             text: err.message,
           });
         });
-
-        //this.imgURL = '/assets/noimage.png';
-      } else if (result.isDenied) {
-        // El usuario ha cancelado la operación
       }
-
     });
 
   }
-
+  generatePDF() {
+    const tableData:any[] = [];
+    let table = document.getElementById('productTable');
+    if(this.products.length>0){
+      table = document.getElementById('productTable'); // Reemplaza 'myTable' con el ID de tu tabla
+    }else{
+      table = document.getElementById('orderTable'); // Reemplaza 'myTable' con el ID de tu tabla
+    }
+  
+    if (table) {
+      const rows = table.querySelectorAll('tr');
+  
+      rows.forEach((row) => {
+        const rowData:any[] = [];
+        const cells = row.querySelectorAll('td');
+  
+        cells.forEach((cell) => {
+          rowData.push(cell.innerText);
+        });
+  
+        tableData.push(rowData);
+      });
+    }
+  
+    // Luego, puedes usar tableData para construir el contenido del PDF
+    const documentDefinition = {
+      content: [
+        { text: 'Tabla de Datos', style: 'header' },
+        {
+          table: {
+            headerRows: 1,
+            body: tableData,
+          },
+        },
+      ],
+      styles: {
+        header: {
+          fontSize: 18,
+          bold: true,
+          alignment: 'center',
+          margin: [0, 0, 0, 10],
+        },
+      },
+    };
+  
+    pdfMake.createPdf(documentDefinition).open(); // Abre el PDF en una nueva ventana
+  }
   // Método para cerrar el modal
   closeModal() {
-    this.formProduct = this.form.group({
+    this.formReport = this.form.group({
       Description: [''],
       Category: [''],
       Amount: [''],
       PurchasePrice: [''],
       SalePrice: [''],
       SupplierId: [''],
-      UbicationId: [''],
       Image: ['']
     });
     this.show = false;

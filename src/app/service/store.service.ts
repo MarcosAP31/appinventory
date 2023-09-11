@@ -14,6 +14,9 @@ import { Session } from '../models/session';
 import { Message } from '../models/message';
 import { Document } from '../models/document';
 import { Conversation } from '../models/conversation';
+import { Order } from '../models/order';
+import { Report } from '../models/report';
+import { OrderXProduct } from '../models/orderxproduct';
 @Injectable({
   providedIn: 'root'
 })
@@ -181,6 +184,12 @@ export class StoreService {
   getOperations() {
     return this.http.get(`${this.API_URI}/operation`);
   }
+  getMovements(){
+    return this.http.get(`${this.API_URI}/operation/movement`);
+  }
+  getLastOperationByProductId(id:number){
+    return this.http.get(`${this.API_URI}/operation/productid/${id}`);
+  }
   insertOperation(operation: Operation) {
     return this.http.post(`${this.API_URI}/operation`, operation);
   }
@@ -306,6 +315,60 @@ export class StoreService {
   }
   deleteUbication(id: number): Observable<any> {
     return this.http.delete(`${this.API_URI}/ubication/${id}`);
+  }
+
+  //Order
+  getOrders() {
+    return this.http.get(`${this.API_URI}/order`);
+  }
+  getOrder(id: number) {
+    return this.http.get(`${this.API_URI}/order/${id}`);
+  }
+  insertOrder(order: Order) {
+    return this.http.post(`${this.API_URI}/order`, order);
+  }
+  updateOrder(id: number, updatedOrder: Order) {
+    return this.http.put(`${this.API_URI}/order/${id}`, updatedOrder);
+  }
+  deleteOrder(id: number): Observable<any> {
+    return this.http.delete(`${this.API_URI}/order/${id}`);
+  }
+
+  //OrderXProduct
+  getOrderXProducts() {
+    return this.http.get(`${this.API_URI}/orderxproduct`);
+  }
+  getOrderXProduct(id: number) {
+    return this.http.get(`${this.API_URI}/orderxproduct/${id}`);
+  }
+  getOrderXProductByOrderId(orderid: number) {
+    return this.http.get(`${this.API_URI}/orderxproduct/orderid/${orderid}`);
+  }
+  insertOrderXProduct(orderxproduct: OrderXProduct) {
+    return this.http.post(`${this.API_URI}/orderxproduct`, orderxproduct);
+  }
+  updateOrderXProduct(id: number, updatedOrderXProduct: OrderXProduct) {
+    return this.http.put(`${this.API_URI}/orderxproduct/${id}`, updatedOrderXProduct);
+  }
+  deleteOrderXProduct(id: number): Observable<any> {
+    return this.http.delete(`${this.API_URI}/orderxproduct/${id}`);
+  }
+
+  //Report
+  getReports() {
+    return this.http.get(`${this.API_URI}/report`);
+  }
+  getReport(id: number) {
+    return this.http.get(`${this.API_URI}/report/${id}`);
+  }
+  insertReport(report: Report) {
+    return this.http.post(`${this.API_URI}/report`, report);
+  }
+  updateReport(id: number, updatedReport: Report) {
+    return this.http.put(`${this.API_URI}/report/${id}`, updatedReport);
+  }
+  deleteReport(id: number): Observable<any> {
+    return this.http.delete(`${this.API_URI}/report/${id}`);
   }
   /*
     getClient(id: any,token:any): Observable<any> {

@@ -33,8 +33,9 @@ export class EntryComponent implements OnInit {
   ) { 
     // Inicializar el formulario de entrada
     this.formEntry = this.form.group({
-      Code: [''],
-      Amount: ['']
+      ProductId: [''],
+      Amount: [''],
+      UbicationId:['']
     });
   }
 
@@ -83,11 +84,12 @@ export class EntryComponent implements OnInit {
     // Crear una nueva entrada o actualizar una entrada existente
     var entry = new Entry();
     var operation = new Operation();
+    var newoperation=new Operation();
     entry.Date = this.todayWithPipe;
     entry.Amount = this.formEntry.value.Amount;
-    entry.Code = this.formEntry.value.Code;
+    entry.ProductId = this.formEntry.value.ProductId;
+    entry.UbicationId = this.formEntry.value.UbicationId;
     entry.UserId = Number(localStorage.getItem('userId'));
-
     if (!this.creating) {
       entry.EntryId = this.entryid;
     }
@@ -106,13 +108,14 @@ export class EntryComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         // Obtener el producto correspondiente al código ingresado en el formulario
-        this.storeService.getProduct(this.formEntry.value.Code).subscribe((r: any) => {
+        this.storeService.getProduct(this.formEntry.value.ProductId).subscribe((r: any) => {
           this.amountproduct = r.Amount;
 
           operation.Date = entry.Date;
           operation.Description = "Compra de " + entry.Amount + " " + r.Description + "(s)";
-          operation.Code = r.Code;
-
+          operation.ProductId = r.ProductId;
+          operation.UserId=Number(localStorage.getItem('userId'));
+          
           Swal.fire({
             allowOutsideClick: false,
             icon: 'info',
@@ -123,9 +126,9 @@ export class EntryComponent implements OnInit {
           Swal.showLoading();
           
           // Realizar la solicitud para guardar la entrada
-          solicitud.subscribe(r => {
+          solicitud.subscribe(res => {
             // Insertar la operación relacionada a la entrada
-            this.storeService.insertOperation(operation).subscribe(r => {
+            this.storeService.insertOperation(operation).subscribe(re => {
               // Mostrar mensaje de éxito y recargar la página
               Swal.fire({
                 allowOutsideClick: false,
@@ -136,6 +139,13 @@ export class EntryComponent implements OnInit {
                 window.location.reload();
               });
             });
+            this.storeService.getUbication(entry.UbicationId).subscribe((resp:any)=>{
+              newoperation.Date=entry.Date;
+              newoperation.Description="Se agregó "+r.Amount+ " "+r.Description+"(s) al "+resp.Name;
+              newoperation.ProductId = entry.ProductId;
+              newoperation.UserId=Number(localStorage.getItem('userId'));
+              this.storeService.insertOperation(newoperation).subscribe(re => { });
+            })
           }, err => {
             console.log(err);
           
@@ -158,11 +168,11 @@ export class EntryComponent implements OnInit {
           });
 
           // Actualizar la cantidad del producto correspondiente
-          this.storeService.getProduct(this.formEntry.value.Code).subscribe(r => {
+          this.storeService.getProduct(this.formEntry.value.ProductId).subscribe(r => {
             this.product = r;
             this.product.Amount = Number(this.amountproduct) + Number(this.formEntry.value.Amount);
             
-            this.storeService.updateProduct(this.formEntry.value.Code, this.product).subscribe(r => {
+            this.storeService.updateProduct(this.formEntry.value.ProductId, this.product).subscribe(r => {
               // Realizar cualquier otra acción necesaria después de actualizar el producto
             });
           });
@@ -176,7 +186,7 @@ export class EntryComponent implements OnInit {
   closeModal() {
     // Reiniciar el formulario al cerrar el modal
     this.formEntry = this.form.group({
-      Code: [''],
+      ProductId: [''],
       Amount: ['']
     });
   }

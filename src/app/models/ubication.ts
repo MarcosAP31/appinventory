@@ -1,5 +1,5 @@
 export class Ubication{
-    Code!:number;
+    UbicationId!:number;
     Name!:string;
     Description!:string;
     Capacity!:number;

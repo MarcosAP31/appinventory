@@ -19,6 +19,7 @@ import { SessionComponent } from './modules/session/session.component'
 import { MessageComponent } from './modules/message/message.component'
 import { DocumentComponent } from './modules/document/document.component'
 import { UbicationComponent } from './modules/ubication/ubication.component'
+import { OrderComponent } from './modules/order/order.component'
 import { InicioComponent } from './pages/inicio/inicio.component';
 import { LoginComponent } from './pages/login/login.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -51,6 +52,7 @@ import { CookieService } from 'ngx-cookie-service';
     MessageComponent,
     DocumentComponent,
     UbicationComponent,
+    OrderComponent,
     InicioComponent,
     LoginComponent
     

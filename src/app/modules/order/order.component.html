@@ -1,0 +1,162 @@
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Pedido</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Mantenimiento</a></li>
+                    <li class="breadcrumb-item active">Pedidos</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-success" (click)="creating=true;" data-toggle="modal"
+                    data-target="#modal-default"><i class="fa fa-plus"></i>&nbsp;&nbsp; Nuevo Pedido</button>
+                <br><br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Lista de Pedidos</h3>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table"
+                            class="table row-border hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Fecha de Pedido</th>
+                                    <th>Estado</th>
+                                    <th>Fecha de Entrega</th>
+                                    <th>Precio total</th>
+                                    <th>Producto</th>
+                                    <th>Cliente</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let order of orders">
+                                    <td>{{order.OrderDate}}</td>
+                                    <td>{{order.State}}</td>
+                                    <td>{{order.DeliveryDate}}</td>
+                                    <td>S/.{{order.TotalPrice}}</td>
+                                    <td>{{order.ProductId}}</td>
+                                    <td>{{order.ClientId}}</td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <button (click)="editOrder(order.ProductId)" type="button"
+                                                class="btn btn-warning" data-toggle="modal"
+                                                data-target="#modal-default">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button (click)="deleteOrder(order.ProductId)" type="button"
+                                                class="btn btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-default" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form ngNativeValidate [formGroup]="formOrder" (ngSubmit)="submit()">
+                    <div class="modal-header">
+                        <h4 class="modal-title">{{creating?'Nuevo':'Editando'}} orden</h4>
+                        <button (click)="closeModal()" type="button" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="inputDeliveryDate">Fecha de Entrega</label>
+                            <input required type="date" class="form-control" Name="" formControlName="DeliveryDate"
+                                class="form-control" placeholder="Ingrese fecha de entrega" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="selectClient">Cliente</label>
+                            <select name="Client" class="form-control" formControlName="ClientId">
+                                <option value="" disabled selected hidden>Selecciona un cliente</option>
+                                <option *ngFor="let client of clients" [value]="client.ClientId">{{client.Name}}
+                                </option>
+                            </select>
+                            <span *ngIf="this.formOrder.value.ClientId==''" class="error-custom">Seleccione el
+                                cliente</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="selectProduct">Producto</label>
+                            <select name="Product" class="form-control" formControlName="ProductId">
+                                <option value="" disabled selected hidden>Selecciona un producto</option>
+                                <option *ngFor="let product of products" [value]="product.ProductId">
+                                    {{product.Description}}</option>
+                            </select>
+                            <span *ngIf="this.formOrder.value.ProductId==''" class="error-custom">Seleccione el
+                                producto</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputAmount">Cantidad</label>
+                            <input required type="text" class="form-control" Name="" formControlName="Amount"
+                                class="form-control" placeholder="Ingrese cantidad" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-primary"><i class="fa fa-save" (click)="addProduct()"></i>&nbsp;&nbsp;
+                            Agregar</button>
+                    </div>
+                    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table"
+                        class="table row-border hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Codigo de Producto</th>
+                                <th>Producto</th>
+                                <th>Precio de venta</th>
+                                <th>Cantidad</th>
+                                <th>Precio total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let element of elements">
+                                <td>{{element.productid}}</td>
+                                <td>{{element.product}}</td>
+                                <td>{{element.price}}</td>
+                                <td>{{element.amount}}</td>
+                                <td>S/.{{element.price*lement.amount}}</td>
+                                <td class="text-center">
+                                    <div class="btn-group">
+                                        <button (click)="editElement(element.productid)" type="button" class="btn btn-warning"
+                                            data-toggle="modal" data-target="#modal-default">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button (click)="deleteElement(element.productid)" type="button" class="btn btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()">
+                            Cerrar</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;
+                            Confirmar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

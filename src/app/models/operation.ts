@@ -2,5 +2,6 @@ export class Operation{
     OperationId!:number;
     Date!:string;
     Description!:string;
-    Code!:number;
+    ProductId!:number;
+    UserId!:number;
 }

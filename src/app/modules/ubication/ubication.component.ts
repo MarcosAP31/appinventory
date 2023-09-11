@@ -18,8 +18,8 @@ export class UbicationComponent implements OnInit {
   dtOptions: DataTables.Settings = {};
   dtTrigger: Subject<any> = new Subject<any>();
   creating = true;
-  noValcodeo = true;
-  code = 0;
+  noValubicationido = true;
+  ubicationid = 0;
 
   constructor(
     public form: FormBuilder,
@@ -64,10 +64,10 @@ export class UbicationComponent implements OnInit {
   }
 
   // Método para editar un proveedor
-  edit(code: any) {
+  edit(ubicationid: any) {
     this.creating = false;
-    this.storeService.getUbication(code).subscribe((response: any) => {
-      this.code = response.Code;
+    this.storeService.getUbication(ubicationid).subscribe((response: any) => {
+      this.ubicationid = response.UbicationId;
       this.formUbication.setValue({
         Name: response.Name,
         Description: response.Description,
@@ -83,7 +83,7 @@ export class UbicationComponent implements OnInit {
   }
 
   // Método para eliminar un proveedor
-  delete(code: any) {
+  delete(ubicationid: any) {
     Swal.fire({
       title: 'Confirmación',
       text: '¿Seguro de eliminar el registro?',
@@ -103,7 +103,7 @@ export class UbicationComponent implements OnInit {
         });
         Swal.showLoading();
 
-        this.storeService.deleteUbication(code).subscribe(r => {
+        this.storeService.deleteUbication(ubicationid).subscribe(r => {
           Swal.fire({
             allowOutsideClick: false,
             icon: 'success',
@@ -120,7 +120,7 @@ export class UbicationComponent implements OnInit {
               allowOutsideClick: false,
               icon: 'error',
               title: 'Error al conectar',
-              text: 'Error de comunicación con el servcodeor',
+              text: 'Error de comunicación con el servubicationidor',
             });
             return;
           }
@@ -145,10 +145,10 @@ export class UbicationComponent implements OnInit {
     ubication.Description = this.formUbication.value.Description;
     ubication.Capacity = this.formUbication.value.Capacity;
     if (!this.creating) {
-      ubication.Code = this.code;
+      ubication.UbicationId = this.ubicationid;
     }
 
-    var solicitud = this.creating ? this.storeService.insertUbication(ubication) : this.storeService.updateUbication(this.code, ubication);
+    var solicitud = this.creating ? this.storeService.insertUbication(ubication) : this.storeService.updateUbication(this.ubicationid, ubication);
     Swal.fire({
       title: 'Confirmación',
       text: '¿Seguro de guardar el registro?',
@@ -185,7 +185,7 @@ export class UbicationComponent implements OnInit {
               allowOutsideClick: false,
               icon: 'error',
               title: 'Error al conectar',
-              text: 'Error de comunicación con el servcodeor',
+              text: 'Error de comunicación con el servubicationidor',
             });
             return;
           }

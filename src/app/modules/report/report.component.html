@@ -1,0 +1,162 @@
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Informes</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Mantenimiento</a></li>
+                    <li class="breadcrumb-item active">Informes</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-success" (click)="creating=true;" data-toggle="modal"
+                    data-target="#modal-default"><i class="fa fa-plus"></i>&nbsp;&nbsp; Nuevo Informe</button>
+                <br><br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Lista de Informes</h3>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table"
+                            class="table row-border hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Descripcion</th>
+                                    <th>Categoria</th>
+                                    <th>Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let report of reports">
+                                    <td>{{report.ReportId}}</td>
+                                    <td>{{report.Description}}</td>
+                                    <td>{{report.Category}}</td>
+                                    <td>{{report.Date}}</td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <button (click)="edit(report.ReportId)" type="button"
+                                                class="btn btn-warning" data-toggle="modal"
+                                                data-target="#modal-default">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button (click)="delete(report.ReportId)" type="button"
+                                                class="btn btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="productTable" style="display:none" class="card-body table-responsive">
+                    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table"
+                        class="table row-border hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Descripcion</th>
+                                <th>Categoria</th>
+                                <th>Cantidad</th>
+                                <th>Precio de compra</th>
+                                <th>Precio de venta</th>
+                                <th>Ubicacion</th>
+                                <th>Imagen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let product of products">
+                                <td>{{product.ProductId}}</td>
+                                <td>{{product.Description}}</td>
+                                <td>{{product.Category}}</td>
+                                <td>{{product.Amount}}</td>
+                                <td>{{product.PurchasePrice}}</td>
+                                <td>{{product.SalePrice}}</td>
+                                <td>{{product.ubication}}</td>
+                                <td><img width="120px" src="http://192.168.1.5:3000/build/uploads/img/{{product.Image}}" alt=""></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="orderTable" style="display:none" class="card-body table-responsive">
+                    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table"
+                        class="table row-border hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha de orden</th>
+                                <th>Estado</th>
+                                <th>Fecha de Entrega</th>
+                                <th>Precio total</th>
+                                <th>Cliente</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let order of orders">
+                                <td>{{order.OrderId}}</td>
+                                <td>{{order.OrderDate}}</td>
+                                <td>{{order.State}}</td>
+                                <td>{{order.DeliveryDate}}</td>
+                                <td>{{order.TotalPrice}}</td>
+                                <td>{{order.clientName+" "+order.clientLastName}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-default" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form ngNativeValidate [formGroup]="formReport" (ngSubmit)="submit()">
+                    <div class="modal-header">
+                        <h4 class="modal-title">{{creating?'Nuevo':'Editando'}} Reporte</h4>
+                        <button (click)="closeModal()" type="button" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="inputDescription">Descripcion</label>
+                            <input required type="text" class="form-control" name="" formControlName="Description"
+                                class="form-control" placeholder="Ingrese descripcion" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="selectCategory">Categoría</label>
+                            <select name="Empresa" class="form-control" formControlName="Category">
+                                <option value="" disabled selected hidden>Selecciona un género</option>
+                                <option value="Existencias">Existencias</option>
+                                <option value="Escasez de inventario">Escasez de inventario</option>
+                                <option value="Exceso de inventario">Exceso de inventario</option>
+                                <option value="Pedidos pendientes">Pedidos pendientes</option>
+                                <option value="Rentabilidad de productos">Rentabilidad de productos</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()">
+                            Cerrar</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;
+                            Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
