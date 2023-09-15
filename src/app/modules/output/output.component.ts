@@ -122,7 +122,7 @@ export class OutputComponent implements OnInit {
           operation.Date = output.Date;
           operation.Description = 'Venta de ' + output.Amount + ' ' + r.Description + '(s)';
           operation.ProductId = r.ProductId;
-
+          operation.UserId=Number(localStorage.getItem('userId'));
           if (this.amountproduct - this.formOutput.value.Amount < 0) {
             // Validar si la cantidad ingresada excede la cantidad de productos en stock
             Swal.fire({
@@ -148,7 +148,7 @@ export class OutputComponent implements OnInit {
             // Realizar la solicitud de inserción o actualización de la salida
             solicitud.subscribe(r => {
               // Insertar la operación relacionada
-              this.storeService.insertOperation(operation).subscribe(r => {});
+              this.storeService.insertOperation(operation).subscribe(re => {});
 
               Swal.fire({
                 allowOutsideClick: false,
@@ -183,7 +183,7 @@ export class OutputComponent implements OnInit {
             this.storeService.getProduct(this.formOutput.value.ProductId).subscribe(r => {
               this.product = r;
               this.product.Amount = this.amountproduct - this.formOutput.value.Amount;
-              this.storeService.updateProduct(this.formOutput.value.ProductId, this.product).subscribe(r => {});
+              this.storeService.updateProduct(this.formOutput.value.ProductId, this.product).subscribe(re => {});
             });
           }
         });

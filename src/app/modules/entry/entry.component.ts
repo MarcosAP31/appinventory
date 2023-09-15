@@ -26,7 +26,7 @@ export class EntryComponent implements OnInit {
   creating = true;
   entryid = 0;
   amountproduct: any;
- 
+  ubications:any;
   constructor(
     public form: FormBuilder,
     private storeService: StoreService,
@@ -64,6 +64,9 @@ export class EntryComponent implements OnInit {
     this.storeService.getProducts().subscribe(response => {
       this.products = response;
     });
+    this.storeService.getUbications().subscribe(response=>{
+      this.ubications=response;
+    })
   }
 
   ngOnInit(): void {

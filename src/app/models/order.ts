@@ -5,4 +5,5 @@ export class Order{
     DeliveryDate!:string;
     TotalPrice!:number;
     ClientId!:number;
+    UserId!:number;
 }

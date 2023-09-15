@@ -147,7 +147,6 @@ export class UbicationComponent implements OnInit {
     if (!this.creating) {
       ubication.UbicationId = this.ubicationid;
     }
-
     var solicitud = this.creating ? this.storeService.insertUbication(ubication) : this.storeService.updateUbication(this.ubicationid, ubication);
     Swal.fire({
       title: 'Confirmación',

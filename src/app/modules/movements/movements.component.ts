@@ -9,11 +9,11 @@ import { Operation } from 'src/app/models/operation';
 import { DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-operation',
-  templateUrl: './operation.component.html',
-  styleUrls: ['./operation.component.css']
+  selector: 'app-movements',
+  templateUrl: './movements.component.html',
+  styleUrls: ['./movements.component.css']
 })
-export class OperationComponent implements OnInit {
+export class MovementsComponent implements OnInit {
   product: any;
   dtOptions: DataTables.Settings = {};
   dtTrigger: Subject<any> = new Subject<any>();
@@ -25,7 +25,7 @@ export class OperationComponent implements OnInit {
   creating = true;
   operationid = 0;
   amountproduct: any;
-
+  ubications:any;
   constructor(
     public form: FormBuilder,
     private storeService: StoreService,
@@ -62,6 +62,9 @@ export class OperationComponent implements OnInit {
 
     this.storeService.getProducts().subscribe(response => {
       this.products = response;
+    });
+    this.storeService.getUbications().subscribe(response => {
+      this.ubications = response;
     });
   }
 

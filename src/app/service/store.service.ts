@@ -321,6 +321,9 @@ export class StoreService {
   getOrders() {
     return this.http.get(`${this.API_URI}/order`);
   }
+  getOrderShipped(){
+    return this.http.get(`${this.API_URI}/order/shipped`);
+  }
   getOrder(id: number) {
     return this.http.get(`${this.API_URI}/order/${id}`);
   }

@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-
 import { ClientComponent } from './modules/client/client.component';
 import { ProductComponent } from './modules/product/product.component';
 import { UserComponent } from './modules/user/user.component';
@@ -9,6 +8,9 @@ import { EntryComponent } from './modules/entry/entry.component';
 import { OutputComponent } from './modules/output/output.component';
 import { InicioComponent } from './pages/inicio/inicio.component';
 import { OperationsComponent } from './modules/operations/operations.component';
+import { MovementsComponent } from './modules/movements/movements.component';
+import { UbicationComponent } from './modules/ubication/ubication.component';
+import { OrderComponent } from './modules/order/order.component';
 import { BusinessComponent } from './modules/business/business.component';
 import { SessionComponent } from './modules/session/session.component';
 import { MessageComponent } from './modules/message/message.component';
@@ -43,7 +45,10 @@ const routes: Routes = [
           { path: 'entry', component: EntryComponent, canActivate: [SecurityGuard] },
           { path: 'output', component: OutputComponent, canActivate: [SecurityGuard] },
           { path: 'operations', component: OperationsComponent, canActivate: [SecurityGuard] },
+          { path: 'movements', component: MovementsComponent, canActivate: [SecurityGuard] },
+          { path: 'ubication', component: UbicationComponent, canActivate: [SecurityGuard] },
           { path: 'business', component: BusinessComponent, canActivate: [SecurityGuard] },
+          { path: 'order', component: OrderComponent, canActivate: [SecurityGuard] },
           { path: 'session', component: SessionComponent, canActivate: [SecurityGuard] },
           { path: 'message', component: MessageComponent, canActivate: [SecurityGuard] },
           { path: 'document', component: DocumentComponent, canActivate: [SecurityGuard] }
