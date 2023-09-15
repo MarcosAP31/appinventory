@@ -418,8 +418,8 @@ export class OrderComponent implements OnInit {
         this.finalprice = this.finalprice + (element.amount * element.price);
         console.log(this.finalprice)
       }
+      this.addedproduct=false;
     })
-
   }
   // Método para cerrar el modal y limpiar el formulario
   closeModal() {
