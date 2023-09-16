@@ -27,6 +27,7 @@ export class EntryComponent implements OnInit {
   entryid = 0;
   amountproduct: any;
   ubications: any;
+  existprod:boolean=false;
   constructor(
     public form: FormBuilder,
     private storeService: StoreService,
@@ -93,13 +94,13 @@ export class EntryComponent implements OnInit {
     entry.ProductId = this.formEntry.value.ProductId;
     entry.UbicationId = this.formEntry.value.UbicationId;
     entry.UserId = Number(localStorage.getItem('userId'));
-    this.storeService.getUbication(entry.UbicationId).subscribe((r: any) => {
-      if (entry.Amount + r.Amount > r.Capacity) {
+    this.storeService.getUbication(Number(entry.UbicationId)).subscribe((ub: any) => {
+      if (Number(entry.Amount) + ub.Amount > ub.Capacity) {
         Swal.fire({
           allowOutsideClick: false,
           icon: 'error',
           title: 'Excede la capacidad del almacén',
-          text: 'El almacén ' + r.Name + ' solo tiene capacidad para ' + r.Capacity + ' producto(s)',
+          text: 'El almacén ' + ub.Name + ' solo tiene capacidad para ' + ub.Capacity + ' producto(s)',
         });
       } else {
 
@@ -120,12 +121,12 @@ export class EntryComponent implements OnInit {
         }).then((result) => {
           if (result.isConfirmed) {
             // Obtener el producto correspondiente al código ingresado en el formulario
-            this.storeService.getProduct(this.formEntry.value.ProductId).subscribe((re: any) => {
-              this.amountproduct = re.Amount;
+            this.storeService.getProduct(this.formEntry.value.ProductId).subscribe((prod: any) => {
+              this.amountproduct = prod.Amount;
 
               operation.Date = entry.Date;
-              operation.Description = "Compra de " + entry.Amount + " " + re.Description + "(s)";
-              operation.ProductId = re.ProductId;
+              operation.Description = "Compra de " + entry.Amount + " " + prod.Description + "(s)";
+              operation.ProductId = prod.ProductId;
               operation.UserId = Number(localStorage.getItem('userId'));
 
               Swal.fire({
@@ -139,20 +140,33 @@ export class EntryComponent implements OnInit {
 
               // Realizar la solicitud para guardar la entrada
               solicitud.subscribe(() => {
-                r.Amount = r.Amount + entry.Amount;
-                if(r.Description=="El almacén no tiene productos"){
-                  r.Description=r.Amount+" "+re.Description+"(s) , ";
+                ub.Amount = ub.Amount + entry.Amount;
+                if(ub.Description=="El almacén no tiene productos"){
+                  ub.Description=ub.Amount+" "+prod.Description+"(s)";
                 }else{
-                  const splits: string[] = r.Description.split(',');
+                  const splits: string[] = ub.Description.split(',');
                   for(let i=0;i<splits.length;i++){
-                    if(splits[i].includes(re.Description)){
+                    if(splits[i].includes(prod.Description)){
                       const array:string[]=splits[i].split(' ');
-                      array
+                      const amountprod=Number(array[0])+Number(entry.Amount);
+                      ub.Description=ub.Description.replace(array[0],amountprod);
+                      this.existprod=true;
+                      break;
                     }
                   }
+                  if(this.existprod==false){
+                    ub.Description=ub.Description+", "+ub.Amount+" "+prod.Description+"(s)";
+                  }
+                  
                 }
-                r.Description="El almacén tiene "
-                this.storeService.updateUbication(r.UbicationId, r).subscribe(() => { });
+                this.storeService.updateUbication(ub.UbicationId,ub).subscribe(()=>{});
+                this.storeService.getUbication(entry.UbicationId).subscribe((resp: any) => {
+                  newoperation.Date = entry.Date;
+                  newoperation.Description = "Se agregó " + entry.Amount + " " + prod.Description + "(s) al almacén " + resp.Name;
+                  newoperation.ProductId = entry.ProductId;
+                  newoperation.UserId = Number(localStorage.getItem('userId'));
+                  this.storeService.insertOperation(newoperation).subscribe(respons => { });
+                })
                 // Insertar la operación relacionada a la entrada
                 this.storeService.insertOperation(operation).subscribe(() => {
                   // Mostrar mensaje de éxito y recargar la página
@@ -165,13 +179,7 @@ export class EntryComponent implements OnInit {
                     window.location.reload();
                   });
                 });
-                this.storeService.getUbication(entry.UbicationId).subscribe((resp: any) => {
-                  newoperation.Date = entry.Date;
-                  newoperation.Description = "Se agregó " + entry.Amount + " " + re.Description + "(s) al almacén " + resp.Name;
-                  newoperation.ProductId = entry.ProductId;
-                  newoperation.UserId = Number(localStorage.getItem('userId'));
-                  this.storeService.insertOperation(newoperation).subscribe(respons => { });
-                })
+                
               }, err => {
                 console.log(err);
 
@@ -197,7 +205,6 @@ export class EntryComponent implements OnInit {
               this.storeService.getProduct(this.formEntry.value.ProductId).subscribe(r => {
                 this.product = r;
                 this.product.Amount = Number(this.amountproduct) + Number(this.formEntry.value.Amount);
-
                 this.storeService.updateProduct(this.formEntry.value.ProductId, this.product).subscribe(r => {
                   // Realizar cualquier otra acción necesaria después de actualizar el producto
                 });
