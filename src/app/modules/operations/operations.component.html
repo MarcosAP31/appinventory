@@ -45,24 +45,14 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>{{this.formOperation.value.Balance}}</td>
-                                </tr>
                                 <tr *ngFor="let operation of operations">
                                     <td>{{operation.Date}}</td>
                                     <td>{{operation.Description}}</td>
                                     <td>{{operation.userName}}</td>
                                     <td>S/.{{operation.Description.includes('Venta')?operation.salePrice.toFixed(2):(operation.purchasePrice)}}</td>
                                     <td>{{this.getAmount(operation.Description)}}</td>
-                                    <td>{{operation.Description.includes('Venta')?'S/.'+(operation.salePrice*this.getAmount(operation.Description)):' '}}</td>
-                                    <td>{{operation.Description.includes('Compra')?'S/.'+(operation.purchasePrice*this.getAmount(operation.Description)):' '}}</td>
+                                    <td>{{operation.Description.includes('Venta')?'S/.'+(operation.salePrice*this.getAmount(operation.Description)).toFixed(2):' '}}</td>
+                                    <td>{{operation.Description.includes('Compra')?'S/.'+(operation.purchasePrice*this.getAmount(operation.Description)).toFixed(2):' '}}</td>
                                     <td>S/.{{this.getFinalBalance(operation).toFixed(2)}}</td>
                                 </tr>
                                 <tr>
@@ -70,9 +60,9 @@
                                     <td></td>
                                     <td></td>
                                     <td></td>
-                                    <td>S/.{{this.finalincomes.toFixed(2)}}</td>
-                                    <td>S/.{{this.finalexpenses.toFixed(2)}}</td>
-                                    <td>S/.{{(this.finalBalance-this.finalexpenses+this.finalincomes).toFixed(2)}}</td>
+                                    <td style="position:relative;left:110px;">S/.{{this.finalincomes.toFixed(2)}}</td>
+                                    <td style="position:relative;left:110px;">S/.{{this.finalexpenses.toFixed(2)}}</td>
+                                    <td style="position:relative;left:110px;">S/.{{(this.finalBalance-this.finalexpenses+this.finalincomes).toFixed(2)}}</td>
                                 </tr>
                             </tbody>
                         </table>

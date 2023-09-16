@@ -37,7 +37,6 @@
                                     <th>Estado</th>
                                     <th>Fecha de Entrega</th>
                                     <th>Precio total</th>
-                                    <th>Producto</th>
                                     <th>Cliente</th>
                                 </tr>
                             </thead>
@@ -45,18 +44,17 @@
                                 <tr *ngFor="let order of orders">
                                     <td>{{order.OrderDate}}</td>
                                     <td>{{order.State}}</td>
-                                    <td>{{order.DeliveryDate}}</td>
-                                    <td>S/.{{order.TotalPrice}}</td>
-                                    <td>{{order.ProductId}}</td>
-                                    <td>{{order.ClientId}}</td>
+                                    <td>{{order.DeliveryDate | date:"dd/MM/yyyy"}}</td>
+                                    <td>S/.{{order.TotalPrice.toFixed(2)}}</td>
+                                    <td>{{order.clientName}} {{order.clientLastName}}</td>
                                     <td class="text-center">
                                         <div class="btn-group">
-                                            <button (click)="editOrder(order.ProductId)" type="button"
+                                            <button (click)="editOrder(order.OrderId)" type="button"
                                                 class="btn btn-warning" data-toggle="modal"
                                                 data-target="#modal-defaultorder">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <button (click)="deleteOrder(order.ProductId)" type="button"
+                                            <button (click)="deleteOrder(order.OrderId)" type="button"
                                                 class="btn btn-danger">
                                                 <i class="fas fa-trash"></i>
                                             </button>
@@ -134,7 +132,7 @@
                             <tr *ngFor="let element of elements">
                                 <td>{{element.productid}}</td>
                                 <td>{{element.product}}</td>
-                                <td>{{element.price}}</td>
+                                <td>S/.{{element.price}}</td>
                                 <td>{{element.amount}}</td>
                                 <td>S/.{{(element.price*element.amount).toFixed(2)}}</td>
                                 <td class="text-center">
@@ -183,32 +181,32 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="inputOrderDate">Fecha de creación de orden</label>
-                            <input required type="date" class="form-control" Name="" formControlName="OrderDate"
+                            <input readonly type="text" class="form-control" Name="" formControlName="OrderDate"
                                 class="form-control" placeholder="Ingrese fecha de creación de orden" required>
                         </div>
                         <div class="form-group">
                             <label for="selectState">Estado</label>
-                            <select name="Empresa" class="form-control" formControlName="State">
+                            <select name="State" class="form-control" formControlName="State" #selectState>
                                 <option value="" disabled selected hidden>Selecciona un estado</option>
-                                <option value="Cancelado">Cancelado</option>
                                 <option value="Pendiente">Pendiente</option>
+                                <option value="Cancelado">Cancelado</option>
                                 <option value="En proceso">En proceso</option>
                                 <option value="Despachado">Despachado</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="inputDeliveryDate">Fecha de entrega de orden</label>
-                            <input required type="date" class="form-control" Name="" formControlName="DeliveryDate"
+                            <input readonly type="date" class="form-control" Name="" formControlName="DeliveryDate"
                                 class="form-control" placeholder="Ingrese fecha de entrega de orden" required>
                         </div>
                         <div class="form-group">
                             <label for="inputTotalPrice">Precio total</label>
-                            <input required type="text" class="form-control" Name="" formControlName="TotalPrice"
+                            <input readonly type="text" class="form-control" Name="" formControlName="TotalPrice"
                                 class="form-control" placeholder="Ingrese precio total" required>
                         </div>
                         <div class="form-group">
                             <label for="selectClient">Cliente</label>
-                            <select name="Client" class="form-control" formControlName="ClientId">
+                            <select readonly name="Client" class="form-control" formControlName="ClientId">
                                 <option value="" disabled selected hidden>Selecciona un cliente</option>
                                 <option *ngFor="let client of clients" [value]="client.ClientId">{{client.Name}}
                                     {{client.LastName}}
@@ -218,7 +216,40 @@
                                 cliente</span>
                         </div>
                     </div>
-                    
+                    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table"
+                        class="table row-border hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Codigo de Producto</th>
+                                <th>Producto</th>
+                                <th>Precio de venta</th>
+                                <th>Cantidad</th>
+                                <th>Precio total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let element of elements">
+                                <td>{{element.productid}}</td>
+                                <td>{{element.product}}</td>
+                                <td>S/.{{element.price}}</td>
+                                <td>{{element.amount}}</td>
+                                <td>S/.{{(element.price*element.amount).toFixed(2)}}</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>S/.{{this.finalprice.toFixed(2)}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()">
+                            Cerrar</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;
+                            Guardar</button>
+                    </div>
                 </form>
             </div>
         </div>

@@ -142,7 +142,8 @@ export class UbicationComponent implements OnInit {
   submit() {
     var ubication = new Ubication();
     ubication.Name = this.formUbication.value.Name;
-    ubication.Description = this.formUbication.value.Description;
+    ubication.Description = "El almacén no tiene productos";
+    ubication.Amount=0;
     ubication.Capacity = this.formUbication.value.Capacity;
     if (!this.creating) {
       ubication.UbicationId = this.ubicationid;

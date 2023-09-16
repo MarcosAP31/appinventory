@@ -103,11 +103,12 @@ export class OperationsComponent implements OnInit {
   getFinalBalance(operation: any) {
     if (this.finalBalance != 0) {
       if (operation.Description.includes('Venta')) {
-        this.finalBalance = this.finalBalance + (operation.salePrice * this.getAmount(operation.Description));
+        this.finalBalance = Number(this.finalBalance) + (operation.salePrice * this.getAmount(operation.Description));
       } else {
-        this.finalBalance = this.finalBalance - (operation.purchasePrice * this.getAmount(operation.Description));
+        this.finalBalance = Number(this.finalBalance) - (operation.purchasePrice * this.getAmount(operation.Description));
       }
     }
+    console.log(this.finalBalance)
     return this.finalBalance;
   }
 }

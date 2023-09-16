@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Order } from 'src/app/models/order';
 import { Output } from 'src/app/models/output';
@@ -16,7 +16,7 @@ import { subscribe } from 'diagnostics_channel';
   styleUrls: ['./order.component.css']
 })
 export class OrderComponent implements OnInit {
-
+  @ViewChild('selectState') selectState: any;
   formOrder: FormGroup;
   formEditOrder: FormGroup;
   orders: any;
@@ -121,8 +121,19 @@ export class OrderComponent implements OnInit {
     }
   }
   editOrder(orderid: any) {
+    this.finalprice = 0;
+    /*for (const element of this.elements) {
+
+      const indice = this.elements.indexOf(element);
+      this.elements.splice(indice, 1); // Elimina 1 elemento a partir del índice encontrado
+    }*/
+    this.elements.length=0;
+    console.log(this.elements)
     this.creating = false;
     this.storeService.getOrder(orderid).subscribe((response: any) => {
+      if(response.State=="Cancelado"||response.State=="Despachado"){
+        this.selectState.nativeElement.disabled = true;
+      }
       this.orderid = response.OrderId;
       this.formEditOrder.setValue({
         OrderDate: response.OrderDate,
@@ -131,9 +142,24 @@ export class OrderComponent implements OnInit {
         TotalPrice: response.TotalPrice,
         ClientId: response.ClientId
       });
+      this.storeService.getOrderXProductByOrderId(orderid).subscribe((orderxproducts: any) => {
+        console.log(orderxproducts)
+        for (const orderxproduct of orderxproducts) {
+          this.storeService.getProduct(orderxproduct.ProductId).subscribe((res:any)=>{
+            this.finalprice=this.finalprice+(orderxproduct.Amount*res.SalePrice);
+            this.elements.push({
+              productid: orderxproduct.ProductId,
+              product: res.Description,
+              price: res.SalePrice,
+              amount: orderxproduct.Amount
+            });
+          })
+          
+        }
+      })
     });
 
-    this.formOrder = this.form.group({
+    this.formEditOrder = this.form.group({
       OrderDate: [''],
       State: [''],
       DeliveryDate: [''],
@@ -238,7 +264,7 @@ export class OrderComponent implements OnInit {
           for (const element of this.elements) {
             var orderxproduct = new OrderXProduct();
             orderxproduct.Amount = element.amount;
-            orderxproduct.OrderId = r.OrderId;
+            orderxproduct.OrderId = r;
             orderxproduct.ProductId = element.productid;
             this.storeService.insertOrderXProduct(orderxproduct).subscribe(re => { })
             this.storeService.getProduct(element.productid).subscribe((resp: any) => {
@@ -248,11 +274,7 @@ export class OrderComponent implements OnInit {
             })
 
           }
-          for (const element of this.elements) {
-
-            const indice = this.elements.indexOf(element);
-            this.elements.splice(indice, 1); // Elimina 1 elemento a partir del índice encontrado
-          }
+          this.elements.length=0;
           Swal.fire({
             allowOutsideClick: false,
             icon: 'success',
@@ -325,9 +347,10 @@ export class OrderComponent implements OnInit {
                 output.UserId = order.UserId;
                 this.storeService.insertOutput(output).subscribe(response => { })
                 this.storeService.getProduct(output.ProductId).subscribe((re: any) => {
+                  console.log(orderxproduct.Amount)
                   var operation = new Operation();
                   operation.Date = output.Date;
-                  operation.Description = 'Venta de ' + output.Amount + ' ' + re.Description + '(s)';
+                  operation.Description = 'Venta de ' + orderxproduct.Amount + ' ' + re.Description + '(s)';
                   operation.ProductId = output.ProductId;
                   operation.UserId = Number(localStorage.getItem('userId'));
                   this.storeService.insertOperation(operation).subscribe(res => { })
@@ -338,9 +361,9 @@ export class OrderComponent implements OnInit {
           if (this.formEditOrder.value.State == "Cancelado") {
             this.storeService.getOrderXProductByOrderId(this.orderid).subscribe((orderxproducts: any) => {
               for (const orderxproduct of orderxproducts) {
-                this.storeService.getProduct(orderxproduct.ProductId).subscribe((re:any)=>{
-                  re.Amount=re.Amount+orderxproduct.Amount;
-                  this.storeService.updateProduct(orderxproduct.ProductId,re).subscribe((res:any)=>{
+                this.storeService.getProduct(orderxproduct.ProductId).subscribe((re: any) => {
+                  re.Amount = re.Amount + orderxproduct.Amount;
+                  this.storeService.updateProduct(orderxproduct.ProductId, re).subscribe((res: any) => {
                   })
                 })
               }
@@ -418,8 +441,8 @@ export class OrderComponent implements OnInit {
         this.finalprice = this.finalprice + (element.amount * element.price);
         console.log(this.finalprice)
       }
+      this.addedproduct = false;
     })
-
   }
   // Método para cerrar el modal y limpiar el formulario
   closeModal() {
