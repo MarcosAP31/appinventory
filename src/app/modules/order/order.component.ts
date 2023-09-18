@@ -37,6 +37,7 @@ export class OrderComponent implements OnInit {
   products: any;
   finalprice: number = 0;
   addedproduct: boolean = false;
+  ubications: { UbicationId: number, Name: string }[] = [];
   constructor(
     public form: FormBuilder,
     private storeService: StoreService,
@@ -127,11 +128,11 @@ export class OrderComponent implements OnInit {
       const indice = this.elements.indexOf(element);
       this.elements.splice(indice, 1); // Elimina 1 elemento a partir del índice encontrado
     }*/
-    this.elements.length=0;
+    this.elements.length = 0;
     console.log(this.elements)
     this.creating = false;
     this.storeService.getOrder(orderid).subscribe((response: any) => {
-      if(response.State=="Cancelado"||response.State=="Despachado"){
+      if (response.State == "Cancelado" || response.State == "Despachado") {
         this.selectState.nativeElement.disabled = true;
       }
       this.orderid = response.OrderId;
@@ -145,8 +146,8 @@ export class OrderComponent implements OnInit {
       this.storeService.getOrderXProductByOrderId(orderid).subscribe((orderxproducts: any) => {
         console.log(orderxproducts)
         for (const orderxproduct of orderxproducts) {
-          this.storeService.getProduct(orderxproduct.ProductId).subscribe((res:any)=>{
-            this.finalprice=this.finalprice+(orderxproduct.Amount*res.SalePrice);
+          this.storeService.getProduct(orderxproduct.ProductId).subscribe((res: any) => {
+            this.finalprice = this.finalprice + (orderxproduct.Amount * res.SalePrice);
             this.elements.push({
               productid: orderxproduct.ProductId,
               product: res.Description,
@@ -154,7 +155,7 @@ export class OrderComponent implements OnInit {
               amount: orderxproduct.Amount
             });
           })
-          
+
         }
       })
     });
@@ -274,7 +275,7 @@ export class OrderComponent implements OnInit {
             })
 
           }
-          this.elements.length=0;
+          this.elements.length = 0;
           Swal.fire({
             allowOutsideClick: false,
             icon: 'success',
@@ -403,45 +404,87 @@ export class OrderComponent implements OnInit {
   //Metodo para agregar productos a una ordern
   addProduct() {
     this.finalprice = 0;
-    this.storeService.getProduct(this.formOrder.value.ProductId).subscribe((r: any) => {
-      this.productdescription = r.Description;
-      this.productprice = r.SalePrice;
-      console.log(r.Description)
-      for (const element of this.elements) {
-        if (element.productid == this.formOrder.value.ProductId) {
-          Swal.fire({
-            allowOutsideClick: false,
-            icon: 'error',
-            title: 'El producto ya está agregado en la orden'
-          });
-          this.addedproduct = true;
-          break;
+    this.storeService.getUbication(this.formOrder.value.UbicationId).subscribe((ub: any) => {
+      this.storeService.getProduct(this.formOrder.value.ProductId).subscribe((p: any) => {
+        this.productdescription = p.Description;
+        this.productprice = p.SalePrice;
+        console.log(p.Description)
+        for (const element of this.elements) {
+          if (element.productid == this.formOrder.value.ProductId) {
+            Swal.fire({
+              allowOutsideClick: false,
+              icon: 'error',
+              title: 'El producto ya está agregado en la orden'
+            });
+            this.addedproduct = true;
+            break;
+          }
         }
-      }
-      if (this.addedproduct == false) {
-        if (this.formOrder.value.Amount > r.Amount) {
-          Swal.fire({
-            allowOutsideClick: false,
-            icon: 'error',
-            title: 'Excede la cantidad de sotck',
-            text: 'En el stock hay ' + r.Amount + " " + r.Description + "(s)",
-          });
-        } else {
-          this.elements.push({
-            productid: this.formOrder.value.ProductId,
-            product: this.productdescription,
-            price: this.productprice,
-            amount: this.formOrder.value.Amount
-          });
+        if (this.addedproduct == false) {
+          ub.Amount = ub.Amount - Number(this.formOrder.value.Amount);
+          const splits: string[] = ub.Description.split(',');
+          for (let i = 0; i < splits.length; i++) {
+            if (splits[i].includes(p.Description)) {
+              const array: string[] = splits[i].split(' ');
+              const amountprodub = Number(array[0]) - Number(this.formOrder.value.Amount);
+              console.log(array[0]);
+              if (ub.Amount == 0) {
+                ub.Description = "El almacén no tiene productos";
+              } else {
+                if (amountprodub >= 0) {
+                  if (amountprodub == 0) {
+                    if (i == splits.length - 1) {
+                      ub.Description = ub.Description.replace(',' + splits[i], '');
+                    } else {
+                      ub.Description = ub.Description.replace(splits[i] + ',', '');
+                    }
+                  } else {
+                    ub.Description = ub.Description.replace(array[0], amountprodub);
+                  }
+                  this.elements.push({
+                    productid: this.formOrder.value.ProductId,
+                    product: this.productdescription,
+                    price: this.productprice,
+                    amount: this.formOrder.value.Amount
+                  });
+                } else {
+                  Swal.fire({
+                    allowOutsideClick: false,
+                    icon: 'error',
+                    title: 'Excede la cantidad de stock',
+                    text: 'En ' + ub.Name + ' hay ' + array[0] + " " + p.Description + "(s)"
+                  });
+                }
+              }
+              break;
+            }
+          }
+          this.idproduct = 0; this.productdescription = ""; this.productprice = 0;
+          //this.storeService.updateUbication(this.formOrder.value.UbicationId,ub).subscribe(()=>{});
+          for (const element of this.elements) {
+            console.log(element)
+            this.finalprice = this.finalprice + (element.amount * element.price);
+            console.log(this.finalprice)
+          }
         }
-      }
-      this.idproduct = 0; this.productdescription = ""; this.productprice = 0;
-      for (const element of this.elements) {
-        console.log(element)
-        this.finalprice = this.finalprice + (element.amount * element.price);
-        console.log(this.finalprice)
-      }
-      this.addedproduct=false;
+        this.addedproduct = false;
+      })
+    })
+  }
+  updateUbications() {
+    this.ubications.length = 0;
+    this.storeService.getProduct(this.formOrder.value.ProductId).subscribe((p: any) => {
+      this.storeService.getUbications().subscribe((ubs: any) => {
+        for (let i = 0; i < ubs.length; i++) {
+          if (ubs[i].Description.includes(p.Description)) {
+            this.ubications.push({
+              UbicationId: ubs[i].UbicationId,
+              Name: ubs[i].Name
+            });
+            console.log(this.ubications)
+          }
+        }
+      });
     })
   }
   // Método para cerrar el modal y limpiar el formulario
@@ -449,6 +492,7 @@ export class OrderComponent implements OnInit {
     this.formOrder = this.form.group({
       DeliveryDate: [''],
       ProductId: [''],
+      UbicationId: [''],
       ClientId: [''],
       Amount: ['']
     });

@@ -116,115 +116,128 @@ export class MovementsComponent implements OnInit {
   }
 
   submit() {
-    var operation = new Operation();
-    // Crear una nueva operacion
+
     this.storeService.getUbication(this.formMovement.value.ActualUbicationId).subscribe((actub: any) => {
       this.storeService.getUbication(this.formMovement.value.NewUbicationId).subscribe((newub: any) => {
         this.storeService.getProduct(this.formMovement.value.ProductId).subscribe((p: any) => {
-          actub.Amount = actub.Amount - Number(this.formMovement.value.Amount);
-          newub.Amount = newub.Amount + Number(this.formMovement.value.Amount);
-          if (newub.Description == "El almacén no tiene productos") {
-            newub.Description = newub.Amount + " " + p.Description + "(s)";
-          } else {
-            const splits: string[] = newub.Description.split(',');
-            const actsplits: string[] = actub.Description.split(',');
-            for (let i = 0; i < actsplits.length; i++) {
-              if (actsplits[i].includes(p.Description)) {
-                const array: string[] = actsplits[i].split(' ');
-                const amountprod = Number(array[0]) - Number(this.formMovement.value.Amount);
-                console.log(array[0]);
-                if(actub.Amount==0){
-                  actub.Description="El almacén no tiene productos";
-                }else{
-                  if(amountprod==0){
-                    actub.Description = actub.Description.replace(actsplits[i]+',','');
-                  }else{
-                    actub.Description = actub.Description.replace(array[0], amountprod);
+          const oldsplits: string[] = actub.Description.split(',');
+          for (let i = 0; i < oldsplits.length; i++) {
+            if (oldsplits[i].includes(p.Description)) {
+              const array: string[] = oldsplits[i].split(' ');
+              if (Number(array[0]) - Number(this.formMovement.value.Amount) >= 0) {
+                Swal.fire({
+                  title: 'Confirmación',
+                  text: '¿Seguro de guardar el registro?',
+                  showDenyButton: true,
+                  showCancelButton: false,
+                  confirmButtonText: `Guardar`,
+                  denyButtonText: `Cancelar`,
+                  allowOutsideClick: false,
+                  icon: 'info'
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    Swal.fire({
+                      allowOutsideClick: false,
+                      icon: 'info',
+                      title: 'Guardando registro',
+                      text: 'Cargando...',
+                    });
+                    Swal.showLoading();
+                    actub.Amount = actub.Amount - Number(this.formMovement.value.Amount);
+                    newub.Amount = newub.Amount + Number(this.formMovement.value.Amount);
+                    if (newub.Description == "El almacén no tiene productos") {
+                      newub.Description = newub.Amount + " " + p.Description + "(s)";
+                    } else {
+                      const splits: string[] = newub.Description.split(',');
+                      const actsplits: string[] = actub.Description.split(',');
+                      for (let i = 0; i < actsplits.length; i++) {
+                        if (actsplits[i].includes(p.Description)) {
+                          const array: string[] = actsplits[i].split(' ');
+                          const amountprodub = Number(array[0]) - Number(this.formMovement.value.Amount);
+                          console.log(array[0]);
+                          if (actub.Amount == 0) {
+                            actub.Description = "El almacén no tiene productos";
+                          } else {
+                            if (amountprodub == 0) {
+                              if (i == actsplits.length - 1) {
+                                actub.Description = actub.Description.replace(',' + actsplits[i], '');
+                              } else {
+                                actub.Description = actub.Description.replace(actsplits[i] + ',', '');
+                              }
+                            } else {
+                              actub.Description = actub.Description.replace(array[0], amountprodub);
+                            }
+                          }
+                          break;
+                        }
+                      }
+                      for (let i = 0; i < splits.length; i++) {
+                        if (splits[i].includes(p.Description)) {
+                          const array: string[] = splits[i].split(' ');
+                          const amountprod = Number(array[0]) + Number(this.formMovement.value.Amount);
+                          console.log(array[0]);
+                          newub.Description = newub.Description.replace(array[0], amountprod);
+                          this.existprod = true;
+                          break;
+                        }
+                      }
+                      if (this.existprod == false) {
+                        newub.Description = newub.Description + "," + this.formMovement.value.Amount + " " + p.Description + "(s)";
+                      }
+                    }
+                    this.storeService.updateUbication(this.formMovement.value.ActualUbicationId,actub).subscribe(()=>{});
+                    this.storeService.updateUbication(this.formMovement.value.NewUbicationId,newub).subscribe(()=>{});
+                    var operation=new Operation();
+                    operation.Date = this.todayWithPipe;
+                    operation.Description = "Se movió " + this.formMovement.value.Amount + " " + p.Description + "(s) de " + actub.Name + " hacia " + newub.Name;
+                    operation.ProductId = this.formMovement.value.ProductId;
+                    operation.UserId = Number(localStorage.getItem('userId'));
+                    this.storeService.insertOperation(operation).subscribe(r => {
+                      Swal.fire({
+                        allowOutsideClick: false,
+                        icon: 'success',
+                        title: 'Éxito',
+                        text: 'Se ha guardado correctamente!',
+                      }).then((result) => {
+                        window.location.reload();
+                      });
+                    }, err => {
+                      console.log(err);
+
+                      if (err.name == "HttpErrorResponse") {
+                        Swal.fire({
+                          allowOutsideClick: false,
+                          icon: 'error',
+                          title: 'Error al conectar',
+                          text: 'Error de comunicación con el servidor',
+                        });
+                        return;
+                      }
+
+                      Swal.fire({
+                        allowOutsideClick: false,
+                        icon: 'error',
+                        title: err.name,
+                        text: err.message,
+                      });
+                    });
                   }
-                }
+                });
+              } else {
+                Swal.fire({
+                  allowOutsideClick: false,
+                  icon: 'error',
+                  title: 'Excede la cantidad de stock en el almacén',
+                  text: 'En ' + actub.Name + ' hay ' + array[0] + ' ' + p.Description + "(s)",
+                });
                 break;
               }
             }
-            for (let i = 0; i < splits.length; i++) {
-              if (splits[i].includes(p.Description)) {
-                const array: string[] = splits[i].split(' ');
-                const amountprod = Number(array[0]) + Number(this.formMovement.value.Amount);
-                console.log(array[0]);
-                newub.Description = newub.Description.replace(array[0], amountprod);
-                this.existprod = true;
-                break;
-              }
-            }
-            if (this.existprod == false) {
-              newub.Description = newub.Description + "," + this.formMovement.value.Amount + " " + p.Description + "(s)";
-            }
-
           }
         })
       })
     })
-    this.storeService.getUbication(this.formMovement.value.ActualUbicationId).subscribe((actub: any) => {
-      this.storeService.getLastOperationByProductId(this.formMovement.value.ProductId).subscribe((re: any) => {
-        this.storeService.getProduct(this.formMovement.value.ProductId).subscribe((res: any) => {
-          const splits: string[] = re.Description.split(' ');
-          operation.Date = this.todayWithPipe;
-          operation.Description = "Se movió " + this.formMovement.value.Amount + " " + res.Description + "(s) de " + splits[5] + " hacia " + actub.Name;
-          operation.ProductId = this.formMovement.value.ProductId;
-          operation.UserId = Number(localStorage.getItem('userId'));
-          console.log(splits);
-        })
-      })
-    })
-    Swal.fire({
-      title: 'Confirmación',
-      text: '¿Seguro de guardar el registro?',
-      showDenyButton: true,
-      showCancelButton: false,
-      confirmButtonText: `Guardar`,
-      denyButtonText: `Cancelar`,
-      allowOutsideClick: false,
-      icon: 'info'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          allowOutsideClick: false,
-          icon: 'info',
-          title: 'Guardando registro',
-          text: 'Cargando...',
-        });
-        Swal.showLoading();
 
-        this.storeService.insertOperation(operation).subscribe(r => {
-          Swal.fire({
-            allowOutsideClick: false,
-            icon: 'success',
-            title: 'Éxito',
-            text: 'Se ha guardado correctamente!',
-          }).then((result) => {
-            window.location.reload();
-          });
-        }, err => {
-          console.log(err);
-
-          if (err.name == "HttpErrorResponse") {
-            Swal.fire({
-              allowOutsideClick: false,
-              icon: 'error',
-              title: 'Error al conectar',
-              text: 'Error de comunicación con el servidor',
-            });
-            return;
-          }
-
-          Swal.fire({
-            allowOutsideClick: false,
-            icon: 'error',
-            title: err.name,
-            text: err.message,
-          });
-        });
-      }
-    });
   }
 
   closeModal() {

@@ -98,13 +98,23 @@
                         </div>
                         <div class="form-group">
                             <label for="selectProduct">Producto</label>
-                            <select name="Product" class="form-control" formControlName="ProductId">
+                            <select name="Product" class="form-control" formControlName="ProductId" (change)="updateUbications()">
                                 <option value="" disabled selected hidden>Selecciona un producto</option>
                                 <option *ngFor="let product of products" [value]="product.ProductId">
                                     {{product.Description}}</option>
                             </select>
                             <span *ngIf="this.formOrder.value.ProductId==''" class="error-custom">Seleccione el
                                 producto</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="selectUbication">Almacén</label>
+                            <select name="Ubication" class="form-control" formControlName="UbicationId">
+                                <option value="" disabled selected hidden>Selecciona el almacén</option>
+                                <option *ngFor="let ubication of ubications" [value]="ubication.UbicationId">
+                                    {{ubication.Name}}</option>
+                            </select>
+                            <span *ngIf="this.formOrder.value.UbicationId==''" class="error-custom">Seleccione el
+                                almacén</span>
                         </div>
                         <div class="form-group">
                             <label for="inputAmount">Cantidad</label>
