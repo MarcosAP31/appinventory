@@ -25,7 +25,9 @@ export class MovementsComponent implements OnInit {
   creating = true;
   operationid = 0;
   amountproduct: any;
-  ubications:any;
+  ubications: any[]=[];
+  actualubications: { UbicationId: number, Name: string }[] = [];
+  newubications: { ubicationid: number, name: string }[] = [];
   constructor(
     public form: FormBuilder,
     private storeService: StoreService,
@@ -34,7 +36,8 @@ export class MovementsComponent implements OnInit {
     this.formMovement = this.form.group({
       ProductId: [''],
       Amount: [''],
-      UbicationId: ['']
+      UbicationId: [''],
+      ActualUbicationId:['']
     });
   }
 
@@ -63,11 +66,25 @@ export class MovementsComponent implements OnInit {
     this.storeService.getProducts().subscribe(response => {
       this.products = response;
     });
-    this.storeService.getUbications().subscribe(response => {
-      this.ubications = response;
-    });
-  }
 
+  }
+  updateActualUbications() {
+    this.storeService.getProduct(this.formMovement.value.ProductId).subscribe((p: any) => {
+      this.storeService.getUbications().subscribe((ubs: any) => {
+        for (let i = 0; i++; i < ubs.length) {
+          console.log(ubs[i])
+          if (ubs[i].Description.includes(p.Description)) {
+            
+            this.actualubications.push({
+              UbicationId: ubs[i].UbicationId,
+              Name: ubs[i].Name
+            });
+            console.log(this.actualubications)
+          }
+        }
+      });
+    })
+  }
   ngOnInit(): void {
     // Configurar opciones de DataTables
     this.dtOptions = {
@@ -85,12 +102,12 @@ export class MovementsComponent implements OnInit {
   submit() {
     var operation = new Operation();
     // Crear una nueva operacion
-    this.storeService.getUbication(this.formMovement.value.UbicationId).subscribe((r:any) => {
-      this.storeService.getLastOperationByProductId(this.formMovement.value.ProductId).subscribe((re:any) => {
-        this.storeService.getProduct(this.formMovement.value.ProductId).subscribe((res:any)=>{
+    this.storeService.getUbication(this.formMovement.value.UbicationId).subscribe((r: any) => {
+      this.storeService.getLastOperationByProductId(this.formMovement.value.ProductId).subscribe((re: any) => {
+        this.storeService.getProduct(this.formMovement.value.ProductId).subscribe((res: any) => {
           const splits: string[] = re.Description.split(' ');
           operation.Date = this.todayWithPipe;
-          operation.Description = "Se movió "+this.formMovement.value.Amount+" "+res.Description+"(s) de "+splits[5]+" hacia "+r.Name;
+          operation.Description = "Se movió " + this.formMovement.value.Amount + " " + res.Description + "(s) de " + splits[5] + " hacia " + r.Name;
           operation.ProductId = this.formMovement.value.ProductId;
           operation.UserId = Number(localStorage.getItem('userId'));
           console.log(splits);

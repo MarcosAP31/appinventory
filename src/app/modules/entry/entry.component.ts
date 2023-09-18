@@ -100,7 +100,7 @@ export class EntryComponent implements OnInit {
           allowOutsideClick: false,
           icon: 'error',
           title: 'Excede la capacidad del almacén',
-          text: 'El almacén ' + ub.Name + ' solo tiene capacidad para ' + ub.Capacity + ' producto(s)',
+          text: 'El almacén ' + ub.Name + ' solo tiene capacidad para ' + ub.Capacity + ' producto(s) y actualmente tiene '+ub.Amount+' productos.',
         });
       } else {
 
@@ -140,7 +140,7 @@ export class EntryComponent implements OnInit {
 
               // Realizar la solicitud para guardar la entrada
               solicitud.subscribe(() => {
-                ub.Amount = ub.Amount + entry.Amount;
+                ub.Amount = ub.Amount + Number(entry.Amount);
                 if(ub.Description=="El almacén no tiene productos"){
                   ub.Description=ub.Amount+" "+prod.Description+"(s)";
                 }else{
@@ -149,20 +149,21 @@ export class EntryComponent implements OnInit {
                     if(splits[i].includes(prod.Description)){
                       const array:string[]=splits[i].split(' ');
                       const amountprod=Number(array[0])+Number(entry.Amount);
+                      console.log(array[0]);
                       ub.Description=ub.Description.replace(array[0],amountprod);
                       this.existprod=true;
                       break;
                     }
                   }
                   if(this.existprod==false){
-                    ub.Description=ub.Description+", "+ub.Amount+" "+prod.Description+"(s)";
+                    ub.Description=ub.Description+","+entry.Amount+" "+prod.Description+"(s)";
                   }
                   
                 }
                 this.storeService.updateUbication(ub.UbicationId,ub).subscribe(()=>{});
                 this.storeService.getUbication(entry.UbicationId).subscribe((resp: any) => {
                   newoperation.Date = entry.Date;
-                  newoperation.Description = "Se agregó " + entry.Amount + " " + prod.Description + "(s) al almacén " + resp.Name;
+                  newoperation.Description = "Se agregó " + entry.Amount + " " + prod.Description + "(s) a " + resp.Name;
                   newoperation.ProductId = entry.ProductId;
                   newoperation.UserId = Number(localStorage.getItem('userId'));
                   this.storeService.insertOperation(newoperation).subscribe(respons => { });
