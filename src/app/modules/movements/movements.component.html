@@ -75,8 +75,8 @@
                                 producto</span>
                         </div>
                         <div class="form-group">
-                            <label for="selectActualUbication">Almacen actual</label>
-                            <select name="ActualUbication" class="form-control" formControlName="ActualUbicationId">
+                            <label for="selectActualUbication">Ubicatión actual</label>
+                            <select name="ActualUbication" class="form-control" formControlName="ActualUbicationId" (change)="updateNewUbications()">
                                 <option value="" disabled selected hidden>Selecciona la ubicación actual</option>
                                 <option *ngFor="let actualubication of actualubications" [value]="actualubication.UbicationId">{{actualubication.Name}}
                                 </option>
@@ -85,19 +85,19 @@
                                 ubicacion actual</span>
                         </div>
                         <div class="form-group">
+                            <label for="selectNewUbication">Nueva ubicación</label>
+                            <select name="NewUbication" class="form-control" formControlName="NewUbicationId">
+                                <option value="" disabled selected hidden>Selecciona la nueva ubicación</option>
+                                <option *ngFor="let newubication of newubications" [value]="newubication.UbicationId">{{newubication.Name}}
+                                </option>
+                            </select>
+                            <span *ngIf="this.formMovement.value.NewUbicationId==''" class="error-custom">Seleccione la
+                                nueva ubicación</span>
+                        </div>
+                        <div class="form-group">
                             <label for="inputAmount">Cantidad</label>
                             <input required type="text" class="form-control" name="" formControlName="Amount"
                                 class="form-control" placeholder="Ingrese cantidad" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="selectUbication">Ubicación</label>
-                            <select name="Ubication" class="form-control" formControlName="UbicationId">
-                                <option value="" disabled selected hidden>Selecciona una ubicación</option>
-                                <option *ngFor="let ubication of ubications" [value]="ubication.UbicationId">
-                                    {{ubication.Name}}</option>
-                            </select>
-                            <span *ngIf="this.formMovement.value.UbicationId==''" class="error-custom">Seleccione la
-                                ubicación</span>
                         </div>
                     </div>
                     <div class="modal-footer justify-content-between">
