@@ -18,6 +18,7 @@ import { subscribe } from 'diagnostics_channel';
 })
 export class OrderComponent implements OnInit {
   @ViewChild('selectState') selectState: any;
+  @ViewChild('selectUbication') selectUbication: any;
   formOrder: FormGroup;
   formEditOrder: FormGroup;
   orders: any;
@@ -41,6 +42,8 @@ export class OrderComponent implements OnInit {
   ubication: Ubication = new Ubication();
   ubications: { UbicationId: number, Name: string }[] = [];
   oldubications: any;
+  validate: boolean = false;
+  existprod:boolean=false;
   constructor(
     public form: FormBuilder,
     private storeService: StoreService,
@@ -142,6 +145,8 @@ export class OrderComponent implements OnInit {
     this.storeService.getOrder(orderid).subscribe((response: any) => {
       if (response.State == "Cancelado" || response.State == "Despachado") {
         this.selectState.nativeElement.disabled = true;
+      } else {
+        this.selectState.nativeElement.disabled = false;
       }
       this.orderid = response.OrderId;
       this.formEditOrder.setValue({
@@ -326,92 +331,139 @@ export class OrderComponent implements OnInit {
     order.TotalPrice = this.formEditOrder.value.TotalPrice;
     order.ClientId = this.formEditOrder.value.ClientId;
     order.UserId = Number(localStorage.getItem('userId'));
-    Swal.fire({
-      title: 'Confirmación',
-      text: '¿Seguro de guardar el registro?',
-      showDenyButton: true,
-      showCancelButton: false,
-      confirmButtonText: `Guardar`,
-      denyButtonText: `Cancelar`,
-      allowOutsideClick: false,
-      icon: 'info'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          allowOutsideClick: false,
-          icon: 'info',
-          title: 'Guardando registro',
-          text: 'Cargando...',
-        });
-        Swal.showLoading();
-
-        this.storeService.updateOrder(this.orderid, order).subscribe(r => {
-          if (this.formEditOrder.value.State == "Despachado") {
-            this.storeService.getOrderXProductByOrderId(this.orderid).subscribe((orderxproducts: any) => {
-              for (const orderxproduct of orderxproducts) {
-                var output = new Output();
-                output.Date = this.todayWithPipe;
-                output.Amount = orderxproduct.Amount;
-                output.ProductId = orderxproduct.ProductId;
-                output.ClientId = order.ClientId;
-                output.UserId = order.UserId;
-                this.storeService.insertOutput(output).subscribe(response => { })
-                this.storeService.getProduct(output.ProductId).subscribe((re: any) => {
-                  console.log(orderxproduct.Amount)
-                  var operation = new Operation();
-                  operation.Date = output.Date;
-                  operation.Description = 'Venta de ' + orderxproduct.Amount + ' ' + re.Description + '(s)';
-                  operation.ProductId = output.ProductId;
-                  operation.UserId = Number(localStorage.getItem('userId'));
-                  this.storeService.insertOperation(operation).subscribe(res => { })
-                })
-              }
-            })
-          }
-          if (this.formEditOrder.value.State == "Cancelado") {
-            this.storeService.getUbication(this.formEditOrder.value.UbicationId).subscribe((ub: any) => {
-              this.storeService.getOrderXProductByOrderId(this.orderid).subscribe((orderxproducts: any) => {
-                for (const orderxproduct of orderxproducts) {
-                  this.storeService.getProduct(orderxproduct.ProductId).subscribe((p: any) => {
-                    p.Amount = p.Amount + orderxproduct.Amount;
-                    this.storeService.updateProduct(orderxproduct.ProductId, p).subscribe(() => {
-                    })
-                  })
-                }
+    if (this.formEditOrder.value.State == "Cancelado") {
+      var amountorder = 0;
+      this.storeService.getUbication(this.formEditOrder.value.UbicationId).subscribe((ub: any) => {
+        this.storeService.getOrderXProductByOrderId(this.orderid).subscribe((orderxproducts: any) => {
+          for (const orderxproduct of orderxproducts) {
+            this.storeService.getProduct(orderxproduct.ProductId).subscribe((p: any) => {
+              p.Amount = p.Amount + orderxproduct.Amount;
+              this.storeService.updateProduct(orderxproduct.ProductId, p).subscribe(() => {
               })
+              amountorder = amountorder + p.Amount;
             })
-
           }
-          Swal.fire({
-            allowOutsideClick: false,
-            icon: 'success',
-            title: 'Éxito',
-            text: 'Se ha guardado correctamente!',
-          }).then((result) => {
-            window.location.reload();
-          });
-        }, err => {
-          console.log(err);
-
-          if (err.name == "HttpErrorResponse") {
+          if (amountorder > (ub.Capacity - ub.Amount)) {
             Swal.fire({
               allowOutsideClick: false,
               icon: 'error',
-              title: 'Error al conectar',
-              text: 'Error de comunicación con el servidor',
+              title: 'Excede la cantidad de stock del almacén',
+              text: 'En el almacén queda espacio para ' + String(ub.Capacity - ub.Amount) + ' productos.'
             });
-            return;
+          } else {
+            this.validate = false;
           }
-
+        })
+      })
+    }
+    if (this.validate == false) {
+      Swal.fire({
+        title: 'Confirmación',
+        text: '¿Seguro de guardar el registro?',
+        showDenyButton: true,
+        showCancelButton: false,
+        confirmButtonText: `Guardar`,
+        denyButtonText: `Cancelar`,
+        allowOutsideClick: false,
+        icon: 'info'
+      }).then((result) => {
+        if (result.isConfirmed) {
           Swal.fire({
             allowOutsideClick: false,
-            icon: 'error',
-            title: err.name,
-            text: err.message,
+            icon: 'info',
+            title: 'Guardando registro',
+            text: 'Cargando...',
           });
-        });
-      }
-    });
+          Swal.showLoading();
+
+          this.storeService.updateOrder(this.orderid, order).subscribe(r => {
+            if (this.formEditOrder.value.State == "Despachado") {
+              this.storeService.getOrderXProductByOrderId(this.orderid).subscribe((orderxproducts: any) => {
+                for (const orderxproduct of orderxproducts) {
+                  var output = new Output();
+                  output.Date = this.todayWithPipe;
+                  output.Amount = orderxproduct.Amount;
+                  output.ProductId = orderxproduct.ProductId;
+                  output.ClientId = order.ClientId;
+                  output.UserId = order.UserId;
+                  this.storeService.insertOutput(output).subscribe(response => { })
+                  this.storeService.getProduct(output.ProductId).subscribe((re: any) => {
+                    console.log(orderxproduct.Amount)
+                    var operation = new Operation();
+                    operation.Date = output.Date;
+                    operation.Description = 'Venta de ' + orderxproduct.Amount + ' ' + re.Description + '(s)';
+                    operation.ProductId = output.ProductId;
+                    operation.UserId = Number(localStorage.getItem('userId'));
+                    this.storeService.insertOperation(operation).subscribe(res => { })
+                  })
+                }
+              })
+            }
+            if (this.formEditOrder.value.State == "Cancelado") {
+              this.storeService.getUbication(this.formEditOrder.value.UbicationId).subscribe((ub: any) => {
+                this.storeService.getOrderXProductByOrderId(this.orderid).subscribe((orderxproducts: any) => {
+                  for (const orderxproduct of orderxproducts) {
+                    this.storeService.getProduct(orderxproduct.ProductId).subscribe((p: any) => {
+                      p.Amount = p.Amount + orderxproduct.Amount;
+                      this.storeService.updateProduct(orderxproduct.ProductId, p).subscribe(() => {
+                      })
+                      ub.Amount = ub.Amount + Number(orderxproduct.Amount);
+                      if (ub.Description == "El almacén no tiene productos") {
+                        ub.Description = ub.Amount + " " + p.Description + "(s)";
+                      } else {
+                        const splits: string[] = ub.Description.split(',');
+                        for (let i = 0; i < splits.length; i++) {
+                          if (splits[i].includes(p.Description)) {
+                            const array: string[] = splits[i].split(' ');
+                            const amountprodub = Number(array[0]) + Number(orderxproduct.Amount);
+                            console.log(array[0]);
+                            ub.Description = ub.Description.replace(array[0], amountprodub);
+                            this.existprod = true;
+                            break;
+                          }
+                        }
+                        if (this.existprod == false) {
+                          ub.Description = ub.Description + "," + orderxproduct.Amount + " " + p.Description + "(s)";
+                        }
+                      }
+                      this.storeService.updateUbication(ub.UbicationId, ub).subscribe(() => { });
+                    })
+                  }
+                })
+              })
+            }
+            Swal.fire({
+              allowOutsideClick: false,
+              icon: 'success',
+              title: 'Éxito',
+              text: 'Se ha guardado correctamente!',
+            }).then((result) => {
+              window.location.reload();
+            });
+          }, err => {
+            console.log(err);
+
+            if (err.name == "HttpErrorResponse") {
+              Swal.fire({
+                allowOutsideClick: false,
+                icon: 'error',
+                title: 'Error al conectar',
+                text: 'Error de comunicación con el servidor',
+              });
+              return;
+            }
+
+            Swal.fire({
+              allowOutsideClick: false,
+              icon: 'error',
+              title: err.name,
+              text: err.message,
+            });
+          });
+        }
+      });
+    }
+
   }
   //Metodo para agregar productos a una ordern
   addProduct() {
@@ -501,6 +553,16 @@ export class OrderComponent implements OnInit {
       });
     })
   }
+  updateOldUbications() {
+    if (this.formEditOrder.value.State == "Cancelado") {
+      this.selectUbication.nativeElement.disabled = true;
+      this.storeService.getUbications().subscribe((ubs: any) => {
+        this.ubications = ubs;
+      });
+    } else {
+      this.selectUbication.nativeElement.disabled = false;
+    }
+  }
   // Método para cerrar el modal y limpiar el formulario
   closeModal() {
     this.formOrder = this.form.group({
@@ -509,6 +571,14 @@ export class OrderComponent implements OnInit {
       UbicationId: [''],
       ClientId: [''],
       Amount: ['']
+    });
+    this.formEditOrder = this.form.group({
+      OrderDate: [''],
+      State: [''],
+      DeliveryDate: [''],
+      TotalPrice: [''],
+      ClientId: [''],
+      UbicationId: ['']
     });
   }
 

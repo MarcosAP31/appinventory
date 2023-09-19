@@ -197,7 +197,7 @@
                         </div>
                         <div class="form-group">
                             <label for="selectState">Estado</label>
-                            <select name="State" class="form-control" formControlName="State" #selectState>
+                            <select name="State" class="form-control" formControlName="State" #selectState (change)="updateOldUbications()">
                                 <option value="" disabled selected hidden>Selecciona un estado</option>
                                 <option value="Pendiente">Pendiente</option>
                                 <option value="Cancelado">Cancelado</option>
@@ -207,7 +207,7 @@
                         </div>
                         <div class="form-group">
                             <label for="selectUbication">Ubicacion</label>
-                            <select name="State" class="form-control" formControlName="UbicationId">
+                            <select name="Ubication" class="form-control" formControlName="UbicationId" #selectUbication>
                                 <option value="" disabled selected hidden>Selecciona un almacén para devolver los productos</option>
                                 <option *ngFor="let oldubication of oldubications" [value]="oldubication.UbicationId">
                                     {{oldubication.Name}}</option>
