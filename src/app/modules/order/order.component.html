@@ -68,7 +68,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-default" data-backdrop="static" >
+    <div class="modal fade" id="modal-default" data-backdrop="static">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <form ngNativeValidate [formGroup]="formOrder" (ngSubmit)="submit()">
@@ -98,7 +98,8 @@
                         </div>
                         <div class="form-group">
                             <label for="selectProduct">Producto</label>
-                            <select name="Product" class="form-control" formControlName="ProductId" (change)="updateUbications()">
+                            <select name="Product" class="form-control" formControlName="ProductId"
+                                (change)="updateUbications()">
                                 <option value="" disabled selected hidden>Selecciona un producto</option>
                                 <option *ngFor="let product of products" [value]="product.ProductId">
                                     {{product.Description}}</option>
@@ -177,7 +178,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-defaultorder" data-backdrop="static" >
+    <div class="modal fade" id="modal-defaultorder" data-backdrop="static">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <form ngNativeValidate [formGroup]="formEditOrder" (ngSubmit)="submitOrder()">
@@ -202,6 +203,14 @@
                                 <option value="Cancelado">Cancelado</option>
                                 <option value="En proceso">En proceso</option>
                                 <option value="Despachado">Despachado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="selectUbication">Ubicacion</label>
+                            <select name="State" class="form-control" formControlName="UbicationId">
+                                <option value="" disabled selected hidden>Selecciona un almacén para devolver los productos</option>
+                                <option *ngFor="let oldubication of oldubications" [value]="oldubication.UbicationId">
+                                    {{oldubication.Name}}</option>
                             </select>
                         </div>
                         <div class="form-group">

@@ -268,22 +268,27 @@ export class ProductComponent implements OnInit {
               entry.UbicationId = this.formProduct.value.UbicationId;
               entry.UserId = Number(localStorage.getItem('userId'));
               console.log(entry)
-              this.storeService.insertEntry(entry).subscribe(response => { });
+              this.storeService.insertEntry(entry).subscribe(() => { });
 
               operation.Date = entry.Date;
               operation.Description = "Compra de " + product.Amount + " " + product.Description + "(s)";
               operation.ProductId = entry.ProductId;
               operation.UserId = Number(localStorage.getItem('userId'));
-              this.storeService.insertOperation(operation).subscribe(re => { });
-              this.storeService.getUbication(entry.UbicationId).subscribe((r: any) => {
+              this.storeService.insertOperation(operation).subscribe(() => { });
+              this.storeService.getUbication(entry.UbicationId).subscribe((ub: any) => {
                 newoperation.Date = entry.Date;
-                newoperation.Description = "Se agregó " + product.Amount + " " + product.Description + "(s) al " + r.Name;
+                newoperation.Description = "Se agregó " + product.Amount + " " + product.Description + "(s) a " + ub.Name;
                 newoperation.ProductId = entry.ProductId;
                 newoperation.UserId = Number(localStorage.getItem('userId'));
-                this.storeService.insertOperation(newoperation).subscribe(re => { });
+                this.storeService.insertOperation(newoperation).subscribe(() => { });
+                ub.Amount = ub.Amount + Number(this.formProduct.value.Amount);
+                if (ub.Description == "El almacén no tiene productos") {
+                  ub.Description = ub.Amount + " " + res.Description + "(s)";
+                } else {
+                  ub.Description=ub.Description+","+this.formProduct.value.Amount+" "+res.Description;
+                }
+                this.storeService.updateUbication(entry.UbicationId,ub).subscribe(()=>{});
               })
-
-
             });
           } else {
             console.log("holaaaa")

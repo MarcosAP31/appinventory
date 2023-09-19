@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { Order } from 'src/app/models/order';
 import { Output } from 'src/app/models/output';
 import { Operation } from 'src/app/models/operation';
+import { Ubication } from 'src/app/models/ubication';
 import { OrderXProduct } from 'src/app/models/orderxproduct';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -37,7 +38,9 @@ export class OrderComponent implements OnInit {
   products: any;
   finalprice: number = 0;
   addedproduct: boolean = false;
+  ubication: Ubication = new Ubication();
   ubications: { UbicationId: number, Name: string }[] = [];
+  oldubications: any;
   constructor(
     public form: FormBuilder,
     private storeService: StoreService,
@@ -46,6 +49,7 @@ export class OrderComponent implements OnInit {
       DeliveryDate: [''],
       ProductId: [''],
       ClientId: [''],
+      UbicationId: [''],
       Amount: ['']
     });
     this.formEditOrder = this.form.group({
@@ -53,7 +57,8 @@ export class OrderComponent implements OnInit {
       State: [''],
       DeliveryDate: [''],
       TotalPrice: [''],
-      ClientId: ['']
+      ClientId: [''],
+      UbicationId: ['']
     });
   }
 
@@ -83,6 +88,9 @@ export class OrderComponent implements OnInit {
     })
     this.storeService.getProducts().subscribe(response => {
       this.products = response;
+    })
+    this.storeService.getUbications().subscribe(r => {
+      this.oldubications = r;
     })
   }
 
@@ -262,15 +270,16 @@ export class OrderComponent implements OnInit {
         Swal.showLoading();
 
         solicitud.subscribe((r: any) => {
+          this.storeService.updateUbication(this.formOrder.value.UbicationId, this.ubication).subscribe(() => { });
           for (const element of this.elements) {
             var orderxproduct = new OrderXProduct();
             orderxproduct.Amount = element.amount;
             orderxproduct.OrderId = r;
             orderxproduct.ProductId = element.productid;
-            this.storeService.insertOrderXProduct(orderxproduct).subscribe(re => { })
+            this.storeService.insertOrderXProduct(orderxproduct).subscribe(() => { })
             this.storeService.getProduct(element.productid).subscribe((resp: any) => {
               resp.Amount = resp.Amount - element.amount;
-              this.storeService.updateProduct(element.productid, resp).subscribe(res => {
+              this.storeService.updateProduct(element.productid, resp).subscribe(() => {
               })
             })
 
@@ -360,15 +369,18 @@ export class OrderComponent implements OnInit {
             })
           }
           if (this.formEditOrder.value.State == "Cancelado") {
-            this.storeService.getOrderXProductByOrderId(this.orderid).subscribe((orderxproducts: any) => {
-              for (const orderxproduct of orderxproducts) {
-                this.storeService.getProduct(orderxproduct.ProductId).subscribe((re: any) => {
-                  re.Amount = re.Amount + orderxproduct.Amount;
-                  this.storeService.updateProduct(orderxproduct.ProductId, re).subscribe((res: any) => {
+            this.storeService.getUbication(this.formEditOrder.value.UbicationId).subscribe((ub: any) => {
+              this.storeService.getOrderXProductByOrderId(this.orderid).subscribe((orderxproducts: any) => {
+                for (const orderxproduct of orderxproducts) {
+                  this.storeService.getProduct(orderxproduct.ProductId).subscribe((p: any) => {
+                    p.Amount = p.Amount + orderxproduct.Amount;
+                    this.storeService.updateProduct(orderxproduct.ProductId, p).subscribe(() => {
+                    })
                   })
-                })
-              }
+                }
+              })
             })
+
           }
           Swal.fire({
             allowOutsideClick: false,
@@ -460,6 +472,8 @@ export class OrderComponent implements OnInit {
             }
           }
           this.idproduct = 0; this.productdescription = ""; this.productprice = 0;
+          this.ubication = ub;
+          console.log(this.ubication);
           //this.storeService.updateUbication(this.formOrder.value.UbicationId,ub).subscribe(()=>{});
           for (const element of this.elements) {
             console.log(element)
