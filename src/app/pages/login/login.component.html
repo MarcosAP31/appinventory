@@ -1,4 +1,3 @@
-
 <div class="hold-transition login-page">
     <div class="login-box">
         <!-- /.login-logo -->
@@ -10,10 +9,10 @@
                 <p class="login-box-msg">Ingrese sus credenciales</p>
 
                 <form ngNativeValidate [formGroup]="formLogin" (ngSubmit)="submit()">
-                    
+
                     <div class="input-group mb-3">
-                        <input required type="text" class="form-control" name="" formControlName="email" 
-                                class="form-control" placeholder="Ingrese correo" required>
+                        <input required type="text" class="form-control" name="" formControlName="email"
+                            class="form-control" placeholder="Ingrese correo" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-user"></span>
@@ -21,8 +20,8 @@
                         </div>
                     </div>
                     <div class="input-group mb-3">
-                        <input required type="password" class="form-control" name="" formControlName="password" 
-                                class="form-control" placeholder="Ingrese contraseña" required>
+                        <input required type="password" class="form-control" name="" formControlName="password"
+                            class="form-control" placeholder="Ingrese contraseña" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
@@ -33,6 +32,11 @@
                         <div class="col-12">
                             <button type="submit" class="btn btn-primary btn-block">Ingresar</button>
                         </div>
+                        <br><br>
+                        <div class="col-12">
+                            <button type="button" class="btn btn-success btn-block" data-toggle="modal"
+                                data-target="#modal-default">Crear nuevo administrador</button>
+                        </div>
                     </div>
                 </form>
 
@@ -42,9 +46,103 @@
         <!-- /.card -->
     </div>
 </div>
+<div class="modal fade" id="modal-default" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form ngNativeValidate [formGroup]="formUser" (ngSubmit)="submitForm()">
+                <div class="modal-header">
+                    <h4 class="modal-title">Nuevo Administrador</h4>
+                    <button (click)="closeModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="inputNombres">Nombres</label>
+                        <input type="text" class="form-control" Name="" formControlName="Name" class="form-control"
+                            placeholder="Ingrese nombres" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputApellidos">Apellidos</label>
+                        <input type="text" class="form-control" Name="" formControlName="LastName" class="form-control"
+                            placeholder="Ingrese apellido paterno" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputNombres">Fecha de nacimiento</label>
+                        <input type="date" class="form-control" Name="" formControlName="Birthday" class="form-control"
+                            placeholder="Ingrese fecha de nacimiento" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="selectSupplier">Sexo</label>
+                        <select name="Empresa" class="form-control" formControlName="Sex">
+                            <option value="" disabled selected hidden>Selecciona un género</option>
+                            <option value="MASCULINO">MASCULINO</option>
+                            <option value="FEMENINO">FEMENINO</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputDepartment">Departamento</label>
+                        <input type="text" class="form-control" Name="" formControlName="Department"
+                            class="form-control" placeholder="Ingrese departamento" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputProvince">Provincia</label>
+                        <input type="text" class="form-control" Name="" formControlName="Province" class="form-control"
+                            placeholder="Ingrese provincia" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputDistrict">Distrito</label>
+                        <input type="text" class="form-control" Name="" formControlName="District" class="form-control"
+                            placeholder="Ingrese distrito" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputDirection">Dirección</label>
+                        <input type="text" class="form-control" Name="" formControlName="Direction" class="form-control"
+                            placeholder="Ingrese direccion" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputPhone">Teléfono</label>
+                        <input type="text" class="form-control" Name="" formControlName="Phone" class="form-control"
+                            placeholder="Ingrese telefono" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputUserName">Nombre de usuario</label>
+                        <input type="text" class="form-control" Name="" formControlName="UserName" class="form-control"
+                            placeholder="Ingrese nombre de usuario" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEmail">Correo</label>
+                        <input type="text" class="form-control" Name="" formControlName="Email" class="form-control"
+                            placeholder="Ingrese correo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputPassword">Contraseña</label>
+                        <input type="text" class="form-control" Name="" formControlName="Password" class="form-control"
+                            placeholder="Ingrese contraseña" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputImage">Imagen</label>
+                        <input formControlName="Image" type="file" class="form-control-file" accept="image/*"
+                            name="image" (change)="selectImage($event)">
+                        <div *ngIf="show" class="card-body">
+                            <img class="img-fluid" style="width:150px;" [src]="imgURL" class="card-img-top">
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()">
+                        Cerrar</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;
+                        Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <script>
     // Elimina el símbolo "#" de la URL mostrada en el navegador
     if (window.location.hash && window.location.hash === '#/') {
-      window.location.replace(window.location.href.replace('#/', ''));
+        window.location.replace(window.location.href.replace('#/', ''));
     }
-  </script>
+</script>

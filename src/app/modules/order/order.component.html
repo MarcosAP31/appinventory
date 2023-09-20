@@ -207,7 +207,7 @@
                         </div>
                         <div class="form-group">
                             <label for="selectUbication">Ubicacion</label>
-                            <select name="Ubication" class="form-control" formControlName="UbicationId" #selectUbication>
+                            <select name="Ubication" class="form-control" formControlName="UbicationId" #selectUbication [hidden]="!showComboBox">
                                 <option value="" disabled selected hidden>Selecciona un almacén para devolver los productos</option>
                                 <option *ngFor="let oldubication of oldubications" [value]="oldubication.UbicationId">
                                     {{oldubication.Name}}</option>

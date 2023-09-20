@@ -266,14 +266,14 @@ export class UserComponent implements OnInit {
         if (this.creating == false) {
           this.storeService.getUser(this.id).subscribe((re: any) => {
             this.storeService.getFileByName(re.Image).subscribe((res: any) => {
-              this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe();
+              this.http.delete<any>(`http://localhost:3000/apistore/file/${res.FileId}`).subscribe();
             })
           });
         }
         solicitud.subscribe(r => {
           const formData = new FormData();
           formData.append('file', this.images);
-          this.http.post<any>('http://192.168.1.5:3000/apistore/saveimg', formData).subscribe(
+          this.http.post<any>('http://localhost:3000/apistore/saveimg', formData).subscribe(
             (res) => console.log(res, Swal.fire({
               icon: 'success',
               title: 'Imagen cargada!!',

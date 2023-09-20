@@ -28,6 +28,7 @@ export class OrderComponent implements OnInit {
   dtOptions: DataTables.Settings = {};
   dtTrigger: Subject<any> = new Subject<any>();
   creating = true;
+  showComboBox = false;
   noValorderido = true;
   orderid = 0;
   idproduct = 0;
@@ -39,7 +40,7 @@ export class OrderComponent implements OnInit {
   products: any;
   finalprice: number = 0;
   addedproduct: boolean = false;
-  ubication: Ubication = new Ubication();
+  ubs: any[]=[];
   ubications: { UbicationId: number, Name: string }[] = [];
   oldubications: any;
   validate: boolean = false;
@@ -239,7 +240,7 @@ export class OrderComponent implements OnInit {
 
   // Método para guardar el proveedor
   submit() {
-    this.finalprice = 0
+    this.finalprice = 0;
     for (const element of this.elements) {
       this.finalprice = this.finalprice + (element.amount * element.price);
     }
@@ -275,7 +276,9 @@ export class OrderComponent implements OnInit {
         Swal.showLoading();
 
         solicitud.subscribe((r: any) => {
-          this.storeService.updateUbication(this.formOrder.value.UbicationId, this.ubication).subscribe(() => { });
+          for(const ub of this.ubs){
+            this.storeService.updateUbication(ub.UbicationId,ub).subscribe(()=>{});
+          }
           for (const element of this.elements) {
             var orderxproduct = new OrderXProduct();
             orderxproduct.Amount = element.amount;
@@ -290,6 +293,7 @@ export class OrderComponent implements OnInit {
 
           }
           this.elements.length = 0;
+          this.ubs.length=0;
           Swal.fire({
             allowOutsideClick: false,
             icon: 'success',
@@ -338,8 +342,6 @@ export class OrderComponent implements OnInit {
           for (const orderxproduct of orderxproducts) {
             this.storeService.getProduct(orderxproduct.ProductId).subscribe((p: any) => {
               p.Amount = p.Amount + orderxproduct.Amount;
-              this.storeService.updateProduct(orderxproduct.ProductId, p).subscribe(() => {
-              })
               amountorder = amountorder + p.Amount;
             })
           }
@@ -386,7 +388,7 @@ export class OrderComponent implements OnInit {
                   output.ProductId = orderxproduct.ProductId;
                   output.ClientId = order.ClientId;
                   output.UserId = order.UserId;
-                  this.storeService.insertOutput(output).subscribe(response => { })
+                  this.storeService.insertOutput(output).subscribe(()=> { })
                   this.storeService.getProduct(output.ProductId).subscribe((re: any) => {
                     console.log(orderxproduct.Amount)
                     var operation = new Operation();
@@ -394,7 +396,7 @@ export class OrderComponent implements OnInit {
                     operation.Description = 'Venta de ' + orderxproduct.Amount + ' ' + re.Description + '(s)';
                     operation.ProductId = output.ProductId;
                     operation.UserId = Number(localStorage.getItem('userId'));
-                    this.storeService.insertOperation(operation).subscribe(res => { })
+                    this.storeService.insertOperation(operation).subscribe(() => { })
                   })
                 }
               })
@@ -468,6 +470,7 @@ export class OrderComponent implements OnInit {
   //Metodo para agregar productos a una ordern
   addProduct() {
     this.finalprice = 0;
+    this.elements.length=0;
     this.storeService.getUbication(this.formOrder.value.UbicationId).subscribe((ub: any) => {
       this.storeService.getProduct(this.formOrder.value.ProductId).subscribe((p: any) => {
         this.productdescription = p.Description;
@@ -524,16 +527,15 @@ export class OrderComponent implements OnInit {
             }
           }
           this.idproduct = 0; this.productdescription = ""; this.productprice = 0;
-          this.ubication = ub;
-          console.log(this.ubication);
+          this.ubs.push(ub);
+          console.log(this.ubs);
           //this.storeService.updateUbication(this.formOrder.value.UbicationId,ub).subscribe(()=>{});
-          for (const element of this.elements) {
+          /*for (const element of this.elements) {
             console.log(element)
             this.finalprice = this.finalprice + (element.amount * element.price);
             console.log(this.finalprice)
-          }
+          }*/
         }
-        this.addedproduct = false;
       })
     })
   }
@@ -555,12 +557,13 @@ export class OrderComponent implements OnInit {
   }
   updateOldUbications() {
     if (this.formEditOrder.value.State == "Cancelado") {
-      this.selectUbication.nativeElement.disabled = true;
+      this.showComboBox = false;
       this.storeService.getUbications().subscribe((ubs: any) => {
-        this.ubications = ubs;
+        this.oldubications = ubs;
       });
     } else {
-      this.selectUbication.nativeElement.disabled = false;
+      this.showComboBox=true;
+      //this.selectUbication.nativeElement.disabled = false;
     }
   }
   // Método para cerrar el modal y limpiar el formulario
