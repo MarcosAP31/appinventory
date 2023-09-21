@@ -232,7 +232,7 @@ export class ProductComponent implements OnInit {
     product.Amount = this.formProduct.value.Amount;
     product.PurchasePrice = this.formProduct.value.PurchasePrice;
     product.SalePrice = this.formProduct.value.SalePrice;
-    product.SupplierId = this.formProduct.value.SupplierId;
+    product.SupplierId = this.formProduct.value.SupplierIdgit;
     var string = this.formProduct.value.Image;
     var splits = string.split("\\", 3);
     product.Image = splits[2];
