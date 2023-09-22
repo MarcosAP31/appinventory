@@ -193,7 +193,6 @@ export class EntryComponent implements OnInit {
                   });
                   return;
                 }
-
                 Swal.fire({
                   allowOutsideClick: false,
                   icon: 'error',

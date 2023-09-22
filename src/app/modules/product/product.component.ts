@@ -135,6 +135,7 @@ export class ProductComponent implements OnInit {
   edit(id: any) {
     this.creating = false;
     this.formProduct.get('Amount')?.disable();
+    this.showUbication=true;
     this.storeService.getProduct(id).subscribe((response: any) => {
       this.id = response.ProductId;
       this.formProduct.setValue({
@@ -236,118 +237,128 @@ export class ProductComponent implements OnInit {
     var string = this.formProduct.value.Image;
     var splits = string.split("\\", 3);
     product.Image = splits[2];
-
     var solicitud = this.creating ? this.storeService.insertProduct(product) : this.storeService.updateProduct(this.id, product);
-
-    Swal.fire({
-      title: 'Confirmación',
-      text: '¿Seguro de guardar el registro?',
-      showDenyButton: true,
-      showCancelButton: false,
-      confirmButtonText: `Guardar`,
-      denyButtonText: `Cancelar`,
-      allowOutsideClick: false,
-      icon: 'info'
-    }).then((result) => {
-      if (result.isConfirmed) {
+    this.storeService.getProductByDescription(this.formProduct.value.Description).subscribe((p: any) => {
+      if (p != null&&this.creating==true) {
         Swal.fire({
           allowOutsideClick: false,
           icon: 'info',
-          title: 'Guardando registro',
-          text: 'Cargando...',
+          title: 'Ya existe un producto con la misma descripción.'
         });
-        Swal.showLoading();
-
-        solicitud.subscribe(r => {
-          if (this.creating == true) {
-            this.storeService.getProductByDescription(this.formProduct.value.Description).subscribe((res: any) => {
-              this.idproduct = res.ProductId;
-              entry.ProductId = this.idproduct;
-              entry.Date = this.todayWithPipe;
-              entry.Amount = this.formProduct.value.Amount;
-              entry.UbicationId = this.formProduct.value.UbicationId;
-              entry.UserId = Number(localStorage.getItem('userId'));
-              console.log(entry)
-              this.storeService.insertEntry(entry).subscribe(() => { });
-
-              operation.Date = entry.Date;
-              operation.Description = "Compra de " + product.Amount + " " + product.Description + "(s)";
-              operation.ProductId = entry.ProductId;
-              operation.UserId = Number(localStorage.getItem('userId'));
-              this.storeService.insertOperation(operation).subscribe(() => { });
-              this.storeService.getUbication(entry.UbicationId).subscribe((ub: any) => {
-                newoperation.Date = entry.Date;
-                newoperation.Description = "Se agregó " + product.Amount + " " + product.Description + "(s) a " + ub.Name;
-                newoperation.ProductId = entry.ProductId;
-                newoperation.UserId = Number(localStorage.getItem('userId'));
-                this.storeService.insertOperation(newoperation).subscribe(() => { });
-                ub.Amount = ub.Amount + Number(this.formProduct.value.Amount);
-                if (ub.Description == "El almacén no tiene productos") {
-                  ub.Description = ub.Amount + " " + res.Description + "(s)";
-                } else {
-                  ub.Description=ub.Description+","+this.formProduct.value.Amount+" "+res.Description;
-                }
-                this.storeService.updateUbication(entry.UbicationId,ub).subscribe(()=>{});
-              })
-            });
-          } else {
-            console.log("holaaaa")
-            this.storeService.getProduct(this.id).subscribe((re: any) => {
-              this.storeService.getFileByName(re.Image).subscribe((res: any) => {
-                this.http.delete<any>(`http://localhost:3000/apistore/file/${res.FileId}`).subscribe();
-              })
-            });
-          }
-          const formData = new FormData();
-          formData.append('file', this.images);
-
-          this.http.post<any>('http://localhost:3000/apistore/saveimg', formData).subscribe((res) =>
-            console.log(res, Swal.fire({
-              icon: 'success',
-              title: 'Imagen cargada!!',
-              text: '¡La imagen se subió correctamente!'
-            }).then((result) => {
-              if (result) {
-                location.reload();
-              }
-            }))
-          );
-          Swal.fire({
-            allowOutsideClick: false,
-            icon: 'success',
-            title: 'Éxito',
-            text: '¡Se ha guardado correctamente!',
-          }).then((result) => {
-            window.location.reload();
-          });
-        }, err => {
-          console.log(err);
-
-          if (err.name == "HttpErrorResponse") {
+      } else {
+        this.storeService.getUbication(this.formProduct.value.UbicationId).subscribe((u: any) => {
+          console.log(u.Capacity);
+          console.log(u.Capacity);
+          console.log(this.formProduct.value.Amount);
+          if (Number(u.Capacity) - Number(u.Amount) < Number(this.formProduct.value.Amount)) {
             Swal.fire({
               allowOutsideClick: false,
               icon: 'error',
-              title: 'Error al conectar',
-              text: 'Error de comunicación con el servidor',
+              title: 'Excede la capacidad del almacén',
+              text: 'El almacén ' + u.Name + ' solo tiene capacidad para ' + u.Capacity + ' producto(s) y actualmente tiene ' + u.Amount + ' productos.',
             });
-            return;
+          } else {
+            Swal.fire({
+              title: 'Confirmación',
+              text: '¿Seguro de guardar el registro?',
+              showDenyButton: true,
+              showCancelButton: false,
+              confirmButtonText: `Guardar`,
+              denyButtonText: `Cancelar`,
+              allowOutsideClick: false,
+              icon: 'info'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                Swal.fire({
+                  allowOutsideClick: false,
+                  icon: 'info',
+                  title: 'Guardando registro',
+                  text: 'Cargando...',
+                });
+                Swal.showLoading();
+                solicitud.subscribe(r => {
+                  if (this.creating == true) {
+                    this.storeService.getProductByDescription(this.formProduct.value.Description).subscribe((res: any) => {
+                      this.idproduct = res.ProductId;
+                      entry.ProductId = this.idproduct;
+                      entry.Date = this.todayWithPipe;
+                      entry.Amount = this.formProduct.value.Amount;
+                      entry.UbicationId = this.formProduct.value.UbicationId;
+                      entry.UserId = Number(localStorage.getItem('userId'));
+                      console.log(entry)
+                      this.storeService.insertEntry(entry).subscribe(() => { });
+
+                      operation.Date = entry.Date;
+                      operation.Description = "Compra de " + product.Amount + " " + product.Description + "(s)";
+                      operation.ProductId = entry.ProductId;
+                      operation.UserId = Number(localStorage.getItem('userId'));
+                      this.storeService.insertOperation(operation).subscribe(() => { });
+                      this.storeService.getUbication(entry.UbicationId).subscribe((ub: any) => {
+                        newoperation.Date = entry.Date;
+                        newoperation.Description = "Se agregó " + product.Amount + " " + product.Description + "(s) a " + ub.Name;
+                        newoperation.ProductId = entry.ProductId;
+                        newoperation.UserId = Number(localStorage.getItem('userId'));
+                        this.storeService.insertOperation(newoperation).subscribe(() => { });
+                        ub.Amount = ub.Amount + Number(this.formProduct.value.Amount);
+
+                        if (ub.Description == "El almacén no tiene productos") {
+                          ub.Description = ub.Amount + " " + res.Description + "(s)";
+                        } else {
+                          ub.Description = ub.Description + "," + this.formProduct.value.Amount + " " + res.Description;
+                        }
+                        this.storeService.updateUbication(entry.UbicationId, ub).subscribe(() => { });
+                      })
+                    });
+                    const formData = new FormData();
+                    formData.append('file', this.images);
+                    this.http.post<any>('http://localhost:3000/apistore/saveimg', formData).subscribe((res) => { });
+                    Swal.fire({
+                      allowOutsideClick: false,
+                      icon: 'success',
+                      title: 'Éxito',
+                      text: '¡Se ha guardado correctamente!',
+                    }).then((result) => {
+                      window.location.reload();
+                    });
+                  } else {
+                    console.log("holaaaa")
+                    this.storeService.getProduct(this.id).subscribe((re: any) => {
+                      this.storeService.getFileByName(re.Image).subscribe((res: any) => {
+                        this.http.delete<any>(`http://localhost:3000/apistore/file/${res.FileId}`).subscribe();
+                      })
+                    });
+                  }
+                }, err => {
+                  console.log(err);
+
+                  if (err.name == "HttpErrorResponse") {
+                    Swal.fire({
+                      allowOutsideClick: false,
+                      icon: 'error',
+                      title: 'Error al conectar',
+                      text: 'Error de comunicación con el servidor',
+                    });
+                    return;
+                  }
+
+                  Swal.fire({
+                    allowOutsideClick: false,
+                    icon: 'error',
+                    title: err.name,
+                    text: err.message,
+                  });
+                });
+
+                //this.imgURL = '/assets/noimage.png';
+              } else if (result.isDenied) {
+                // El usuario ha cancelado la operación
+              }
+
+            });
           }
-
-          Swal.fire({
-            allowOutsideClick: false,
-            icon: 'error',
-            title: err.name,
-            text: err.message,
-          });
-        });
-
-        //this.imgURL = '/assets/noimage.png';
-      } else if (result.isDenied) {
-        // El usuario ha cancelado la operación
+        })
       }
-
-    });
-
+    })
   }
 
   // Método para cerrar el modal
@@ -360,8 +371,9 @@ export class ProductComponent implements OnInit {
       SalePrice: [''],
       SupplierId: [''],
       UbicationId: [''],
-      Image: ['']
+      Image:['']
     });
     this.show = false;
+    this.showUbication=false;
   }
 }

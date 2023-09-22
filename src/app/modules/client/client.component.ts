@@ -239,77 +239,88 @@ export class ClientComponent implements OnInit {
     this.image = splits[1];
     client.Image = this.image;
     var solicitud = this.creating ? this.storeService.insertClient(client) : this.storeService.updateClient(this.id, client);
-    Swal.fire({
-      title: 'Confirmación',
-      text: '¿Seguro que desea guardar el registro?',
-      showDenyButton: true,
-      showCancelButton: false,
-      confirmButtonText: `Guardar`,
-      denyButtonText: `Cancelar`,
-      allowOutsideClick: false,
-      icon: 'info'
-    }).then((result) => {
-      if (result.isConfirmed) {
+    this.storeService.getClientByEmail(this.formClient.value.Email).subscribe((c:any)=>{
+      if(c!=null){
         Swal.fire({
           allowOutsideClick: false,
           icon: 'info',
-          title: 'Guardando registro',
-          text: 'Cargando...',
+          title: 'Ya existe un cliente con el mismo correo.'
         });
-        Swal.showLoading();
-        if (this.creating == false) {
-          this.storeService.getClient(this.id).subscribe((re: any) => {
-            this.storeService.getFileByName(re.Image).subscribe((res: any) => {
-              this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe();
-            })
-          });
-        }
-        solicitud.subscribe(r => {
-          // Subir imagen
-          const formData = new FormData();
-          formData.append('file', this.images);
-          this.http.post<any>('http://192.168.1.5:3000/apistore/saveimg', formData).subscribe(
-            (res) => console.log(res, Swal.fire({
-              icon: 'success',
-              title: 'Imagen cargada',
-              text: '¡La imagen se subió correctamente!'
-            }).then((result) => {
-              if (result) {
-                location.reload();
-              }
-            }))
-          );
-          Swal.fire({
-            allowOutsideClick: false,
-            icon: 'success',
-            title: 'Éxito',
-            text: '¡Se ha guardado correctamente!'
-          }).then((result) => {
-            window.location.reload();
-          });
-        }, err => {
-          console.log(err);
-
-          if (err.Name == "HttpErrorResponse") {
+      }else{
+        Swal.fire({
+          title: 'Confirmación',
+          text: '¿Seguro que desea guardar el registro?',
+          showDenyButton: true,
+          showCancelButton: false,
+          confirmButtonText: `Guardar`,
+          denyButtonText: `Cancelar`,
+          allowOutsideClick: false,
+          icon: 'info'
+        }).then((result) => {
+          if (result.isConfirmed) {
             Swal.fire({
               allowOutsideClick: false,
-              icon: 'error',
-              title: 'Error al conectar',
-              text: 'Error de comunicación con el servidor'
+              icon: 'info',
+              title: 'Guardando registro',
+              text: 'Cargando...',
             });
-            return;
+            Swal.showLoading();
+            if (this.creating == false) {
+              this.storeService.getClient(this.id).subscribe((re: any) => {
+                this.storeService.getFileByName(re.Image).subscribe((res: any) => {
+                  this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe();
+                })
+              });
+            }
+            solicitud.subscribe(r => {
+              // Subir imagen
+              const formData = new FormData();
+              formData.append('file', this.images);
+              this.http.post<any>('http://192.168.1.5:3000/apistore/saveimg', formData).subscribe(
+                (res) => console.log(res, Swal.fire({
+                  icon: 'success',
+                  title: 'Imagen cargada',
+                  text: '¡La imagen se subió correctamente!'
+                }).then((result) => {
+                  if (result) {
+                    location.reload();
+                  }
+                }))
+              );
+              Swal.fire({
+                allowOutsideClick: false,
+                icon: 'success',
+                title: 'Éxito',
+                text: '¡Se ha guardado correctamente!'
+              }).then((result) => {
+                window.location.reload();
+              });
+            }, err => {
+              console.log(err);
+    
+              if (err.Name == "HttpErrorResponse") {
+                Swal.fire({
+                  allowOutsideClick: false,
+                  icon: 'error',
+                  title: 'Error al conectar',
+                  text: 'Error de comunicación con el servidor'
+                });
+                return;
+              }
+              Swal.fire({
+                allowOutsideClick: false,
+                icon: 'error',
+                title: err.Name,
+                text: err.message
+              });
+            });
+          } else if (result.isDenied) {
+            // El usuario ha cancelado la operación
           }
-          Swal.fire({
-            allowOutsideClick: false,
-            icon: 'error',
-            title: err.Name,
-            text: err.message
-          });
         });
-      } else if (result.isDenied) {
-        // El usuario ha cancelado la operación
       }
-    });
+    })
+    
   }
 
   // Cerrar modal

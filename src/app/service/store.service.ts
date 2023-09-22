@@ -53,6 +53,9 @@ export class StoreService {
   getClient(id: number) {
     return this.http.get(`${this.API_URI}/client/${id}`);
   }
+  getClientByEmail(email: string) {
+    return this.http.get(`${this.API_URI}/client/email/${email}`);
+  }
   insertClient(client: Client) {
 
     return this.http.post(`${this.API_URI}/client`, client);
@@ -136,6 +139,9 @@ export class StoreService {
   }
   getUserByEmail(email: string) {
     return this.http.get(`${this.API_URI}/user/email/${email}`);
+  }
+  getUserByUserName(email: string) {
+    return this.http.get(`${this.API_URI}/user/name/${name}`);
   }
   login(user: User) {
     return this.http.post(`${this.API_URI}/user/login`, user);

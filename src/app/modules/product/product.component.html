@@ -115,7 +115,7 @@
                             </select>
                             <span *ngIf="this.formProduct.value.SupplierId==''" class="error-custom">Seleccione el proveedor</span>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" *ngIf="showUbication">
                             <label for="selectUbication">Ubicación</label>
                             <select name="Ubication" class="form-control" formControlName="UbicationId">
                                 <option value="" disabled selected hidden>Selecciona una ubicación</option>
@@ -123,7 +123,7 @@
                             </select>
                             <span *ngIf="this.formProduct.value.UbicationId==''" class="error-custom">Selecciona la ubicacion</span>
                         </div>
-                        <div class="form-group" *ngIf="showUbication">
+                        <div class="form-group" >
                             <label for="inputPurchasePrice">Imagen</label>
                             <input formControlName="Image" type="file" class="form-control-file" accept="image/*" name="image"
                             (change)="selectImage($event)">
