@@ -109,7 +109,7 @@ export class ClientComponent implements OnInit {
 
   // Mostrar imágenes
   mostrarImg() {
-    this.http.get<any>('http://192.168.1.5:3000/apistore/upload').subscribe(res => {
+    this.http.get<any>('http://localhost:3000/apistore/upload').subscribe(res => {
       this.imagenes = res;
       const reader = new FileReader();
       reader.onload = (this.imagenes);
@@ -134,7 +134,7 @@ export class ClientComponent implements OnInit {
           Direction: response.Direction,
           Phone: response.Phone,
           Email: response.Email,
-          Image: response.Image
+          Image:''
         });
         console.log(this.id);
       }
@@ -240,7 +240,7 @@ export class ClientComponent implements OnInit {
     client.Image = this.image;
     var solicitud = this.creating ? this.storeService.insertClient(client) : this.storeService.updateClient(this.id, client);
     this.storeService.getClientByEmail(this.formClient.value.Email).subscribe((c:any)=>{
-      if(c!=null){
+      if(c!=null&&this.creating==true){
         Swal.fire({
           allowOutsideClick: false,
           icon: 'info',
@@ -265,12 +265,19 @@ export class ClientComponent implements OnInit {
               text: 'Cargando...',
             });
             Swal.showLoading();
+            const formData = new FormData();
+              formData.append('file', this.images);
             if (this.creating == false) {
-              this.storeService.getClient(this.id).subscribe((re: any) => {
-                this.storeService.getFileByName(re.Image).subscribe((res: any) => {
-                  this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe();
-                })
-              });
+              if (this.formClient.value.Image != '') {
+                this.storeService.getClient(this.id).subscribe((re: any) => {
+                  this.storeService.getFileByName(re.Image).subscribe((res: any) => {
+                    this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe(()=>{});
+                    this.http.post<any>('http://192.168.1.5:3000/apistore/saveimg', formData).subscribe(()=>{});
+                  })
+                });
+              }
+            }else{
+              this.http.post<any>('http://192.168.1.5:3000/apistore/saveimg', formData).subscribe(()=>{});
             }
             solicitud.subscribe(r => {
               // Subir imagen

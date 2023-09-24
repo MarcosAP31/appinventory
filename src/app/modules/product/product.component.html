@@ -117,7 +117,7 @@
                         </div>
                         <div class="form-group" *ngIf="showUbication">
                             <label for="selectUbication">Ubicación</label>
-                            <select name="Ubication" class="form-control" formControlName="UbicationId">
+                            <select required name="Ubication" class="form-control" formControlName="UbicationId">
                                 <option value="" disabled selected hidden>Selecciona una ubicación</option>
                                 <option  *ngFor="let ubication of ubications" [value]="ubication.UbicationId">{{ubication.Name}}</option>
                             </select>

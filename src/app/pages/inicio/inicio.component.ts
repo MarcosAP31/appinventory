@@ -59,12 +59,13 @@ export class InicioComponent implements OnInit {
     this.storeService.expireToken(localStorage.getItem('token')).subscribe((res: any) => {
       if (res == null) {
         this.cookieService.delete('token_access');
-        this.router.navigateByUrl('login');
+        
         localStorage.removeItem('token');
         localStorage.removeItem('name');
         localStorage.removeItem('userId');
         localStorage.removeItem('username');
         console.log(localStorage.getItem('username'))
+        this.router.navigateByUrl('login');
       }
     });
   }

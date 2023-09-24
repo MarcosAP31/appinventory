@@ -140,8 +140,8 @@ export class StoreService {
   getUserByEmail(email: string) {
     return this.http.get(`${this.API_URI}/user/email/${email}`);
   }
-  getUserByUserName(email: string) {
-    return this.http.get(`${this.API_URI}/user/name/${name}`);
+  getUserByUserName(username: string) {
+    return this.http.get(`${this.API_URI}/user/username/${username}`);
   }
   login(user: User) {
     return this.http.post(`${this.API_URI}/user/login`, user);

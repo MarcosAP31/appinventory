@@ -139,7 +139,7 @@ export class UserComponent implements OnInit {
           UserName: response.UserName,
           Email: response.Email,
           Password: response.Password,
-          Image: response.Image
+          Image: ''
         });
         console.log(this.id);
       }
@@ -246,7 +246,7 @@ export class UserComponent implements OnInit {
     }
     var solicitud = this.creating ? this.storeService.insertUser(user) : this.storeService.updateUser(this.id, user);
     this.storeService.getUserByUserName(this.formUser.value.UserName).subscribe((u: any) => {
-      if (u != null) {
+      if (u != null&&this.creating==true) {
         Swal.fire({
           allowOutsideClick: false,
           icon: 'info',
@@ -271,28 +271,21 @@ export class UserComponent implements OnInit {
               text: 'Cargando...',
             });
             Swal.showLoading();
+            const formData = new FormData();
+            formData.append('file', this.images);
             if (this.creating == false) {
-              this.storeService.getUser(this.id).subscribe((re: any) => {
-                this.storeService.getFileByName(re.Image).subscribe((res: any) => {
-                  this.http.delete<any>(`http://localhost:3000/apistore/file/${res.FileId}`).subscribe();
-                })
-              });
+              if (this.formUser.value.Image != '') {
+                this.storeService.getUser(this.id).subscribe((re: any) => {
+                  this.storeService.getFileByName(re.Image).subscribe((res: any) => {
+                    this.http.delete<any>(`http://localhost:3000/apistore/file/${res.FileId}`).subscribe(() => { });
+                    this.http.post<any>('http://localhost:3000/apistore/saveimg', formData).subscribe(() => { });
+                  })
+                });
+              } 
+            }else{
+              this.http.post<any>('http://localhost:3000/apistore/saveimg', formData).subscribe(() => { });
             }
-            solicitud.subscribe(r => {
-              const formData = new FormData();
-              formData.append('file', this.images);
-              this.http.post<any>('http://localhost:3000/apistore/saveimg', formData).subscribe(
-                (res) => console.log(res, Swal.fire({
-                  icon: 'success',
-                  title: 'Imagen cargada!!',
-                  text: 'La imagen se subió correctamente!'
-                }).then((result) => {
-                  if (result) {
-                    location.reload();
-                  }
-                }))
-              );
-
+            solicitud.subscribe(() => {
               Swal.fire({
                 allowOutsideClick: false,
                 icon: 'success',
