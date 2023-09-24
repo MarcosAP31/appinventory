@@ -271,13 +271,13 @@ export class ClientComponent implements OnInit {
               if (this.formClient.value.Image != '') {
                 this.storeService.getClient(this.id).subscribe((re: any) => {
                   this.storeService.getFileByName(re.Image).subscribe((res: any) => {
-                    this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe(()=>{});
-                    this.http.post<any>('http://192.168.1.5:3000/apistore/saveimg', formData).subscribe(()=>{});
+                    this.http.delete<any>(`http://localhost:3000/apistore/file/${res.FileId}`).subscribe(()=>{});
+                    this.http.post<any>('http://localhost:3000/apistore/saveimg', formData).subscribe(()=>{});
                   })
                 });
               }
             }else{
-              this.http.post<any>('http://192.168.1.5:3000/apistore/saveimg', formData).subscribe(()=>{});
+              this.http.post<any>('http://localhost:3000/apistore/saveimg', formData).subscribe(()=>{});
             }
             solicitud.subscribe(r => {
               Swal.fire({
