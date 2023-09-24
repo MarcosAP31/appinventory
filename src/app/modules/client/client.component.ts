@@ -280,20 +280,6 @@ export class ClientComponent implements OnInit {
               this.http.post<any>('http://192.168.1.5:3000/apistore/saveimg', formData).subscribe(()=>{});
             }
             solicitud.subscribe(r => {
-              // Subir imagen
-              const formData = new FormData();
-              formData.append('file', this.images);
-              this.http.post<any>('http://192.168.1.5:3000/apistore/saveimg', formData).subscribe(
-                (res) => console.log(res, Swal.fire({
-                  icon: 'success',
-                  title: 'Imagen cargada',
-                  text: '¡La imagen se subió correctamente!'
-                }).then((result) => {
-                  if (result) {
-                    location.reload();
-                  }
-                }))
-              );
               Swal.fire({
                 allowOutsideClick: false,
                 icon: 'success',
