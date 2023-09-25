@@ -132,8 +132,10 @@ export class ProductComponent implements OnInit {
 
   // Método para editar un producto
   edit(id: any) {
+    const campoInput = document.getElementById("Amount") as HTMLInputElement;
+    campoInput.disabled = true;
     this.creating = false;
-    this.formProduct.get('Amount')?.disable();
+    //this.formProduct.get('Amount')?.disable();
     this.storeService.getProduct(id).subscribe((response: any) => {
       this.id = response.ProductId;
       this.formProduct.setValue({
@@ -437,7 +439,10 @@ export class ProductComponent implements OnInit {
       UbicationId: [''],
       Image: ['']
     });
+    const campoInput = document.getElementById("Amount") as HTMLInputElement;
+    campoInput.disabled = false;
     this.show = false;
     this.showUbication = true;
+    
   }
 }

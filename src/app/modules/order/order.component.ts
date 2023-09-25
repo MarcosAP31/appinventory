@@ -419,7 +419,7 @@ export class OrderComponent implements OnInit {
                             const array: string[] = splits[i].split(' ');
                             const amountprodub = Number(array[0]) + Number(orderxproduct.Amount);
                             console.log(array[0]);
-                            ub.Description = ub.Description.replace(array[0], amountprodub);
+                            ub.Description = ub.Description.replace(array[0]+" "+array[1],amountprodub+" "+array[1]);
                             this.existprod = true;
                             break;
                           }
@@ -470,7 +470,6 @@ export class OrderComponent implements OnInit {
   //Metodo para agregar productos a una ordern
   addProduct() {
     this.finalprice = 0;
-    this.elements.length=0;
     this.storeService.getUbication(this.formOrder.value.UbicationId).subscribe((ub: any) => {
       this.storeService.getProduct(this.formOrder.value.ProductId).subscribe((p: any) => {
         this.productdescription = p.Description;
@@ -506,14 +505,9 @@ export class OrderComponent implements OnInit {
                       ub.Description = ub.Description.replace(splits[i] + ',', '');
                     }
                   } else {
-                    ub.Description = ub.Description.replace(array[0], amountprodub);
+                    ub.Description = ub.Description.replace(array[0]+" "+array[1],amountprodub+" "+array[1]);
                   }
-                  this.elements.push({
-                    productid: this.formOrder.value.ProductId,
-                    product: this.productdescription,
-                    price: this.productprice,
-                    amount: this.formOrder.value.Amount
-                  });
+                  
                 } else {
                   Swal.fire({
                     allowOutsideClick: false,
@@ -526,6 +520,12 @@ export class OrderComponent implements OnInit {
               break;
             }
           }
+          this.elements.push({
+            productid: this.formOrder.value.ProductId,
+            product: this.productdescription,
+            price: this.productprice,
+            amount: this.formOrder.value.Amount
+          });
           this.idproduct = 0; this.productdescription = ""; this.productprice = 0;
           this.ubs.push(ub);
           console.log(this.ubs);

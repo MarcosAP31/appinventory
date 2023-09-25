@@ -142,8 +142,6 @@ export class UbicationComponent implements OnInit {
   submit() {
     var ubication = new Ubication();
     ubication.Name = this.formUbication.value.Name;
-    ubication.Description = "El almacén no tiene productos";
-    ubication.Amount=0;
     ubication.Capacity = this.formUbication.value.Capacity;
     if (!this.creating) {
       ubication.UbicationId = this.ubicationid;
@@ -167,7 +165,10 @@ export class UbicationComponent implements OnInit {
           text: 'Cargando...',
         });
         Swal.showLoading();
-
+        if(this.creating==true){
+          ubication.Description = "El almacén no tiene productos";
+          ubication.Amount=0;
+        }
         solicitud.subscribe(r => {
           Swal.fire({
             allowOutsideClick: false,

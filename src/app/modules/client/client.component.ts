@@ -35,7 +35,7 @@ export class ClientComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private sanitizer: DomSanitizer,
+    
     public form: FormBuilder,
     private storeService: StoreService,
   ) {

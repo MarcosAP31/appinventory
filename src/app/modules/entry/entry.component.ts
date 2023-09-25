@@ -150,7 +150,7 @@ export class EntryComponent implements OnInit {
                       const array:string[]=splits[i].split(' ');
                       const amountprod=Number(array[0])+Number(entry.Amount);
                       console.log(array[0]);
-                      ub.Description=ub.Description.replace(array[0],amountprod);
+                      ub.Description=ub.Description.replace(array[0]+" "+array[1],amountprod+" "+array[1]);
                       this.existprod=true;
                       break;
                     }

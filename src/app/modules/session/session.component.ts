@@ -44,6 +44,7 @@ export class SessionComponent implements OnInit {
   get() {
     this.storeService.getSessions().subscribe((response: any) => {
       this.sessions = response;
+      this.dtTrigger.next(0);
     });
   }
 }
