@@ -305,7 +305,7 @@ export class ProductComponent implements OnInit {
                         if (ub.Description == "El almacén no tiene productos") {
                           ub.Description = ub.Amount + " " + product.Description + "(s)";
                         } else {
-                          ub.Description = ub.Description + "," + this.formProduct.value.Amount + " " + product.Description;
+                          ub.Description = ub.Description + "," + this.formProduct.value.Amount + " " + product.Description+"(s)";
                         }
                         this.storeService.updateUbication(entry.UbicationId, ub).subscribe(() => { });
                       })

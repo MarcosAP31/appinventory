@@ -3,4 +3,5 @@ export class OrderXProduct{
     Amount!:number;
     OrderId!:number;
     ProductId!:number;
+    UbicationId!:number;
 }

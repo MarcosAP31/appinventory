@@ -507,7 +507,12 @@ export class OrderComponent implements OnInit {
                   } else {
                     ub.Description = ub.Description.replace(array[0]+" "+array[1],amountprodub+" "+array[1]);
                   }
-                  
+                  this.elements.push({
+                    productid: this.formOrder.value.ProductId,
+                    product: this.productdescription,
+                    price: this.productprice,
+                    amount: this.formOrder.value.Amount
+                  });
                 } else {
                   Swal.fire({
                     allowOutsideClick: false,
@@ -517,17 +522,13 @@ export class OrderComponent implements OnInit {
                   });
                 }
               }
+              this.ubs.push(ub);
               break;
             }
           }
-          this.elements.push({
-            productid: this.formOrder.value.ProductId,
-            product: this.productdescription,
-            price: this.productprice,
-            amount: this.formOrder.value.Amount
-          });
+          
           this.idproduct = 0; this.productdescription = ""; this.productprice = 0;
-          this.ubs.push(ub);
+          
           console.log(this.ubs);
           //this.storeService.updateUbication(this.formOrder.value.UbicationId,ub).subscribe(()=>{});
           /*for (const element of this.elements) {
