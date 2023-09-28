@@ -24,11 +24,10 @@ export class OrderComponent implements OnInit {
   orders: any;
   totalprice = 0;
   orderxproducts: any[] = [];
-  elements: { productid: number, product: string, price: number, amount: number }[] = [];
+  elements: { productid: number, product: string, price: number, amount: number, ubicationid: number }[] = [];
   dtOptions: DataTables.Settings = {};
   dtTrigger: Subject<any> = new Subject<any>();
   creating = true;
-  showComboBox = false;
   noValorderido = true;
   orderid = 0;
   idproduct = 0;
@@ -40,11 +39,12 @@ export class OrderComponent implements OnInit {
   products: any;
   finalprice: number = 0;
   addedproduct: boolean = false;
-  ubs: any[]=[];
+  ubs: any[] = [];
   ubications: { UbicationId: number, Name: string }[] = [];
   oldubications: any;
   validate: boolean = false;
-  existprod:boolean=false;
+  existprod: boolean = false;
+  showUbication: boolean = false;
   constructor(
     public form: FormBuilder,
     private storeService: StoreService,
@@ -124,12 +124,18 @@ export class OrderComponent implements OnInit {
     }
 
   }
-  deleteElement(idproduct: any) {
+  deleteElement(idproduct: any, idubication: any) {
     for (const element of this.elements) {
       if (element.productid == idproduct) {
         const indice = this.elements.indexOf(element);
         this.finalprice = this.finalprice - (element.amount * element.price);
         this.elements.splice(indice, 1); // Elimina 1 elemento a partir del índice encontrado
+      }
+    }
+    for (const ub of this.ubs) {
+      if (ub.UbicationId == idubication) {
+        const indice = this.ubs.indexOf(ub);
+        this.ubs.splice(indice, 1); // Elimina 1 elemento a partir del índice encontrado
       }
     }
   }
@@ -155,7 +161,8 @@ export class OrderComponent implements OnInit {
         State: response.State,
         DeliveryDate: response.DeliveryDate,
         TotalPrice: response.TotalPrice,
-        ClientId: response.ClientId
+        ClientId: response.ClientId,
+        UbicationId: 0
       });
       this.storeService.getOrderXProductByOrderId(orderid).subscribe((orderxproducts: any) => {
         console.log(orderxproducts)
@@ -166,7 +173,8 @@ export class OrderComponent implements OnInit {
               productid: orderxproduct.ProductId,
               product: res.Description,
               price: res.SalePrice,
-              amount: orderxproduct.Amount
+              amount: orderxproduct.Amount,
+              ubicationid: 0
             });
           })
 
@@ -179,7 +187,8 @@ export class OrderComponent implements OnInit {
       State: [''],
       DeliveryDate: [''],
       TotalPrice: [''],
-      ClientId: ['']
+      ClientId: [''],
+      UbicationId: ['']
     });
   }
   // Método para eliminar un proveedor
@@ -276,8 +285,8 @@ export class OrderComponent implements OnInit {
         Swal.showLoading();
 
         solicitud.subscribe((r: any) => {
-          for(const ub of this.ubs){
-            this.storeService.updateUbication(ub.UbicationId,ub).subscribe(()=>{});
+          for (const ub of this.ubs) {
+            this.storeService.updateUbication(ub.UbicationId, ub).subscribe(() => { });
           }
           for (const element of this.elements) {
             var orderxproduct = new OrderXProduct();
@@ -293,7 +302,7 @@ export class OrderComponent implements OnInit {
 
           }
           this.elements.length = 0;
-          this.ubs.length=0;
+          this.ubs.length = 0;
           Swal.fire({
             allowOutsideClick: false,
             icon: 'success',
@@ -326,6 +335,7 @@ export class OrderComponent implements OnInit {
         // Acción cancelada
       }
     });
+
   }
   submitOrder() {
     var order = new Order();
@@ -350,7 +360,7 @@ export class OrderComponent implements OnInit {
               allowOutsideClick: false,
               icon: 'error',
               title: 'Excede la cantidad de stock del almacén',
-              text: 'En el almacén queda espacio para ' + String(ub.Capacity - ub.Amount) + ' productos.'
+              text: 'La capacidad del almacén es de ' + ub.Capacity + ' productos y actualmente tiene ' + ub.Amount + ' productos.'
             });
           } else {
             this.validate = false;
@@ -388,12 +398,12 @@ export class OrderComponent implements OnInit {
                   output.ProductId = orderxproduct.ProductId;
                   output.ClientId = order.ClientId;
                   output.UserId = order.UserId;
-                  this.storeService.insertOutput(output).subscribe(()=> { })
-                  this.storeService.getProduct(output.ProductId).subscribe((re: any) => {
+                  this.storeService.insertOutput(output).subscribe(() => { })
+                  this.storeService.getProduct(output.ProductId).subscribe((p: any) => {
                     console.log(orderxproduct.Amount)
                     var operation = new Operation();
                     operation.Date = output.Date;
-                    operation.Description = 'Venta de ' + orderxproduct.Amount + ' ' + re.Description + '(s)';
+                    operation.Description = 'Venta de ' + orderxproduct.Amount + ' ' + p.Description + '(s)';
                     operation.ProductId = output.ProductId;
                     operation.UserId = Number(localStorage.getItem('userId'));
                     this.storeService.insertOperation(operation).subscribe(() => { })
@@ -419,7 +429,7 @@ export class OrderComponent implements OnInit {
                             const array: string[] = splits[i].split(' ');
                             const amountprodub = Number(array[0]) + Number(orderxproduct.Amount);
                             console.log(array[0]);
-                            ub.Description = ub.Description.replace(array[0]+" "+array[1],amountprodub+" "+array[1]);
+                            ub.Description = ub.Description.replace(array[0] + " " + array[1], amountprodub + " " + array[1]);
                             this.existprod = true;
                             break;
                           }
@@ -428,6 +438,12 @@ export class OrderComponent implements OnInit {
                           ub.Description = ub.Description + "," + orderxproduct.Amount + " " + p.Description + "(s)";
                         }
                       }
+                      var operation = new Operation();
+                      operation.Date = this.todayWithPipe;
+                      operation.Description = 'Se devolvió ' + orderxproduct.Amount + ' ' + p.Description + '(s) a ' + ub.Name;
+                      operation.ProductId = p.ProductId;
+                      operation.UserId = Number(localStorage.getItem('userId'));
+                      this.storeService.insertOperation(operation).subscribe(() => { })
                       this.storeService.updateUbication(ub.UbicationId, ub).subscribe(() => { });
                     })
                   }
@@ -469,7 +485,6 @@ export class OrderComponent implements OnInit {
   }
   //Metodo para agregar productos a una ordern
   addProduct() {
-    this.finalprice = 0;
     this.storeService.getUbication(this.formOrder.value.UbicationId).subscribe((ub: any) => {
       this.storeService.getProduct(this.formOrder.value.ProductId).subscribe((p: any) => {
         this.productdescription = p.Description;
@@ -505,13 +520,14 @@ export class OrderComponent implements OnInit {
                       ub.Description = ub.Description.replace(splits[i] + ',', '');
                     }
                   } else {
-                    ub.Description = ub.Description.replace(array[0]+" "+array[1],amountprodub+" "+array[1]);
+                    ub.Description = ub.Description.replace(array[0] + " " + array[1], amountprodub + " " + array[1]);
                   }
                   this.elements.push({
                     productid: this.formOrder.value.ProductId,
                     product: this.productdescription,
                     price: this.productprice,
-                    amount: this.formOrder.value.Amount
+                    amount: this.formOrder.value.Amount,
+                    ubicationid: ub.UbicationId
                   });
                 } else {
                   Swal.fire({
@@ -523,12 +539,13 @@ export class OrderComponent implements OnInit {
                 }
               }
               this.ubs.push(ub);
+              this.finalprice = this.finalprice + (this.formOrder.value.Amount * p.SalePrice);
               break;
             }
           }
-          
+
           this.idproduct = 0; this.productdescription = ""; this.productprice = 0;
-          
+
           console.log(this.ubs);
           //this.storeService.updateUbication(this.formOrder.value.UbicationId,ub).subscribe(()=>{});
           /*for (const element of this.elements) {
@@ -558,17 +575,18 @@ export class OrderComponent implements OnInit {
   }
   updateOldUbications() {
     if (this.formEditOrder.value.State == "Cancelado") {
-      this.showComboBox = false;
+      this.showUbication = true;
       this.storeService.getUbications().subscribe((ubs: any) => {
         this.oldubications = ubs;
       });
     } else {
-      this.showComboBox=true;
+      this.showUbication = false;
       //this.selectUbication.nativeElement.disabled = false;
     }
   }
   // Método para cerrar el modal y limpiar el formulario
   closeModal() {
+
     this.formOrder = this.form.group({
       DeliveryDate: [''],
       ProductId: [''],
@@ -584,6 +602,10 @@ export class OrderComponent implements OnInit {
       ClientId: [''],
       UbicationId: ['']
     });
+    this.showUbication = false;
+    this.elements.length = 0;
+    this.ubs.length = 0;
+    this.finalprice=0;
   }
 
 }

@@ -71,8 +71,6 @@
                                 <option *ngFor="let product of products" [value]="product.ProductId">{{product.Description}}
                                 </option>
                             </select>
-                            <span *ngIf="this.formMovement.value.ProductId==''" class="error-custom">Seleccione el
-                                producto</span>
                         </div>
                         <div class="form-group">
                             <label for="selectActualUbication">Ubicatión actual</label>
@@ -81,8 +79,6 @@
                                 <option *ngFor="let actualubication of actualubications" [value]="actualubication.UbicationId">{{actualubication.Name}}
                                 </option>
                             </select>
-                            <span *ngIf="this.formMovement.value.ActualUbicationId==''" class="error-custom">Seleccione la
-                                ubicacion actual</span>
                         </div>
                         <div class="form-group">
                             <label for="selectNewUbication">Nueva ubicación</label>
@@ -91,8 +87,6 @@
                                 <option *ngFor="let newubication of newubications" [value]="newubication.UbicationId">{{newubication.Name}}
                                 </option>
                             </select>
-                            <span *ngIf="this.formMovement.value.NewUbicationId==''" class="error-custom">Seleccione la
-                                nueva ubicación</span>
                         </div>
                         <div class="form-group">
                             <label for="inputAmount">Cantidad</label>

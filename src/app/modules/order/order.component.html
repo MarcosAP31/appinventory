@@ -124,8 +124,7 @@
                         </div>
                     </div>
                     <div class="modal-footer justify-content-between">
-                        <button type="button" class="btn btn-primary"><i class="fa fa-save"
-                                (click)="addProduct()"></i>&nbsp;&nbsp;
+                        <button type="button" class="btn btn-primary" (click)="addProduct()"><i class="fa fa-save"></i>&nbsp;&nbsp;
                             Agregar</button>
                     </div>
                     <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table"
@@ -153,7 +152,7 @@
                                             class="btn btn-warning">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button (click)="deleteElement(element.productid)" type="button"
+                                        <button (click)="deleteElement(element.productid,element.ubicationid)" type="button"
                                             class="btn btn-danger">
                                             <i class="fas fa-trash"></i>
                                         </button>
@@ -165,7 +164,7 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td>{{this.finalprice.toFixed(2)}}</td>
+                                <td>S/.{{this.finalprice.toFixed(2)}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -206,9 +205,9 @@
                                 <option value="Despachado">Despachado</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" *ngIf="showUbication">
                             <label for="selectUbication">Ubicacion</label>
-                            <select name="Ubication" class="form-control" formControlName="UbicationId" #selectUbication [hidden]="!showComboBox">
+                            <select name="Ubication" class="form-control" formControlName="UbicationId">
                                 <option value="" disabled selected hidden>Selecciona un almacén para devolver los productos</option>
                                 <option *ngFor="let oldubication of oldubications" [value]="oldubication.UbicationId">
                                     {{oldubication.Name}}</option>
