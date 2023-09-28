@@ -547,6 +547,7 @@ export class OrderComponent implements OnInit {
           this.idproduct = 0; this.productdescription = ""; this.productprice = 0;
 
           console.log(this.ubs);
+          //dsa
           //this.storeService.updateUbication(this.formOrder.value.UbicationId,ub).subscribe(()=>{});
           /*for (const element of this.elements) {
             console.log(element)
