@@ -23,6 +23,7 @@ export class OrderComponent implements OnInit {
   formEditOrder: FormGroup;
   orders: any;
   totalprice = 0;
+  amountorder:number=0;
   orderxproducts: any[] = [];
   elements: { productid: number, product: string, price: number, amount: number, ubicationid: number }[] = [];
   dtOptions: DataTables.Settings = {};
@@ -39,10 +40,11 @@ export class OrderComponent implements OnInit {
   products: any;
   finalprice: number = 0;
   addedproduct: boolean = false;
+  addprod:boolean=false;
   ubs: any[] = [];
   ubications: { UbicationId: number, Name: string }[] = [];
   oldubications: any;
-  validate: boolean = false;
+  invalidate: boolean = false;
   existprod: boolean = false;
   showUbication: boolean = false;
   constructor(
@@ -253,6 +255,7 @@ export class OrderComponent implements OnInit {
     for (const element of this.elements) {
       this.finalprice = this.finalprice + (element.amount * element.price);
     }
+    var ubid=0;
     var order = new Order();
     order.OrderDate = this.todayWithPipe;
     order.State = "Pendiente";
@@ -286,6 +289,8 @@ export class OrderComponent implements OnInit {
 
         solicitud.subscribe((r: any) => {
           for (const ub of this.ubs) {
+            ubid=ub.UbicationId;
+            
             this.storeService.updateUbication(ub.UbicationId, ub).subscribe(() => { });
           }
           for (const element of this.elements) {
@@ -346,29 +351,30 @@ export class OrderComponent implements OnInit {
     order.ClientId = this.formEditOrder.value.ClientId;
     order.UserId = Number(localStorage.getItem('userId'));
     if (this.formEditOrder.value.State == "Cancelado") {
-      var amountorder = 0;
+      
       this.storeService.getUbication(this.formEditOrder.value.UbicationId).subscribe((ub: any) => {
         this.storeService.getOrderXProductByOrderId(this.orderid).subscribe((orderxproducts: any) => {
+          
           for (const orderxproduct of orderxproducts) {
             this.storeService.getProduct(orderxproduct.ProductId).subscribe((p: any) => {
               p.Amount = p.Amount + orderxproduct.Amount;
-              amountorder = amountorder + p.Amount;
+              this.amountorder = this.amountorder + orderxproduct.Amount;
             })
           }
-          if (amountorder > (ub.Capacity - ub.Amount)) {
+          console.log(this.amountorder)
+          if (this.amountorder > (ub.Capacity - ub.Amount)) {
             Swal.fire({
               allowOutsideClick: false,
               icon: 'error',
               title: 'Excede la cantidad de stock del almacén',
               text: 'La capacidad del almacén es de ' + ub.Capacity + ' productos y actualmente tiene ' + ub.Amount + ' productos.'
             });
-          } else {
-            this.validate = false;
-          }
+            this.invalidate = true;
+          } 
         })
       })
     }
-    if (this.validate == false) {
+    if (this.invalidate == false) {
       Swal.fire({
         title: 'Confirmación',
         text: '¿Seguro de guardar el registro?',
@@ -481,7 +487,7 @@ export class OrderComponent implements OnInit {
         }
       });
     }
-
+    this.invalidate=false;
   }
   //Metodo para agregar productos a una ordern
   addProduct() {
@@ -529,6 +535,22 @@ export class OrderComponent implements OnInit {
                     amount: this.formOrder.value.Amount,
                     ubicationid: ub.UbicationId
                   });
+                  for (let i=0;i<this.ubs.length;i++) {
+                    if(this.ubs[i].UbicationId==ub.UbicationId){
+                      const newarray: string[] = splits[i].split(' ');
+                      if (amountprodub == 0) {
+                        if (i == splits.length - 1) {
+                          this.ubs[i].Description = this.ubs[i].Description.replace(',' + splits[i], '');
+                        } else {
+                          this.ubs[i].Description = this.ubs[i].Description.replace(splits[i] + ',', '');
+                        }
+                      } else {
+                        this.ubs[i].Description = this.ubs[i].Description.replace(newarray[0] + " " + array[1], amountprodub + " " + array[1]);
+                      }
+                      this.addprod=true;
+                      break;
+                    }
+                  }
                 } else {
                   Swal.fire({
                     allowOutsideClick: false,
@@ -537,8 +559,12 @@ export class OrderComponent implements OnInit {
                     text: 'En ' + ub.Name + ' hay ' + array[0] + " " + p.Description + "(s)"
                   });
                 }
+                
               }
-              this.ubs.push(ub);
+              if(this.addprod==false){
+                this.ubs.push(ub);
+              }
+              this.addprod=false;
               this.finalprice = this.finalprice + (this.formOrder.value.Amount * p.SalePrice);
               break;
             }
