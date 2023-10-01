@@ -344,6 +344,7 @@ export class OrderComponent implements OnInit {
   }
   submitOrder() {
     var order = new Order();
+    var amountorder=0;
     order.OrderDate = this.todayWithPipe;
     order.State = this.formEditOrder.value.State;
     order.DeliveryDate = this.formEditOrder.value.DeliveryDate;
@@ -356,13 +357,11 @@ export class OrderComponent implements OnInit {
         this.storeService.getOrderXProductByOrderId(this.orderid).subscribe((orderxproducts: any) => {
           
           for (const orderxproduct of orderxproducts) {
-            this.storeService.getProduct(orderxproduct.ProductId).subscribe((p: any) => {
-              p.Amount = p.Amount + orderxproduct.Amount;
-              this.amountorder = this.amountorder + orderxproduct.Amount;
-            })
+            amountorder = amountorder + orderxproduct.Amount;
+            
           }
-          console.log(this.amountorder)
-          if (this.amountorder > (ub.Capacity - ub.Amount)) {
+          console.log(amountorder);
+          if (amountorder > (ub.Capacity - ub.Amount)) {
             Swal.fire({
               allowOutsideClick: false,
               icon: 'error',
@@ -488,6 +487,7 @@ export class OrderComponent implements OnInit {
       });
     }
     this.invalidate=false;
+    amountorder=0;
   }
   //Metodo para agregar productos a una ordern
   addProduct() {
