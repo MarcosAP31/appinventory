@@ -150,10 +150,9 @@ export class LoginComponent implements OnInit {
       } else {
         // Si la autenticación tiene éxito, almacenar el token de acceso y realizar verificaciones adicionales
         localStorage.setItem("token", r);
-        this.storeService.verifyToken(localStorage.getItem("token")).subscribe(re => {
+        this.storeService.verifyToken(localStorage.getItem("token")).subscribe(() => {
           this.cookieService.set('token_access', r);
           this.storeService.getUserByEmail(this.formLogin.value.email).subscribe((res: any) => {
-
             localStorage.setItem('username', res.UserName);
             localStorage.setItem('userId', res.UserId);
             const session = new Session();

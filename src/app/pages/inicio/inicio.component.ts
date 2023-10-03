@@ -57,6 +57,7 @@ export class InicioComponent implements OnInit {
 
     // Expirar el token de acceso y realizar el proceso de cierre de sesión
     this.storeService.expireToken(localStorage.getItem('token')).subscribe((res: any) => {
+      console.log(this.cookieService.get('token_access'));
       if (res == null) {
         this.cookieService.delete('token_access');
         
