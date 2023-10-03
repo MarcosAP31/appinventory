@@ -22,8 +22,9 @@ export class OrderComponent implements OnInit {
   formOrder: FormGroup;
   formEditOrder: FormGroup;
   orders: any;
-  totalprice = 0;
-  amountorder:number=0;
+  totalprice= 0;
+  ubamount=0;
+  amountorder=0;
   orderxproducts: any[] = [];
   elements: { productid: number, product: string, price: number, amount: number, ubicationid: number }[] = [];
   dtOptions: DataTables.Settings = {};
@@ -38,7 +39,7 @@ export class OrderComponent implements OnInit {
   todayWithPipe: any;
   clients: any;
   products: any;
-  finalprice: number = 0;
+  finalprice= 0;
   addedproduct: boolean = false;
   addprod:boolean=false;
   ubs: any[] = [];
@@ -571,8 +572,8 @@ export class OrderComponent implements OnInit {
           }
 
           this.idproduct = 0; this.productdescription = ""; this.productprice = 0;
-
-          console.log(this.ubs);
+          this.ubamount=ub.Amount+this.formOrder.value.Amount;
+          //console.log(this.ubs);
           console.log(ub.Amount);
           //dsa
           //this.storeService.updateUbication(this.formOrder.value.UbicationId,ub).subscribe(()=>{});
