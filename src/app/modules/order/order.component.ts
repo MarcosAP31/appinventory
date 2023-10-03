@@ -23,7 +23,8 @@ export class OrderComponent implements OnInit {
   formEditOrder: FormGroup;
   orders: any;
   totalprice = 0;
-  amountorder:number=0;
+  ubamount = 0;
+  amountorder: number = 0;
   orderxproducts: any[] = [];
   elements: { productid: number, product: string, price: number, amount: number, ubicationid: number }[] = [];
   dtOptions: DataTables.Settings = {};
@@ -40,7 +41,7 @@ export class OrderComponent implements OnInit {
   products: any;
   finalprice: number = 0;
   addedproduct: boolean = false;
-  addprod:boolean=false;
+  recalledprod: boolean = false;
   ubs: any[] = [];
   ubications: { UbicationId: number, Name: string }[] = [];
   oldubications: any;
@@ -255,7 +256,7 @@ export class OrderComponent implements OnInit {
     for (const element of this.elements) {
       this.finalprice = this.finalprice + (element.amount * element.price);
     }
-    var ubid=0;
+    var ubid = 0;
     var order = new Order();
     order.OrderDate = this.todayWithPipe;
     order.State = "Pendiente";
@@ -289,8 +290,8 @@ export class OrderComponent implements OnInit {
 
         solicitud.subscribe((r: any) => {
           for (const ub of this.ubs) {
-            ubid=ub.UbicationId;
-            
+            ubid = ub.UbicationId;
+
             this.storeService.updateUbication(ub.UbicationId, ub).subscribe(() => { });
           }
           for (const element of this.elements) {
@@ -344,7 +345,7 @@ export class OrderComponent implements OnInit {
   }
   submitOrder() {
     var order = new Order();
-    var amountorder=0;
+    var amountorder = 0;
     order.OrderDate = this.todayWithPipe;
     order.State = this.formEditOrder.value.State;
     order.DeliveryDate = this.formEditOrder.value.DeliveryDate;
@@ -352,13 +353,13 @@ export class OrderComponent implements OnInit {
     order.ClientId = this.formEditOrder.value.ClientId;
     order.UserId = Number(localStorage.getItem('userId'));
     if (this.formEditOrder.value.State == "Cancelado") {
-      
+
       this.storeService.getUbication(this.formEditOrder.value.UbicationId).subscribe((ub: any) => {
         this.storeService.getOrderXProductByOrderId(this.orderid).subscribe((orderxproducts: any) => {
-          
+
           for (const orderxproduct of orderxproducts) {
             amountorder = amountorder + orderxproduct.Amount;
-            
+
           }
           console.log(amountorder);
           if (amountorder > (ub.Capacity - ub.Amount)) {
@@ -369,7 +370,7 @@ export class OrderComponent implements OnInit {
               text: 'La capacidad del almacén es de ' + ub.Capacity + ' productos y actualmente tiene ' + ub.Amount + ' productos.'
             });
             this.invalidate = true;
-          } 
+          }
         })
       })
     }
@@ -486,8 +487,8 @@ export class OrderComponent implements OnInit {
         }
       });
     }
-    this.invalidate=false;
-    amountorder=0;
+    this.invalidate = false;
+    amountorder = 0;
   }
   //Metodo para agregar productos a una ordern
   addProduct() {
@@ -515,63 +516,70 @@ export class OrderComponent implements OnInit {
               const array: string[] = splits[i].split(' ');
               const amountprodub = Number(array[0]) - Number(this.formOrder.value.Amount);
               console.log(array[0]);
-              if (ub.Amount == 0) {
-                ub.Description = "El almacén no tiene productos";
+              if (amountprodub < 0) {
+                Swal.fire({
+                  allowOutsideClick: false,
+                  icon: 'error',
+                  title: 'Excede la cantidad de stock',
+                  text: 'En ' + ub.Name + ' hay ' + array[0] + " " + p.Description + "(s)"
+                });
               } else {
-                if (amountprodub >= 0) {
-                  if (amountprodub == 0) {
-                    if (i == splits.length - 1) {
-                      ub.Description = ub.Description.replace(',' + splits[i], '');
-                    } else {
-                      ub.Description = ub.Description.replace(splits[i] + ',', '');
-                    }
-                  } else {
-                    ub.Description = ub.Description.replace(array[0] + " " + array[1], amountprodub + " " + array[1]);
-                  }
-                  this.elements.push({
-                    productid: this.formOrder.value.ProductId,
-                    product: this.productdescription,
-                    price: this.productprice,
-                    amount: this.formOrder.value.Amount,
-                    ubicationid: ub.UbicationId
-                  });
-                  for (let i=0;i<this.ubs.length;i++) {
-                    if(this.ubs[i].UbicationId==ub.UbicationId){
-                      const newarray: string[] = splits[i].split(' ');
-                      if (amountprodub == 0) {
-                        if (i == splits.length - 1) {
-                          this.ubs[i].Description = this.ubs[i].Description.replace(',' + splits[i], '');
-                        } else {
-                          this.ubs[i].Description = this.ubs[i].Description.replace(splits[i] + ',', '');
-                        }
-                      } else {
-                        this.ubs[i].Description = this.ubs[i].Description.replace(newarray[0] + " " + array[1], amountprodub + " " + array[1]);
-                      }
-                      this.addprod=true;
-                      break;
-                    }
-                  }
+                if (ub.Amount == 0) {
+                  ub.Description = "El almacén no tiene productos";
                 } else {
-                  Swal.fire({
-                    allowOutsideClick: false,
-                    icon: 'error',
-                    title: 'Excede la cantidad de stock',
-                    text: 'En ' + ub.Name + ' hay ' + array[0] + " " + p.Description + "(s)"
-                  });
+                  if (amountprodub >= 0) {
+                    if (amountprodub == 0) {
+                      if (i == splits.length - 1) {
+                        ub.Description = ub.Description.replace(',' + splits[i], '');
+                      } else {
+                        ub.Description = ub.Description.replace(splits[i] + ',', '');
+                      }
+                    } else {
+                      ub.Description = ub.Description.replace(array[0] + " " + array[1], amountprodub + " " + array[1]);
+                    }
+                    this.elements.push({
+                      productid: this.formOrder.value.ProductId,
+                      product: this.productdescription,
+                      price: this.productprice,
+                      amount: this.formOrder.value.Amount,
+                      ubicationid: ub.UbicationId
+                    });
+                  }
                 }
-                
+                this.finalprice = this.finalprice + (this.formOrder.value.Amount * p.SalePrice);
+                break;
               }
-              if(this.addprod==false){
-                this.ubs.push(ub);
-              }
-              this.addprod=false;
-              this.finalprice = this.finalprice + (this.formOrder.value.Amount * p.SalePrice);
-              break;
             }
           }
+          for (let i = 0; i < this.ubs.length; i++) {
+            if (this.ubs[i].UbicationId == ub.UbicationId) {
+              if (splits[i].includes(p.Description)) {
+                const array: string[] = splits[i].split(' ');
+                const amountprodub = Number(array[0]) - Number(this.formOrder.value.Amount);
+                const newarray: string[] = splits[i].split(' ');
+                if (amountprodub == 0) {
+                  if (i == splits.length - 1) {
+                    this.ubs[i].Description = this.ubs[i].Description.replace(',' + splits[i], '');
+                  } else {
+                    this.ubs[i].Description = this.ubs[i].Description.replace(splits[i] + ',', '');
+                  }
+                } else {
+                  this.ubs[i].Description = this.ubs[i].Description.replace(newarray[0] + " " + array[1], amountprodub + " " + array[1]);
+                }
 
-          this.idproduct = 0; this.productdescription = ""; this.productprice = 0;
 
+              } else {
+                this.ubs[i].Amount = this.ubs[i].Amount - this.formOrder.value.Amount;
+              }
+              this.recalledprod = true;
+              break;
+
+            }
+          }
+          if (this.recalledprod == false) {
+            ub.Amount = ub.Amount - this.formOrder.value.Amount;
+            this.ubs.push(ub);
+          }
           console.log(this.ubs);
           console.log(ub.Amount);
           //dsa
@@ -582,6 +590,9 @@ export class OrderComponent implements OnInit {
             console.log(this.finalprice)
           }*/
         }
+        this.recalledprod = false;
+        this.addedproduct = false;
+        this.idproduct = 0; this.productdescription = ""; this.productprice = 0;
       })
     })
   }
@@ -633,7 +644,7 @@ export class OrderComponent implements OnInit {
     this.showUbication = false;
     this.elements.length = 0;
     this.ubs.length = 0;
-    this.finalprice=0;
+    this.finalprice = 0;
   }
 
 }
