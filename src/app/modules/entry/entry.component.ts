@@ -100,7 +100,7 @@ export class EntryComponent implements OnInit {
           allowOutsideClick: false,
           icon: 'error',
           title: 'Excede la capacidad del almacén',
-          text: 'El almacén ' + ub.Name + ' solo tiene capacidad para ' + ub.Capacity + ' producto(s) y actualmente tiene '+ub.Amount+' productos.',
+          text: ub.Name + ' solo tiene capacidad para ' + ub.Capacity + ' producto(s) y actualmente tiene '+ub.Amount+' productos.',
         });
       } else {
 

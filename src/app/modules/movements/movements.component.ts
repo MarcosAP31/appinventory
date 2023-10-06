@@ -165,7 +165,7 @@ export class MovementsComponent implements OnInit {
                                 actub.Description = actub.Description.replace(actsplits[i] + ',', '');
                               }
                             } else {
-                              actub.Description = actub.Description.replace(array[0], amountprodub);
+                              actub.Description = actub.Description.replace(array[0]+" "+array[1], amountprodub+" "+array[1]);
                             }
                           }
                           break;
@@ -174,9 +174,9 @@ export class MovementsComponent implements OnInit {
                       for (let i = 0; i < splits.length; i++) {
                         if (splits[i].includes(p.Description)) {
                           const array: string[] = splits[i].split(' ');
-                          const amountprod = Number(array[0]) + Number(this.formMovement.value.Amount);
+                          const amountprodub = Number(array[0]) + Number(this.formMovement.value.Amount);
                           console.log(array[0]);
-                          newub.Description = newub.Description.replace(array[0], amountprod);
+                          newub.Description = newub.Description.replace(array[0] + " " + array[1], amountprodub + " " + array[1]);
                           this.existprod = true;
                           break;
                         }
@@ -185,9 +185,9 @@ export class MovementsComponent implements OnInit {
                         newub.Description = newub.Description + "," + this.formMovement.value.Amount + " " + p.Description + "(s)";
                       }
                     }
-                    this.storeService.updateUbication(this.formMovement.value.ActualUbicationId,actub).subscribe(()=>{});
-                    this.storeService.updateUbication(this.formMovement.value.NewUbicationId,newub).subscribe(()=>{});
-                    var operation=new Operation();
+                    this.storeService.updateUbication(this.formMovement.value.ActualUbicationId, actub).subscribe(() => { });
+                    this.storeService.updateUbication(this.formMovement.value.NewUbicationId, newub).subscribe(() => { });
+                    var operation = new Operation();
                     operation.Date = this.todayWithPipe;
                     operation.Description = "Se movió " + this.formMovement.value.Amount + " " + p.Description + "(s) de " + actub.Name + " hacia " + newub.Name;
                     operation.ProductId = this.formMovement.value.ProductId;

@@ -44,7 +44,6 @@ export class OperationsComponent implements OnInit {
       Balance: ['']
     });
   }
-
   ngOnInit(): void {
     // Configurar opciones de DataTables
     this.dtOptions = {
@@ -55,7 +54,6 @@ export class OperationsComponent implements OnInit {
     // Obtener operaciones
     this.get();
   }
-
   isLoading() {
     Swal.fire({
       allowOutsideClick: false,

@@ -128,19 +128,42 @@ export class OrderComponent implements OnInit {
 
   }
   deleteElement(idproduct: any, idubication: any) {
-    for (const element of this.elements) {
-      if (element.productid == idproduct) {
-        const indice = this.elements.indexOf(element);
-        this.finalprice = this.finalprice - (element.amount * element.price);
-        this.elements.splice(indice, 1); // Elimina 1 elemento a partir del índice encontrado
+
+    this.storeService.getProduct(idproduct).subscribe((p: any) => {
+      for (const ub of this.ubs) {
+        if (ub.UbicationId = idubication) {
+          for (const element of this.elements) {
+            if (element.product == p.Description) {
+              const indice = this.elements.indexOf(element);
+              this.finalprice = this.finalprice - (element.amount * element.price);
+              this.elements.splice(indice, 1); // Elimina 1 elemento a partir del índice encontrado
+              ub.Amount = ub.Amount + Number(element.amount);
+              console.log(ub.Amount)
+              if (ub.Description == "El almacén no tiene productos") {
+                ub.Description = ub.Amount + " " + p.Description + "(s)";
+              } else {
+                const splits: string[] = ub.Description.split(',');
+                for (let i = 0; i < splits.length; i++) {
+                  if (splits[i].includes(p.Description)) {
+                    const array: string[] = splits[i].split(' ');
+                    const amountprodub = Number(array[0]) + Number(element.amount);
+                    ub.Description = ub.Description.replace(array[0] + " " + array[1], amountprodub + " " + array[1]);
+                    this.existprod = true;
+                    break;
+                  }
+                }
+                if (this.existprod == false) {
+                  ub.Description = ub.Description + "," + element.amount + " " + p.Description + "(s)";
+                }
+              }
+              
+            }
+          }
+          this.existprod = false;
+        }
       }
-    }
-    for (const ub of this.ubs) {
-      if (ub.UbicationId == idubication) {
-        const indice = this.ubs.indexOf(ub);
-        this.ubs.splice(indice, 1); // Elimina 1 elemento a partir del índice encontrado
-      }
-    }
+    })
+
   }
   editOrder(orderid: any) {
     this.finalprice = 0;
@@ -309,6 +332,7 @@ export class OrderComponent implements OnInit {
           }
           this.elements.length = 0;
           this.ubs.length = 0;
+          console.log(order.OrderDate);
           Swal.fire({
             allowOutsideClick: false,
             icon: 'success',
@@ -444,6 +468,7 @@ export class OrderComponent implements OnInit {
                           ub.Description = ub.Description + "," + orderxproduct.Amount + " " + p.Description + "(s)";
                         }
                       }
+                      this.existprod = false;
                       var operation = new Operation();
                       operation.Date = this.todayWithPipe;
                       operation.Description = 'Se devolvió ' + orderxproduct.Amount + ' ' + p.Description + '(s) a ' + ub.Name;
@@ -496,7 +521,7 @@ export class OrderComponent implements OnInit {
       this.storeService.getProduct(this.formOrder.value.ProductId).subscribe((p: any) => {
         this.productdescription = p.Description;
         this.productprice = p.SalePrice;
-        console.log(p.Description)
+
         for (const element of this.elements) {
           if (element.productid == this.formOrder.value.ProductId) {
             Swal.fire({
@@ -515,7 +540,7 @@ export class OrderComponent implements OnInit {
             if (splits[i].includes(p.Description)) {
               const array: string[] = splits[i].split(' ');
               const amountprodub = Number(array[0]) - Number(this.formOrder.value.Amount);
-              console.log(array[0]);
+
               if (amountprodub < 0) {
                 Swal.fire({
                   allowOutsideClick: false,
@@ -568,13 +593,14 @@ export class OrderComponent implements OnInit {
                   }
                   this.ubs[i].Amount = this.ubs[i].Amount - this.formOrder.value.Amount;
                   this.recalledprod = true;
+                  //console.log(this.ubs[i]);
                   break;
                 }
               }
             }
           }
           if (this.recalledprod == false) {
-            ub.Amount = ub.Amount - this.formOrder.value.Amount;
+
             this.ubs.push(ub);
           }
           console.log(this.ubs);
@@ -603,7 +629,7 @@ export class OrderComponent implements OnInit {
               UbicationId: ubs[i].UbicationId,
               Name: ubs[i].Name
             });
-            console.log(this.ubications)
+            //console.log(this.ubications)
           }
         }
       });

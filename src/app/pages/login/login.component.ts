@@ -114,7 +114,7 @@ export class LoginComponent implements OnInit {
 
   // Método para mostrar imágenes
   mostrarImg() {
-    this.http.get<any>('http://192.168.1.5:3000/apistore/upload').subscribe(res => {
+    this.http.get<any>('http://localhost:3000/apistore/upload').subscribe(res => {
       this.imagenes = res;
       const reader = new FileReader();
       reader.onload = (this.imagenes);
