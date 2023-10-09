@@ -600,8 +600,8 @@ export class OrderComponent implements OnInit {
             }
           }
           if (this.recalledprod == false) {
-
             this.ubs.push(ub);
+            this.ubamount
           }
           console.log(this.ubs);
           console.log(ub.Amount);
