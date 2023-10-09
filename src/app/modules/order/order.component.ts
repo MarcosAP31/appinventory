@@ -517,107 +517,112 @@ export class OrderComponent implements OnInit {
   }
   //Metodo para agregar productos a una ordern
   addProduct() {
-    this.storeService.getUbication(this.formOrder.value.UbicationId).subscribe((ub: any) => {
-      this.storeService.getProduct(this.formOrder.value.ProductId).subscribe((p: any) => {
-        this.productdescription = p.Description;
-        this.productprice = p.SalePrice;
-
-        for (const element of this.elements) {
-          if (element.productid == this.formOrder.value.ProductId) {
-            Swal.fire({
-              allowOutsideClick: false,
-              icon: 'error',
-              title: 'El producto ya está agregado en la orden'
-            });
-            this.addedproduct = true;
-            break;
-          }
-        }
-        if (this.addedproduct == false) {
-          ub.Amount = ub.Amount - Number(this.formOrder.value.Amount);
-          const splits: string[] = ub.Description.split(',');
-          for (let i = 0; i < splits.length; i++) {
-            if (splits[i].includes(p.Description)) {
-              const array: string[] = splits[i].split(' ');
-              const amountprodub = Number(array[0]) - Number(this.formOrder.value.Amount);
-
-              if (amountprodub < 0) {
-                Swal.fire({
-                  allowOutsideClick: false,
-                  icon: 'error',
-                  title: 'Excede la cantidad de stock',
-                  text: 'En ' + ub.Name + ' hay ' + array[0] + " " + p.Description + "(s)"
-                });
-              } else {
-                if (ub.Amount == 0) {
-                  ub.Description = "El almacén no tiene productos";
-                } else {
-                  if (amountprodub >= 0) {
-                    if (amountprodub == 0) {
-                      if (i == splits.length - 1) {
-                        ub.Description = ub.Description.replace(',' + splits[i], '');
-                      } else {
-                        ub.Description = ub.Description.replace(splits[i] + ',', '');
-                      }
-                    } else {
-                      ub.Description = ub.Description.replace(array[0] + " " + array[1], amountprodub + " " + array[1]);
-                    }
-                    this.elements.push({
-                      productid: this.formOrder.value.ProductId,
-                      product: this.productdescription,
-                      price: this.productprice,
-                      amount: this.formOrder.value.Amount,
-                      ubicationid: ub.UbicationId
-                    });
-                  }
-                }
-                this.finalprice = this.finalprice + (this.formOrder.value.Amount * p.SalePrice);
-                break;
-              }
+    if(this.formOrder.value.DeliveryDate!=""&&this.formOrder.value.ClientId!=""&&this.formOrder.value.ProductId!=""&&this.formOrder.value.UbicationId!=""&&this.formOrder.value.Amount!=""){
+      this.storeService.getUbication(this.formOrder.value.UbicationId).subscribe((ub: any) => {
+        this.storeService.getProduct(this.formOrder.value.ProductId).subscribe((p: any) => {
+          this.productdescription = p.Description;
+          this.productprice = p.SalePrice;
+  
+          for (const element of this.elements) {
+            if (element.productid == this.formOrder.value.ProductId) {
+              Swal.fire({
+                allowOutsideClick: false,
+                icon: 'error',
+                title: 'El producto ya está agregado en la orden'
+              });
+              this.addedproduct = true;
+              break;
             }
           }
-          for (let i = 0; i < this.ubs.length; i++) {
-            if (this.ubs[i].UbicationId == ub.UbicationId) {
-              for (let j = 0; j < splits.length; j++) {
-                if (splits[j].includes(p.Description)) {
-                  const array: string[] = splits[j].split(' ');
-                  const amountprodub = Number(array[0]) - Number(this.formOrder.value.Amount);
-                  if (amountprodub == 0) {
-                    if (j == splits.length - 1) {
-                      this.ubs[i].Description = this.ubs[i].Description.replace(',' + splits[j], '');
-                    } else {
-                      this.ubs[i].Description = this.ubs[i].Description.replace(splits[j] + ',', '');
-                    }
+          if (this.addedproduct == false) {
+            ub.Amount = ub.Amount - Number(this.formOrder.value.Amount);
+            const splits: string[] = ub.Description.split(',');
+            for (let i = 0; i < splits.length; i++) {
+              if (splits[i].includes(p.Description)) {
+                const array: string[] = splits[i].split(' ');
+                const amountprodub = Number(array[0]) - Number(this.formOrder.value.Amount);
+  
+                if (amountprodub < 0) {
+                  Swal.fire({
+                    allowOutsideClick: false,
+                    icon: 'error',
+                    title: 'Excede la cantidad de stock',
+                    text: 'En ' + ub.Name + ' hay ' + array[0] + " " + p.Description + "(s)"
+                  });
+                } else {
+                  if (ub.Amount == 0) {
+                    ub.Description = "El almacén no tiene productos";
                   } else {
-                    this.ubs[i].Description = this.ubs[i].Description.replace(array[0] + " " + array[1], amountprodub + " " + array[1]);
+                    if (amountprodub >= 0) {
+                      if (amountprodub == 0) {
+                        if (i == splits.length - 1) {
+                          ub.Description = ub.Description.replace(',' + splits[i], '');
+                        } else {
+                          ub.Description = ub.Description.replace(splits[i] + ',', '');
+                        }
+                      } else {
+                        ub.Description = ub.Description.replace(array[0] + " " + array[1], amountprodub + " " + array[1]);
+                      }
+                      this.elements.push({
+                        productid: this.formOrder.value.ProductId,
+                        product: this.productdescription,
+                        price: this.productprice,
+                        amount: this.formOrder.value.Amount,
+                        ubicationid: ub.UbicationId
+                      });
+                    }
                   }
-                  this.ubs[i].Amount = this.ubs[i].Amount - this.formOrder.value.Amount;
-                  this.recalledprod = true;
-                  //console.log(this.ubs[i]);
+                  this.finalprice = this.finalprice + (this.formOrder.value.Amount * p.SalePrice);
                   break;
                 }
               }
             }
+            for (let i = 0; i < this.ubs.length; i++) {
+              if (this.ubs[i].UbicationId == ub.UbicationId) {
+                for (let j = 0; j < splits.length; j++) {
+                  if (splits[j].includes(p.Description)) {
+                    const array: string[] = splits[j].split(' ');
+                    const amountprodub = Number(array[0]) - Number(this.formOrder.value.Amount);
+                    if (amountprodub == 0) {
+                      if (j == splits.length - 1) {
+                        this.ubs[i].Description = this.ubs[i].Description.replace(',' + splits[j], '');
+                      } else {
+                        this.ubs[i].Description = this.ubs[i].Description.replace(splits[j] + ',', '');
+                      }
+                    } else {
+                      this.ubs[i].Description = this.ubs[i].Description.replace(array[0] + " " + array[1], amountprodub + " " + array[1]);
+                    }
+                    this.ubs[i].Amount = this.ubs[i].Amount - this.formOrder.value.Amount;
+                    this.recalledprod = true;
+                    //console.log(this.ubs[i]);
+                    break;
+                  }
+                }
+              }
+            }
+            if (this.recalledprod == false) {
+  
+              this.ubs.push(ub);
+            }
+            console.log(this.ubs);
+            console.log(ub.Amount);
+            //dsa
+            //this.storeService.updateUbication(this.formOrder.value.UbicationId,ub).subscribe(()=>{});
+            /*for (const element of this.elements) {
+              console.log(element)
+              this.finalprice = this.finalprice + (element.amount * element.price);
+              console.log(this.finalprice)
+            }*/
           }
-          if (this.recalledprod == false) {
-            this.ubs.push(ub);
-            this.ubamount
-          }
-          console.log(this.ubs);
-          console.log(ub.Amount);
-          //dsa
-          //this.storeService.updateUbication(this.formOrder.value.UbicationId,ub).subscribe(()=>{});
-          /*for (const element of this.elements) {
-            console.log(element)
-            this.finalprice = this.finalprice + (element.amount * element.price);
-            console.log(this.finalprice)
-          }*/
-        }
-        this.recalledprod = false;
-        this.addedproduct = false;
-        this.idproduct = 0; this.productdescription = ""; this.productprice = 0;
+          this.recalledprod = false;
+          this.addedproduct = false;
+          this.idproduct = 0; this.productdescription = ""; this.productprice = 0;
+        })
       })
-    })
+    }else{
+      console.log("hola");
+    }
+    
   }
   updateUbications() {
     this.ubications.length = 0;

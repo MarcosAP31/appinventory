@@ -71,8 +71,8 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
 
     // Redireccionar al inicio si ya hay un token de acceso en las cookies
-    if (this.cookieService.check('token_access')) {
-      this.router.navigateByUrl('inicio');
+    if (this.cookieService.check('token_access')==false) {
+      this.router.navigateByUrl('login');
     }
 
     // Obtener la fecha actual formateada
@@ -133,22 +133,28 @@ export class LoginComponent implements OnInit {
     user.Password = this.formLogin.value.password;
 
     // Mostrar un mensaje de carga mientras se realiza la autenticación
-    Swal.fire({
-      allowOutsideClick: false,
-      icon: 'info',
-      title: 'Login',
-      text: 'Ingresando...',
-    });
-    Swal.showLoading();
+    
 
     // Llamar al servicio de autenticación
     this.storeService.login(user).subscribe((r: any) => {
       if (r == null) {
         // Si la autenticación falla, redireccionar a la página de inicio de sesión y cerrar el mensaje de carga
-        this.router.navigateByUrl('login');
-        Swal.close();
+        Swal.fire({
+          allowOutsideClick: false,
+          icon: 'info',
+          title: 'Error de autenticación',
+          text: 'Correo o contraseña incorrectos',
+        });
+        
       } else {
         // Si la autenticación tiene éxito, almacenar el token de acceso y realizar verificaciones adicionales
+        Swal.fire({
+          allowOutsideClick: false,
+          icon: 'info',
+          title: 'Login',
+          text: 'Ingresando...',
+        });
+        Swal.showLoading();
         localStorage.setItem("token", r);
         this.storeService.verifyToken(localStorage.getItem("token")).subscribe(() => {
           this.cookieService.set('token_access', r);
