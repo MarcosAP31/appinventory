@@ -48,6 +48,7 @@ export class InicioComponent implements OnInit {
   }
 
   logout() {
+    this.router.navigateByUrl('login');
     // Obtener la sesión actual del usuario y actualizar la hora de cierre
     this.storeService.getSessionByUserId(Number(localStorage.getItem('userId'))).subscribe((res: any) => {
       this.session = res;
@@ -57,6 +58,7 @@ export class InicioComponent implements OnInit {
 
     // Expirar el token de acceso y realizar el proceso de cierre de sesión
     this.storeService.expireToken(localStorage.getItem('token')).subscribe((res: any) => {
+      
       console.log(this.cookieService.get('token_access'));
       if (res == null) {
         this.cookieService.delete('token_access');
@@ -66,8 +68,8 @@ export class InicioComponent implements OnInit {
         localStorage.removeItem('userId');
         localStorage.removeItem('username');
         console.log(localStorage.getItem('username'))
-        this.router.navigateByUrl('login');
       }
+      
     });
   }
 }

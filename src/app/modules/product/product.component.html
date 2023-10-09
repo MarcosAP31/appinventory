@@ -81,9 +81,9 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="inputDescription">Descripcion</label>
+                            <label for="inputDescription">Descripción</label>
                             <input required type="text" class="form-control" name="" formControlName="Description" 
-                                class="form-control" placeholder="Ingrese descripcion" required>
+                                class="form-control" placeholder="Ingrese descripción" required>
                         </div>
                         <div class="form-group">
                             <label for="inputCategory">Categoria</label>
@@ -111,7 +111,6 @@
                                 <option value="" disabled selected hidden>Selecciona un proveedor</option>
                                 <option  *ngFor="let supplier of suppliers" [value]="supplier.SupplierId">{{supplier.BusinessName}}</option>
                             </select>
-                            <span *ngIf="this.formProduct.value.SupplierId==''" class="error-custom">Seleccione el proveedor</span>
                         </div>
                         <div class="form-group" *ngIf="showUbication">
                             <label for="selectUbication">Ubicación</label>
@@ -119,7 +118,6 @@
                                 <option value="" disabled selected hidden>Selecciona una ubicación</option>
                                 <option  *ngFor="let ubication of ubications" [value]="ubication.UbicationId">{{ubication.Name}}</option>
                             </select>
-                            <span *ngIf="this.formProduct.value.UbicationId==''" class="error-custom">Selecciona la ubicacion</span>
                         </div>
                         <div class="form-group" >
                             <label for="inputPurchasePrice">Imagen</label>
