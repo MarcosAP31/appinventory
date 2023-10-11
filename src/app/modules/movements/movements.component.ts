@@ -64,11 +64,9 @@ export class MovementsComponent implements OnInit {
       this.operations = response;
       this.dtTrigger.next(0);
     });
-
     this.storeService.getProducts().subscribe(response => {
       this.products = response;
     });
-
   }
   updateActualUbications() {
     this.actualubications.length = 0;

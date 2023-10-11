@@ -84,11 +84,11 @@
                         <div class="form-group">
                             <label for="inputDeliveryDate">Fecha de Entrega</label>
                             <input required type="date" class="form-control" Name="" formControlName="DeliveryDate"
-                                class="form-control" placeholder="Ingrese fecha de entrega" required>
+                                class="form-control" placeholder="Ingrese fecha de entrega" #DeliveryDate required>
                         </div>
                         <div class="form-group">
                             <label for="selectClient">Cliente</label>
-                            <select name="Client" class="form-control" formControlName="ClientId" required>
+                            <select name="Client" class="form-control" formControlName="ClientId" #ClientId required>
                                 <option value="" disabled selected hidden>Selecciona un cliente</option>
                                 <option *ngFor="let client of clients" [value]="client.ClientId">{{client.Name}}
                                     {{client.LastName}}
@@ -98,7 +98,7 @@
                         <div class="form-group">
                             <label for="selectProduct">Producto</label>
                             <select name="Product" class="form-control" formControlName="ProductId"
-                                (change)="updateUbications()" required>
+                                (change)="updateUbications()" #ProductId required>
                                 <option value="" disabled selected hidden>Selecciona un producto</option>
                                 <option *ngFor="let product of products" [value]="product.ProductId">
                                     {{product.Description}}</option>
@@ -106,7 +106,7 @@
                         </div>
                         <div class="form-group">
                             <label for="selectUbication">Almacén</label>
-                            <select name="Ubication" class="form-control" formControlName="UbicationId" required>
+                            <select name="Ubication" class="form-control" formControlName="UbicationId" #UbicationId required>
                                 <option value="" disabled selected hidden>Selecciona el almacén</option>
                                 <option *ngFor="let ubication of ubications" [value]="ubication.UbicationId">
                                     {{ubication.Name}}</option>
