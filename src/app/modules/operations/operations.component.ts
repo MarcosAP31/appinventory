@@ -50,7 +50,6 @@ export class OperationsComponent implements OnInit {
       pagingType: 'full_numbers',
       responsive: true
     };
-
     // Obtener operaciones
     this.get();
   }

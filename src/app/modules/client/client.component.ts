@@ -8,6 +8,8 @@ import { StoreService } from 'src/app/service/store.service';
 import Swal from 'sweetalert2';
 import { DomSanitizer } from '@angular/platform-browser';
 
+
+
 @Component({
   selector: 'app-client',
   templateUrl: './client.component.html',

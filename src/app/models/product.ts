@@ -6,6 +6,6 @@ export class Product{
     PurchasePrice!:number;
     SalePrice!:number;
     SupplierId!:number;
-    UbicationId!:number;
+    //UbicationId!:number;
     Image!:string;
 }
