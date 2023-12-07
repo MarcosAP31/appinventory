@@ -112,7 +112,7 @@ export class UserComponent implements OnInit {
 
   // Método para mostrar imágenes
   mostrarImg() {
-    this.http.get<any>('http://192.168.1.5:3000/apistore/upload').subscribe(res => {
+    this.http.get<any>('http://localhost:3000/apistore/upload').subscribe(res => {
       this.imagenes = res;
       const reader = new FileReader();
       reader.onload = (this.imagenes);
@@ -183,7 +183,7 @@ export class UserComponent implements OnInit {
         Swal.showLoading();
         this.storeService.getUser(id).subscribe((r: any) => {
           this.storeService.getFileByName(r.Image).subscribe((res: any) => {
-            this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe(re => {
+            this.http.delete<any>(`http://localhost:3000/apistore/file/${res.FileId}`).subscribe(re => {
               console.log(re, location.reload());
             });
           });

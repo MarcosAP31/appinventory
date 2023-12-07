@@ -142,7 +142,7 @@ export class DocumentComponent implements OnInit {
         Swal.showLoading();
         this.storeService.getDocument(documentid).subscribe((r: any) => {
           this.storeService.getFileByName(r.Path).subscribe((res: any) => {
-            this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe(re => {
+            this.http.delete<any>(`http://localhost:3000/apistore/file/${res.FileId}`).subscribe(re => {
               console.log(re, location.reload());
             });
           })
@@ -219,7 +219,7 @@ export class DocumentComponent implements OnInit {
         if (this.creating == false) {
           this.storeService.getDocument(this.documentid).subscribe((re: any) => {
             this.storeService.getFileByName(re.Path).subscribe((res: any) => {
-              this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe();
+              this.http.delete<any>(`http://localhost:3000/apistore/file/${res.FileId}`).subscribe();
             })
           });
         }
@@ -259,8 +259,8 @@ export class DocumentComponent implements OnInit {
 
   }
   generatePDF() {
-    const imageUrl1 = 'assets/img/firma.PNG';
-    const imageUrl2 = 'assets/img/datos.PNG';
+    const imageUrl1 = 'assets/img/dsadsa.PNG';
+    const imageUrl2 = 'assets/img/fasdas.PNG';
     this.storeService.getDocumentByUserId(Number(localStorage.getItem('userId'))).subscribe((r: any) => {
       var document = new Document();
       document.Name = this.formDocument.value.Name;
@@ -319,7 +319,7 @@ export class DocumentComponent implements OnInit {
                       { text: '       GARANTIA: SOLO MANO DE OBRA Y EN REPUESTO POR DEFECTO DE FABRICA. ' },
                       { text: '       ENTREGA DE TRABAJOS. INMEDIATO UNA VES RECIBIDA LA O/C – O/S' + '\n\n' },
                       { image: base64data1 },
-                      { text: '\n\n' + 'EMAIL: PRINTERSOK@HOTMAIL.COM' + '\n\n' },
+                      { text: '\n\n' + 'EMAIL: dsadsads' + '\n\n' },
                       {
                         image: base64data2,
                         width: 500,
@@ -346,7 +346,7 @@ export class DocumentComponent implements OnInit {
                     const formData = new FormData();
                     formData.append('file', file);
 
-                    this.http.post<any>('http://192.168.1.5:3000/apistore/savedoc', formData).subscribe((res) =>
+                    this.http.post<any>('http://localhost:3000/apistore/savedoc', formData).subscribe((res) =>
                       console.log(res, Swal.fire({
                         icon: 'success',
                         title: 'Imagen cargada!!',

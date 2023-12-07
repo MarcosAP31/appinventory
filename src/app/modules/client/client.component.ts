@@ -182,7 +182,7 @@ export class ClientComponent implements OnInit {
           // Obtener archivo asociado al cliente
           this.storeService.getFileByName(r.Image).subscribe((res: any) => {
             // Eliminar archivo
-            this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe(re => {
+            this.http.delete<any>(`http://localhost:3000/apistore/file/${res.FileId}`).subscribe(re => {
               console.log(re, location.reload());
             });
           });

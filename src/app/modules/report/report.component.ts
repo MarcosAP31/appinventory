@@ -114,7 +114,7 @@ export class ReportComponent implements OnInit {
 
   // Método para mostrar las imágenes
   mostrarImg() {
-    this.http.get<any>('http://192.168.1.5:3000/apistore/upload').subscribe(res => {
+    this.http.get<any>('http://localhost:3000/apistore/upload').subscribe(res => {
       this.imagenes = res;
       const reader = new FileReader();
       reader.onload = (this.imagenes);
@@ -174,7 +174,7 @@ export class ReportComponent implements OnInit {
 
         this.storeService.getReport(id).subscribe((r: any) => {
           this.storeService.getFileByName(r.Image).subscribe((res: any) => {
-            this.http.delete<any>(`http://192.168.1.5:3000/apistore/file/${res.FileId}`).subscribe(re => {
+            this.http.delete<any>(`http://localhost:3000/apistore/file/${res.FileId}`).subscribe(re => {
               console.log(re, location.reload());
             });
           })
