@@ -114,8 +114,8 @@ export class StoreService {
   insertSupplier(supplier: Supplier) {
     return this.http.post(`${this.API_URI}/supplier`, supplier);
   }
-  updateSupplier(id: number, updatedSupplier: Supplier) {
-    return this.http.put(`${this.API_URI}/supplier/${id}`, updatedSupplier);
+  updateSupplier(updatedSupplier: Supplier) {
+    return this.http.put(`${this.API_URI}/supplier/${updatedSupplier.SupplierId}`, updatedSupplier);
   }
   deleteSupplier(id: number): Observable<any> {
     return this.http.delete(`${this.API_URI}/supplier/${id}`);

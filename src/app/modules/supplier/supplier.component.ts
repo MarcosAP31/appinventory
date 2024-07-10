@@ -177,7 +177,7 @@ export class SupplierComponent implements OnInit {
       supplier.SupplierId = this.id;
     }
 
-    var solicitud = this.creating ? this.storeService.insertSupplier(supplier) : this.storeService.updateSupplier(this.id, supplier);
+    var solicitud = this.creating ? this.storeService.insertSupplier(supplier) : this.storeService.updateSupplier(supplier);
     Swal.fire({
       title: 'Confirmación',
       text: '¿Seguro de guardar el registro?',
